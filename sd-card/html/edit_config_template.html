@@ -305,6 +305,19 @@
             <td>$TOOLTIP_TakeImage_WaitBeforeTakingPicture</td>
         </tr>
 
+        <tr>
+            <td class="indent1">
+                <class id="TakeImage_PowerDownCameraBetweenRounds_text" style="color:black;">Power Down Camera Between Rounds</class>
+            </td>
+            <td>
+                <select id="TakeImage_PowerDownCameraBetweenRounds_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_TakeImage_PowerDownCameraBetweenRounds</td>
+        </tr>
+
         <tr class="expert" unused_id="TakeImage_CamGainceiling_ex3">
             <td class="indent1">
                 <class id="TakeImage_CamGainceiling_text" style="color:black;">CamGainceiling</class>
@@ -2011,6 +2024,48 @@
             <td>$TOOLTIP_AutoTimer_Interval</td>
         </tr>
 
+        <tr>
+            <td class="indent1">
+                <class id="AutoTimer_SleepWhileIdle_text" style="color:black;">Sleep While Idle</class>
+            </td>
+            <td>
+                <select id="AutoTimer_SleepWhileIdle_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_AutoTimer_SleepWhileIdle</td>
+        </tr>
+
+        <tr>
+            <td class="indent1">
+                <class id="AutoTimer_SleepGraceSeconds_text" style="color:black;">Sleep Grace Window</class>
+            </td>
+            <td>
+                <input required type="number" id="AutoTimer_SleepGraceSeconds_value1" size="13" min="0" max="600" step="1"
+                    oninput="(!validity.rangeUnderflow||(value=0));(!validity.rangeOverflow||(value=600));">Seconds
+            </td>
+            <td>$TOOLTIP_AutoTimer_SleepGraceSeconds</td>
+        </tr>
+
+        <!------------- Battery ------------------>
+        <tr style="border-bottom: 2px solid lightgray;">
+            <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Battery</h4></td>
+        </tr>
+
+        <tr>
+            <td class="indent1">
+                <class id="Battery_Enabled_text" style="color:black;">Battery Monitoring</class>
+            </td>
+            <td>
+                <select id="Battery_Enabled_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_Battery_Enabled</td>
+        </tr>
+
         <!------------- Data Logging ------------------>
         <tr style="border-bottom: 2px solid lightgray;">
             <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;"><h4>Data Logging</h4></td>
@@ -2372,7 +2427,8 @@ function UpdateInput() {
     WriteParameter(param, category, "TakeImage", "RawImagesRetention", true);
 
     WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
-    WriteParameter(param, category, "TakeImage", "CamGainceiling", false);	
+    WriteParameter(param, category, "TakeImage", "PowerDownCameraBetweenRounds", false);
+    WriteParameter(param, category, "TakeImage", "CamGainceiling", false);
     WriteParameter(param, category, "TakeImage", "CamQuality", false);
     WriteParameter(param, category, "TakeImage", "CamBrightness", false);
     WriteParameter(param, category, "TakeImage", "CamContrast", false);
@@ -2468,6 +2524,10 @@ function UpdateInput() {
 
     //WriteParameter(param, category, "AutoTimer", "AutoStart", false);
     WriteParameter(param, category, "AutoTimer", "Interval", false);
+    WriteParameter(param, category, "AutoTimer", "SleepWhileIdle", false);
+    WriteParameter(param, category, "AutoTimer", "SleepGraceSeconds", false);
+
+    WriteParameter(param, category, "Battery", "Enabled", false);
 
     WriteParameter(param, category, "DataLogging", "DataLogActive", false);
     WriteParameter(param, category, "DataLogging", "DataFilesRetention", false);
@@ -2542,6 +2602,7 @@ function ReadParameterAll() {
     ReadParameter(param, "TakeImage", "RawImagesLocation", true);
     ReadParameter(param, "TakeImage", "RawImagesRetention", true);
     ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
+    ReadParameter(param, "TakeImage", "PowerDownCameraBetweenRounds", false);
     ReadParameter(param, "TakeImage", "CamGainceiling", false);	
     ReadParameter(param, "TakeImage", "CamQuality", false);	
     ReadParameter(param, "TakeImage", "CamBrightness", false);
@@ -2647,6 +2708,10 @@ function ReadParameterAll() {
 
     //ReadParameter(param, "AutoTimer", "AutoStart", false);
     ReadParameter(param, "AutoTimer", "Interval", false);
+    ReadParameter(param, "AutoTimer", "SleepWhileIdle", false);
+    ReadParameter(param, "AutoTimer", "SleepGraceSeconds", false);
+
+    ReadParameter(param, "Battery", "Enabled", false);
     
     ReadParameter(param, "DataLogging", "DataLogActive", false);
     ReadParameter(param, "DataLogging", "DataFilesRetention", false);

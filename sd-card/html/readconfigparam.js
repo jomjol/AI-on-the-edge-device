@@ -102,6 +102,7 @@ function ParseConfig() {
     ParamAddValue(param, catname, "RawImagesLocation");
     ParamAddValue(param, catname, "RawImagesRetention");
     ParamAddValue(param, catname, "WaitBeforeTakingPicture");
+    ParamAddValue(param, catname, "PowerDownCameraBetweenRounds");
     ParamAddValue(param, catname, "CamGainceiling");		// Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
     ParamAddValue(param, catname, "CamQuality");    		// 0 - 63
     ParamAddValue(param, catname, "CamBrightness"); 		// (-2 to 2) - set brightness
@@ -277,8 +278,16 @@ function ParseConfig() {
     category[catname]["found"] = false;
     param[catname] = new Object();
     //ParamAddValue(param, catname, "AutoStart");
-    ParamAddValue(param, catname, "Interval");     
-    ParamAddValue(param, catname, "SleepWhileIdle");     
+    ParamAddValue(param, catname, "Interval");
+    ParamAddValue(param, catname, "SleepWhileIdle");
+    ParamAddValue(param, catname, "SleepGraceSeconds");
+
+    var catname = "Battery";
+    category[catname] = new Object();
+    category[catname]["enabled"] = false;
+    category[catname]["found"] = false;
+    param[catname] = new Object();
+    ParamAddValue(param, catname, "Enabled");
 
     var catname = "DataLogging";
     category[catname] = new Object();
@@ -329,6 +338,41 @@ function ParseConfig() {
         
         aktline++;
     }
+
+    // Downward compatibility: synthesize [Battery] section for devices whose
+    // existing config.ini predates it. Without this the dropdown stays
+    // disabled even though the firmware accepts the setting.
+    if (category["Battery"]["found"] == false) {
+        category["Battery"]["found"] = true;
+        param["Battery"]["Enabled"]["found"] = true;
+        param["Battery"]["Enabled"]["value1"] = "false";
+    }
+
+    // Battery > Enabled is a top-level switch (no separate enable checkbox),
+    // so the dropdown must always be interactive even when the section or
+    // line was commented out in config.ini. Force both flags on.
+    category["Battery"]["enabled"] = true;
+    param["Battery"]["Enabled"]["enabled"] = true;
+
+    // Downward compatibility for TakeImage.PowerDownCameraBetweenRounds when
+    // the user's existing config.ini predates it. Same reasoning as above:
+    // it's a top-level switch with no per-param enable checkbox, so always
+    // keep it interactive.
+    if (param["TakeImage"]["PowerDownCameraBetweenRounds"]["found"] == false) {
+        param["TakeImage"]["PowerDownCameraBetweenRounds"]["found"] = true;
+        param["TakeImage"]["PowerDownCameraBetweenRounds"]["value1"] = "false";
+    }
+    param["TakeImage"]["PowerDownCameraBetweenRounds"]["enabled"] = true;
+
+    // Downward compatibility for AutoTimer.SleepGraceSeconds when the user's
+    // existing config.ini predates it. It's an always-editable scalar (like
+    // Interval), not an optional checkbox parameter, so keep it interactive
+    // and default it to 10 s when absent.
+    if (param["AutoTimer"]["SleepGraceSeconds"]["found"] == false) {
+        param["AutoTimer"]["SleepGraceSeconds"]["found"] = true;
+        param["AutoTimer"]["SleepGraceSeconds"]["value1"] = "10";
+    }
+    param["AutoTimer"]["SleepGraceSeconds"]["enabled"] = true;
 
     // Make the downward compatiblity with DataLogging
     if (category["DataLogging"]["found"] == false) {

@@ -19,6 +19,14 @@
 #include "esp_log.h"
 #include "basic_auth.h"
 #include "esp_chip_info.h"
+#include "StayAwake.h"
+#ifdef ENABLE_MQTT
+#include "interface_mqtt.h"
+#include "server_mqtt.h"
+#endif //ENABLE_MQTT
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+#include "battery_adc.h"
+#endif
 
 #include <stdio.h>
 
@@ -158,6 +166,87 @@ esp_err_t info_get_handler(httpd_req_t *req)
         else {
             httpd_resp_sendstr(req, "unavailable");
         }
+        return ESP_OK;
+    }
+    else if (_task.compare("StayAwake") == 0)
+    {
+        httpd_resp_sendstr(req, StayAwake_Get() ? "true" : "false");
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryEnabled") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        httpd_resp_sendstr(req, Battery_IsReady() ? "true" : "false");
+#else
+        httpd_resp_sendstr(req, "false");
+#endif
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryVoltage") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        if (Battery_IsReady()) {
+            float v = Battery_ReadVoltage();
+            if (v >= 0.0f) {
+                char buf[16];
+                snprintf(buf, sizeof(buf), "%.3f", v);
+                httpd_resp_sendstr(req, buf);
+                return ESP_OK;
+            }
+        }
+#endif
+        httpd_resp_sendstr(req, "");
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryPercent") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        if (Battery_IsReady()) {
+            float v = Battery_ReadVoltage();
+            if (v >= 0.0f) {
+                char buf[16];
+                snprintf(buf, sizeof(buf), "%d", Battery_PercentFromVoltage(v));
+                httpd_resp_sendstr(req, buf);
+                return ESP_OK;
+            }
+        }
+#endif
+        httpd_resp_sendstr(req, "");
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryRawAdc") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        if (Battery_IsReady()) {
+            // Trigger a fresh read so the cached raw matches the cached voltage.
+            (void)Battery_ReadVoltage();
+            int raw = Battery_LastRawAdc();
+            if (raw >= 0) {
+                char buf[16];
+                snprintf(buf, sizeof(buf), "%d", raw);
+                httpd_resp_sendstr(req, buf);
+                return ESP_OK;
+            }
+        }
+#endif
+        httpd_resp_sendstr(req, "");
+        return ESP_OK;
+    }
+    else if (_task.compare("BatteryAdcVoltage") == 0)
+    {
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+        if (Battery_IsReady()) {
+            (void)Battery_ReadVoltage();
+            float v = Battery_LastAdcVoltage();
+            if (v >= 0.0f) {
+                char buf[16];
+                snprintf(buf, sizeof(buf), "%.3f", v);
+                httpd_resp_sendstr(req, buf);
+                return ESP_OK;
+            }
+        }
+#endif
+        httpd_resp_sendstr(req, "");
         return ESP_OK;
     }
     else if (_task.compare("SDCardPartitionSize") == 0)
@@ -441,6 +530,38 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
 }
 
 
+static esp_err_t sleep_override_handler(httpd_req_t *req)
+{
+    char query[64];
+    char value[8];
+    bool target = false;
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    if (httpd_req_get_url_query_str(req, query, sizeof(query)) == ESP_OK &&
+        httpd_query_key_value(query, "value", value, sizeof(value)) == ESP_OK) {
+        std::string v(value);
+        target = (v == "true" || v == "1" || v == "on");
+    } else {
+        // No value query -> toggle current state.
+        target = !StayAwake_Get();
+    }
+
+    if (StayAwake_Set(target)) {
+#ifdef ENABLE_MQTT
+        // Keep the Homeassistant "Stay Awake" switch in sync when toggled here.
+        if (getMQTTisConnected()) {
+            MQTTPublish(mqttServer_getMainTopic() + "/stay_awake", target ? "ON" : "OFF", 1, true);
+        }
+#endif //ENABLE_MQTT
+        httpd_resp_sendstr(req, target ? "true" : "false");
+    } else {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "failed to persist override");
+    }
+    return ESP_OK;
+}
+
+
 void register_server_main_uri(httpd_handle_t server, const char *base_path)
 {
     httpd_uri_t info_get_handle = {
@@ -450,6 +571,14 @@ void register_server_main_uri(httpd_handle_t server, const char *base_path)
         .user_ctx  = (void*) base_path    // Pass server data as context
     };
     httpd_register_uri_handler(server, &info_get_handle);
+
+    httpd_uri_t sleep_override_handle = {
+        .uri       = "/sleep_override",
+        .method    = HTTP_GET,
+        .handler   = APPLY_BASIC_AUTH_FILTER(sleep_override_handler),
+        .user_ctx  = NULL
+    };
+    httpd_register_uri_handler(server, &sleep_override_handle);
 
     httpd_uri_t sysinfo_handle = {
         .uri       = "/sysinfo",  // Match all URIs of type /path/to/file
@@ -497,7 +626,7 @@ httpd_handle_t start_webserver(void)
     config.server_port = 80;
     config.ctrl_port = 32768;
     config.max_open_sockets = 5; //20210921 --> previously 7   
-    config.max_uri_handlers = 41; // Make sure this fits all URI handlers. Memory usage in bytes: 6*max_uri_handlers
+    config.max_uri_handlers = 43; // Make sure this fits all URI handlers. Memory usage in bytes: 6*max_uri_handlers. Currently 42 registered (incl. /sleep_override); keep 1 spare.
     config.max_resp_headers = 8;                        
     config.backlog_conn = 5;                        
     config.lru_purge_enable = true; // this cuts old connections if new ones are needed.               

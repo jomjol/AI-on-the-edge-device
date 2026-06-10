@@ -37,7 +37,10 @@ protected:
 
 	bool AutoStart;
 	float AutoInterval;
-	void SetInitialParameter(void);	
+	bool SleepWhileIdle;
+	int SleepGraceSeconds;
+	bool BatteryEnabled;
+	void SetInitialParameter(void);
 	std::string aktstatusWithTime;
 	std::string aktstatus;
 	int aktRunNr;
@@ -72,6 +75,9 @@ public:
 
 	bool getIsAutoStart();
 	void setAutoStartInterval(long &_interval);
+	void setSleepWhileIdle(bool& _sleepwhileidle);
+	void setSleepGraceSeconds(int& _grace_seconds);
+	bool getBatteryEnabled();
 
 	std::string* getActStatusWithTime();
 	std::string* getActStatus();

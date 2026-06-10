@@ -120,8 +120,16 @@
 			<td class="tg-4">
 				<div id="sntp_date" ></div>
 				<div id="timestamp" ></div>	
-				<div id="cputemp" ></div>	
+				<div id="cputemp" ></div>
 				<div id="rssi" ></div>
+				<div id="battery_row" style="display:none;">
+					<span id="battery_icon" style="display:inline-block; width:1.6em; text-align:center;"></span>
+					<span id="battery_text"></span>
+				</div>
+				<div id="stay_awake_row" style="display:none;">
+					<span id="stay_awake_text"></span>
+					<button id="stay_awake_btn" type="button" onclick="toggleStayAwake()" style="margin-left:6px;">toggle</button>
+				</div>
 				<div>
 					<span id="uptime" ></span>
 					<span id="round" ></span>
@@ -159,6 +167,8 @@
 			loadRSSI();
 			loadUptime();
 			loadRoundCounter();
+			loadBattery();
+			loadStayAwake();
 		}
 
 		function LoadROIImage(){
@@ -265,7 +275,7 @@
 		}
 
 		function loadRoundCounter() {
-			url = domainname + '/info?type=Round';     
+			url = domainname + '/info?type=Round';
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
@@ -273,8 +283,96 @@
 					$('#round').html("(Round: " + _rsp + ")");
 				}
 			}
-			
+
 			xhttp.open("GET", url, true);
+			xhttp.send();
+		}
+
+		function batteryIcon(pct) {
+			// Unicode block sequence for a battery icon -- works without any extra font.
+			// One of 5 fill levels, recoloured red when low.
+			var glyph;
+			if (pct >= 87) glyph = "\u{1F50B}";      // full battery
+			else if (pct >= 62) glyph = "\u{1F50B}"; // 3/4
+			else if (pct >= 37) glyph = "\u{1FAAB}"; // half
+			else if (pct >= 15) glyph = "\u{1FAAB}"; // 1/4
+			else glyph = "\u{1FAAB}";                // empty
+			var color = (pct < 15) ? "#cc0000" : (pct < 30 ? "#cc7700" : "inherit");
+			return '<span style="color:' + color + '; font-size:1.1em;">' + glyph + '</span>';
+		}
+
+		function loadBattery() {
+			// First probe whether battery monitoring is enabled on the device.
+			// On non-aleksei boards (or aleksei without Battery.Enabled) this
+			// returns "false" and the row stays hidden.
+			var xprobe = new XMLHttpRequest();
+			xprobe.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					if (xprobe.responseText.trim() !== "true") {
+						document.getElementById("battery_row").style.display = "none";
+						return;
+					}
+					document.getElementById("battery_row").style.display = "";
+
+					var xv = new XMLHttpRequest();
+					xv.onreadystatechange = function() {
+						if (this.readyState == 4 && this.status == 200) {
+							var v = xv.responseText.trim();
+							var xp = new XMLHttpRequest();
+							xp.onreadystatechange = function() {
+								if (this.readyState == 4 && this.status == 200) {
+									var p = parseInt(xp.responseText.trim(), 10);
+									if (isNaN(p)) {
+										$("#battery_icon").html("");
+										$("#battery_text").html("Battery: n/a");
+									} else {
+										$("#battery_icon").html(batteryIcon(p));
+										$("#battery_text").html("Battery: " + p + "% (" + v + " V)");
+									}
+								}
+							}
+							xp.open("GET", domainname + "/info?type=BatteryPercent", true);
+							xp.send();
+						}
+					}
+					xv.open("GET", domainname + "/info?type=BatteryVoltage", true);
+					xv.send();
+				}
+			}
+			xprobe.open("GET", domainname + "/info?type=BatteryEnabled", true);
+			xprobe.send();
+		}
+
+		function renderStayAwake(on) {
+			document.getElementById("stay_awake_row").style.display = "";
+			$("#stay_awake_text").html("Stay Awake: <strong style=\"color:" + (on ? "#cc7700" : "inherit") + "\">" + (on ? "ON (sleep disabled)" : "off (normal sleep)") + "</strong>");
+			document.getElementById("stay_awake_btn").textContent = on ? "Resume sleep" : "Stay awake";
+		}
+
+		function loadStayAwake() {
+			// Always shown -- this is the user's manual override for SleepWhileIdle.
+			// Useful even when SleepWhileIdle=false: a known harmless toggle.
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					renderStayAwake(xhttp.responseText.trim() === "true");
+				}
+			}
+			xhttp.open("GET", domainname + "/info?type=StayAwake", true);
+			xhttp.send();
+		}
+
+		function toggleStayAwake() {
+			// No value query -> server toggles the current state.
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var on = xhttp.responseText.trim() === "true";
+					renderStayAwake(on);
+					firework.launch("Stay-Awake override " + (on ? "enabled - device will not deep sleep" : "cleared - normal sleep will resume next round"), on ? 'warning' : 'success', 5000);
+				}
+			}
+			xhttp.open("GET", domainname + "/sleep_override", true);
 			xhttp.send();
 		}
 

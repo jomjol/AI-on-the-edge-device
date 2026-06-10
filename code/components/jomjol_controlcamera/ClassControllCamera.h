@@ -32,6 +32,7 @@ typedef struct
     bool CameraDeepSleepEnable;
     bool DemoMode;
     bool SaveAllFiles;
+    bool PowerDownCameraBetweenRounds;
 } camera_controll_config_temp_t;
 
 extern camera_controll_config_temp_t CCstatus;
@@ -61,11 +62,11 @@ protected:
     int PrecaptureCamSetup(bool *focusEnabled, bool *manualFocus, bool *needReloadZoomConfig);
 
     bool initCameraAF(void);
-    int CameraDeepSleep(bool sleep);
 
 public:
     CCamera(void);
     esp_err_t InitCam(void);
+    int CameraDeepSleep(bool sleep);
 
     void LightOnOff(bool status);
     void LEDOnOff(bool status);

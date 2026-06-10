@@ -13,6 +13,10 @@
 #include "time_sntp.h"
 #include "../../include/defines.h"
 #include "basic_auth.h"
+#include "StayAwake.h"
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+#include "battery_adc.h"
+#endif
 
 
 
@@ -93,6 +97,9 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     else if (field == "flowstart") { // Special case: Button
         topicFull = "homeassistant/button/" + node_id + "/" + configTopic + "/config";
     }
+    else if (field == "stay_awake") { // Special case: Switch (Stay-Awake override)
+        topicFull = "homeassistant/switch/" + node_id + "/" + configTopic + "/config";
+    }
     else {
         topicFull = "homeassistant/sensor/" + node_id + "/" + configTopic + "/config";
     }
@@ -121,6 +128,14 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         }
         else if (field == "flowstart") { // Special case: Button
             payload += "\"cmd_t\":\"~/ctrl/flow_start\","; // Add command topic
+        }
+        else if (field == "stay_awake") { // Special case: Switch (Stay-Awake override)
+            payload += "\"cmd_t\":\"~/ctrl/stay_awake\",";
+            payload += "\"state_topic\": \"~/stay_awake\",";
+            // Retain commands on the broker: with SleepWhileIdle the device is
+            // in deep sleep most of the time, so a command sent while it is
+            // asleep must survive until the next wake + MQTT reconnect.
+            payload += "\"retain\": true,";
         }
         else {
             payload += "\"state_topic\": \"~/" + field + "\",";
@@ -181,10 +196,17 @@ bool MQTThomeassistantDiscovery(int qos) {
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "freeMem",         "Free Memory",       "memory",                   "B",   "",                "measurement", "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "wifiRSSI",        "Wi-Fi RSSI",        "wifi",                     "dBm", "signal_strength", "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "CPUtemp",         "CPU Temperature",   "thermometer",              "°C",  "temperature",     "measurement", "diagnostic", qos);
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+    if (Battery_IsReady()) {
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("", "battery_voltage", "Battery Voltage",   "car-battery",              "V",   "voltage",         "measurement", "diagnostic", qos);
+        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("", "battery_percent", "Battery",           "battery",                  "%",   "battery",         "measurement", "diagnostic", qos);
+    }
+#endif
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "interval",        "Interval",          "clock-time-eight-outline", "min",  ""           ,    "measurement", "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "IP",              "IP",                "network-outline",           "",    "",               "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "status",          "Status",            "list-status",               "",    "",               "",            "diagnostic", qos);
     allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "flowstart",       "Manual Flow Start", "timer-play-outline",        "",    "",               "",            "",           qos);
+    allSendsSuccessed |= sendHomeAssistantDiscoveryTopic("",     "stay_awake",      "Stay Awake",        "sleep-off",                 "",    "",               "",            "config",     qos); // Switch: suppresses deep sleep between rounds (see [AutoTimer] SleepWhileIdle)
 
 
     for (int i = 0; i < (*NUMBERS).size(); ++i) {
@@ -260,6 +282,24 @@ bool publishSystemData(int qos) {
 
     sprintf(tmp_char, "%d", (int)temperatureRead());
     allSendsSuccessed |= MQTTPublish(maintopic + "/" + "CPUtemp", std::string(tmp_char), qos, retainFlag);
+
+    // State for the "Stay Awake" Homeassistant switch (see MQTThomeassistantDiscovery)
+    allSendsSuccessed |= MQTTPublish(maintopic + "/" + "stay_awake", StayAwake_Get() ? "ON" : "OFF", qos, retainFlag);
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+    // Battery monitoring is only initialised when Battery.Enabled = true in config.
+    // Battery_IsReady() returns false otherwise, so this block silently skips for PoE/USB users.
+    if (Battery_IsReady()) {
+        float bat_v = Battery_ReadVoltage();
+        if (bat_v >= 0.0f) {
+            int bat_pct = Battery_PercentFromVoltage(bat_v);
+            sprintf(tmp_char, "%.3f", bat_v);
+            allSendsSuccessed |= MQTTPublish(maintopic + "/" + "battery_voltage", std::string(tmp_char), qos, retainFlag);
+            sprintf(tmp_char, "%d", bat_pct);
+            allSendsSuccessed |= MQTTPublish(maintopic + "/" + "battery_percent", std::string(tmp_char), qos, retainFlag);
+        }
+    }
+#endif
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Successfully published all System MQTT topics");
 

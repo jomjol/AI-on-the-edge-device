@@ -1,6 +1,7 @@
 #ifdef ENABLE_MQTT
 #include "interface_mqtt.h"
 
+#include <cctype>
 #include "esp_log.h"
 #if DEBUG_DETAIL_ON
     #include "esp_timer.h"
@@ -9,6 +10,7 @@
 #include "mqtt_client.h"
 #include "ClassLogFile.h"
 #include "MainFlowControl.h"
+#include "StayAwake.h"
 #include "cJSON.h"
 #include "../../include/defines.h"
 
@@ -442,6 +444,49 @@ bool mqtt_handler_set_prevalue(std::string _topic, char* _data, int _data_len)
     return ESP_FAIL;
 }
 
+bool mqtt_handler_stay_awake(std::string _topic, char* _data, int _data_len)
+{
+    // Payload: ON/OFF (also accepts true/false, 1/0; case-insensitive).
+    // Sets the Stay-Awake override that suppresses deep sleep between rounds.
+    // The matching state is echoed on <maintopic>/stay_awake so the
+    // Homeassistant switch reflects the result.
+
+    // Commands are sent retained (see Homeassistant discovery) so they survive
+    // deep sleep until the device reconnects. An empty payload is our own
+    // "clear retained command" publish looping back -- ignore it.
+    if (_data_len == 0) {
+        return ESP_OK;
+    }
+
+    std::string value(_data, _data_len);
+    for (auto &c : value) { c = toupper(c); }
+
+    bool on;
+    if ((value == "ON") || (value == "TRUE") || (value == "1")) {
+        on = true;
+    }
+    else if ((value == "OFF") || (value == "FALSE") || (value == "0")) {
+        on = false;
+    }
+    else {
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "handler_stay_awake: invalid payload '" + value + "' (expected ON or OFF)");
+        return ESP_FAIL;
+    }
+
+    if (StayAwake_Get() != on) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, std::string("Stay-Awake override set via MQTT: ") + (on ? "ON" : "OFF"));
+        StayAwake_Set(on);
+    }
+
+    // Consume-then-clear: delete the retained command from the broker so a
+    // stale retained ON/OFF cannot override a later change made through the
+    // web UI or the BOOT button. Then echo the new state for the HA switch.
+    MQTTPublish(_topic, "", 1, true);
+    MQTTPublish(maintopic + "/stay_awake", on ? "ON" : "OFF", 1, SetRetainFlag);
+
+    return ESP_OK;
+}
+
 void MQTTconnected(){
     if (mqtt_connected) {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Connected to broker");
@@ -459,8 +504,11 @@ void MQTTconnected(){
         std::function<bool(std::string topic, char* data, int data_len)> subHandler1 = mqtt_handler_flow_start;     
         MQTTregisterSubscribeFunction(maintopic + "/ctrl/flow_start", subHandler1);        // subcribe to maintopic/ctrl/flow_start
 
-        std::function<bool(std::string topic, char* data, int data_len)> subHandler2 = mqtt_handler_set_prevalue;     
+        std::function<bool(std::string topic, char* data, int data_len)> subHandler2 = mqtt_handler_set_prevalue;
         MQTTregisterSubscribeFunction(maintopic + "/ctrl/set_prevalue", subHandler2);      // subcribe to maintopic/ctrl/set_prevalue
+
+        std::function<bool(std::string topic, char* data, int data_len)> subHandler3 = mqtt_handler_stay_awake;
+        MQTTregisterSubscribeFunction(maintopic + "/ctrl/stay_awake", subHandler3);        // subcribe to maintopic/ctrl/stay_awake
 
        if (subscribeFunktionMap != NULL) {
             for(std::map<std::string, std::function<bool(std::string, char*, int)>>::iterator it = subscribeFunktionMap->begin(); it != subscribeFunktionMap->end(); ++it) {

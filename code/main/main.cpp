@@ -44,6 +44,8 @@
 #include "Helper.h"
 #include "statusled.h"
 #include "sdcard_check.h"
+#include "StayAwake.h"
+#include "esp_sleep.h"
 
 #include "../../include/defines.h"
 
@@ -219,10 +221,16 @@ extern "C" void app_main(void)
     TickType_t xDelay;
 
     #if defined (BOARD_ESP32_S3_ALEKSEI)
+        // Release any GPIO holds left over from a previous deep-sleep cycle
+        // before we reconfigure the pins (no-op on a cold boot / non-battery use).
+        gpio_hold_dis(PER_ENABLE);
+        gpio_hold_dis(ETH_ENABLE);
+        gpio_deep_sleep_hold_dis();
+
 //        gpio_pad_select_gpio(ETH_EN);
 //        gpio_set_direction(ETH_EN, GPIO_MODE_OUTPUT);
 //        gpio_set_level(ETH_EN, 0);
-        // PER_ENABLE activates power for camera,leds,and SDcard, Battery measurement voltage divider
+        // PER_ENABLE activates power for camera,leds,and SDcard
         gpio_pad_select_gpio(PER_ENABLE);
         gpio_set_direction(PER_ENABLE, GPIO_MODE_OUTPUT);
         gpio_set_level(PER_ENABLE, 1);
@@ -271,6 +279,18 @@ extern "C" void app_main(void)
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "==================== Start ======================");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "=================================================");
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+    // BOOT button (GPIO0) pressed while the device was in deep sleep: the press
+    // is armed as an EXT0 wake source before each deep sleep. Treat it as the
+    // user asking the device to stay awake (e.g. for an OTA update) and latch
+    // the Stay-Awake override. It is cleared via the "Resume sleep" button on
+    // the overview page or the <maintopic>/ctrl/stay_awake MQTT topic.
+    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0) {
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Woken by BOOT button -- enabling Stay-Awake override");
+        StayAwake_Set(true);
+    }
+#endif
 
     // SD card: basic R/W check
     // ********************************************

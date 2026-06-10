@@ -209,6 +209,9 @@ void ClassFlowControll::SetInitialParameter(void)
     AutoStart = true;
     SetupModeActive = false;
     AutoInterval = 10; // Minutes
+    SleepWhileIdle = false;
+    SleepGraceSeconds = 10;
+    BatteryEnabled = false;
     flowdigit = NULL;
     flowanalog = NULL;
     flowpostprocessing = NULL;
@@ -228,6 +231,21 @@ bool ClassFlowControll::getIsAutoStart(void)
 void ClassFlowControll::setAutoStartInterval(long &_interval)
 {
     _interval = AutoInterval * 60 * 1000; // AutoInterval: minutes -> ms
+}
+
+void ClassFlowControll::setSleepWhileIdle(bool& _sleepwhileidle)
+{
+    _sleepwhileidle = SleepWhileIdle;
+}
+
+void ClassFlowControll::setSleepGraceSeconds(int& _grace_seconds)
+{
+    _grace_seconds = SleepGraceSeconds;
+}
+
+bool ClassFlowControll::getBatteryEnabled()
+{
+    return BatteryEnabled;
 }
 
 ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
@@ -300,6 +318,10 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
 
     if (toUpper(_type).compare("[SYSTEM]") == 0) {
+        cfc = this;
+    }
+
+    if (toUpper(_type).compare("[BATTERY]") == 0) {
         cfc = this;
     }
 
@@ -561,7 +583,8 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
 
     if ((toUpper(aktparamgraph).compare("[AUTOTIMER]") != 0) && (toUpper(aktparamgraph).compare("[DEBUG]") != 0) &&
-        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0 && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0))) {     
+        (toUpper(aktparamgraph).compare("[SYSTEM]") != 0) && (toUpper(aktparamgraph).compare("[DATALOGGING]") != 0) &&
+        (toUpper(aktparamgraph).compare("[BATTERY]") != 0)) {
         // Paragraph passt nicht zu Debug oder DataLogging
         return false;
     }
@@ -573,6 +596,23 @@ bool ClassFlowControll::ReadParameter(FILE* pfile, string& aktparamgraph)
             if (isStringNumeric(splitted[1])) {
                 AutoInterval = std::stof(splitted[1]);
             }
+        }
+
+        if ((toUpper(splitted[0]) == "SLEEPWHILEIDLE") && (splitted.size() > 1)) {
+            SleepWhileIdle = alphanumericToBoolean(splitted[1]);
+        }
+
+        if ((toUpper(splitted[0]) == "SLEEPGRACESECONDS") && (splitted.size() > 1)) {
+            if (isStringNumeric(splitted[1])) {
+                int v = std::stoi(splitted[1]);
+                if (v < 0) v = 0;
+                if (v > 600) v = 600;
+                SleepGraceSeconds = v;
+            }
+        }
+
+        if ((toUpper(splitted[0]) == "ENABLED") && (splitted.size() > 1)) {
+            BatteryEnabled = alphanumericToBoolean(splitted[1]);
         }
 
         if ((toUpper(splitted[0]) == "DATALOGACTIVE") && (splitted.size() > 1)) {

@@ -5,6 +5,11 @@
 #include "string.h"
 #include "esp_log.h"
 #include <esp_timer.h>
+#include <esp_sleep.h>
+#include "driver/gpio.h"
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+#include "driver/rtc_io.h"
+#endif
 
 #include <iomanip>
 #include <sstream>
@@ -12,6 +17,10 @@
 #include "../../include/defines.h"
 #include "Helper.h"
 #include "statusled.h"
+#include "StayAwake.h"
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+#include "battery_adc.h"
+#endif
 
 #include "esp_camera.h"
 #include "time_sntp.h"
@@ -43,6 +52,8 @@ bool bTaskAutoFlowCreated = false;
 bool flowisrunning = false;
 
 long auto_interval = 0;
+bool sleep_while_idle = false;
+int sleep_grace_seconds = 10;
 bool autostartIsEnabled = false;
 
 int countRounds = 0;
@@ -1559,7 +1570,15 @@ void task_autodoFlow(void *pvParameter)
     doInit();
 
     flowctrl.setAutoStartInterval(auto_interval);
+    flowctrl.setSleepWhileIdle(sleep_while_idle);
+    flowctrl.setSleepGraceSeconds(sleep_grace_seconds);
     autostartIsEnabled = flowctrl.getIsAutoStart();
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+    if (flowctrl.getBatteryEnabled()) {
+        Battery_Init();
+    }
+#endif
 
     if (isSetupModusActive())
     {
@@ -1635,13 +1654,100 @@ void task_autodoFlow(void *pvParameter)
         wifiRoamByScanning();
 #endif
 
+        // If we're going to be idle for a while AND the user wants the camera to
+        // sleep between rounds (e.g. for OV5640 thermal mitigation), put the sensor
+        // into low-power standby via its I2C sleep register. SleepWhileIdle also
+        // triggers this so a board that just had sleep enabled gets the benefit
+        // without the user having to toggle two settings.
+        // Note: when SleepWhileIdle actually deep-sleeps, the cold-boot wake
+        // re-inits the camera anyway, so this call is redundant in that path -
+        // but it's harmless and keeps the OR-semantics the user requested.
+        bool camera_off_between_rounds = CCstatus.PowerDownCameraBetweenRounds || sleep_while_idle;
+        if (camera_off_between_rounds && auto_interval > ((esp_timer_get_time() - fr_start) / 1000)) {
+            Camera.CameraDeepSleep(true);
+        }
+
         fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
 
         if (auto_interval > fr_delta_ms)
         {
-            const TickType_t xDelay = (auto_interval - fr_delta_ms) / portTICK_PERIOD_MS;
-            ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long)xDelay);
-            vTaskDelay(xDelay);
+            if (sleep_while_idle) {
+                // Grace window so the user can reach the device to reconfigure or
+                // toggle the Stay-Awake override before deep sleep. Configurable
+                // via [AutoTimer] SleepGraceSeconds (default 10s, range 0-600).
+                int grace_s = sleep_grace_seconds;
+                if (grace_s < 0) grace_s = 0;
+                if (grace_s > 600) grace_s = 600;
+                if (grace_s > 0) {
+                    vTaskDelay((grace_s * 1000) / portTICK_PERIOD_MS);
+                }
+
+                // Stay-Awake override: a one-shot user-controlled flag persisted
+                // in NVS. Lets the user keep the device responsive while pushing
+                // OTA updates without unplugging the battery. Honest detection of
+                // "USB plugged in" is not possible on this hardware (TP4057 CHRG
+                // is LED-only, no VBUS sense GPIO), so this is the reliable path.
+                // While the Stay-Awake override is on, idle in short chunks and
+                // re-check the flag each time. If the user clicks "Resume sleep"
+                // mid-interval, the next chunk notices and falls through to deep
+                // sleep immediately instead of staying awake until the next round.
+                bool announced_stay_awake = false;
+                fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
+                while ((auto_interval > fr_delta_ms) && StayAwake_Get()) {
+                    if (!announced_stay_awake) {
+                        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Stay-Awake override is on -- skipping deep sleep");
+                        announced_stay_awake = true;
+                    }
+                    long remaining_ms = auto_interval - fr_delta_ms;
+                    vTaskDelay(((remaining_ms < 10000) ? remaining_ms : 10000) / portTICK_PERIOD_MS);
+                    fr_delta_ms = (esp_timer_get_time() - fr_start) / 1000;
+                }
+
+                if (auto_interval > fr_delta_ms) {
+                    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Deep sleep for " + std::to_string(auto_interval - fr_delta_ms) + "ms");
+
+#if defined(BOARD_ESP32_S3_ALEKSEI)
+                    // Battery-powered AI-on-the-edge-cam: kill the W5500 ethernet PHY
+                    // (~100 mA) and camera/SD/LED rail before sleeping; hold both pins
+                    // low through deep sleep so the regulators stay off.
+                    if (flowctrl.getBatteryEnabled()) {
+                        gpio_set_level(ETH_ENABLE, 0);
+                        gpio_set_level(PER_ENABLE, 0);
+                        gpio_hold_en(ETH_ENABLE);
+                        gpio_hold_en(PER_ENABLE);
+                        gpio_deep_sleep_hold_en();
+                    }
+
+                    // Arm the BOOT button (GPIO0, RTC-capable on the S3) as an
+                    // additional wake source. A short press during deep sleep
+                    // wakes the device and latches the Stay-Awake override
+                    // (handled via the wakeup-cause check in app_main), so a
+                    // user standing at the device can keep it reachable for an
+                    // OTA update without racing the sleep grace window.
+                    // Note: press BRIEFLY and release. GPIO0 is also the
+                    // download-mode strapping pin -- holding it through the
+                    // wake reset can drop the chip into serial bootloader mode
+                    // until the next reset.
+                    rtc_gpio_pullup_en(GPIO_NUM_0);
+                    rtc_gpio_pulldown_dis(GPIO_NUM_0);
+                    esp_sleep_enable_ext0_wakeup(GPIO_NUM_0, 0); // 0 = wake on LOW (button pressed)
+#endif
+
+                    esp_sleep_enable_timer_wakeup((auto_interval - fr_delta_ms) * 1000); // Time in microseconds
+                    esp_deep_sleep_start();
+                }
+            } else {
+                const TickType_t xDelay = (auto_interval - fr_delta_ms) / portTICK_PERIOD_MS;
+                ESP_LOGD(TAG, "Autoflow: sleep for: %ldms", (long)xDelay);
+                vTaskDelay(xDelay);
+            }
+
+            // Wake the camera back up before the next round. Only needed in the
+            // non-deep-sleep path: when deep sleep actually fires it cold-boots
+            // the chip and esp_camera_init() runs from scratch.
+            if (camera_off_between_rounds) {
+                Camera.CameraDeepSleep(false);
+            }
         }
     }
 
