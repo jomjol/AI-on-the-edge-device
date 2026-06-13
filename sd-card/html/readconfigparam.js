@@ -833,6 +833,11 @@ function isCommented(input) {
 }    
 
 function SaveConfigToServer(_domainname){
+    if (typeof config_loaded_ok !== "undefined" && !config_loaded_ok) {
+        firework.launch('Not saving: the configuration was never loaded from the device. Saving now would overwrite config.ini with defaults. Please reload the page!', 'danger', 30000);
+        return;
+    }
+
     // leere Zeilen am Ende löschen
     var zw = config_split.length - 1;
 	 

@@ -1,4 +1,9 @@
 function SaveConfigToServer(_domainname){
+     if (!config_loaded_ok) {
+          firework.launch('Not saving: the configuration was never loaded from the device. Saving now would overwrite config.ini with defaults. Please reload the page!', 'danger', 30000);
+          return;
+     }
+
      // leere Zeilen am Ende löschen
      var zw = config_split.length - 1;
 	 
@@ -132,17 +137,30 @@ function getConfig() {
 }
 
      
+// True only after config.ini has actually been fetched. SaveConfigToServer
+// refuses to write while this is false: regenerating config.ini from a page
+// that silently failed to load it wipes the whole device configuration.
+var config_loaded_ok = false;
+
 function loadConfig(_domainname) {
     var xhttp = new XMLHttpRequest();
-    
+
 	try {
-        url = _domainname + '/fileserver/config/config.ini';     
+        url = _domainname + '/fileserver/config/config.ini';
         xhttp.open("GET", url, false);
         xhttp.send();
+
+        if ((xhttp.status != 200) || (xhttp.responseText.trim().length == 0)) {
+            return false;
+        }
+
         config_gesamt = xhttp.responseText;
         config_gesamt = config_gesamt.replace("InitalRotate", "InitialRotate");         // Korrigiere Schreibfehler in config.ini !!!!!
-    } catch (error) {}
-    
+    } catch (error) {
+        return false;
+    }
+
+    config_loaded_ok = true;
 	return true;
 }
 
