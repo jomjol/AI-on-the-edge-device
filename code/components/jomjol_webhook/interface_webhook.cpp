@@ -28,6 +28,12 @@ void WebhookInit(std::string _uri, std::string _apiKey)
 
 bool WebhookPublish(std::vector<NumberPost*>* numbers)
 {
+    if (_webhookURI.empty())
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WebhookPublish aborted: no Uri configured");
+        return false;
+    }
+
     bool numbersWithError = false;
     cJSON *jsonArray = cJSON_CreateArray();
 
@@ -76,6 +82,14 @@ bool WebhookPublish(std::vector<NumberPost*>* numbers)
 
     esp_http_client_handle_t http_client = esp_http_client_init(&http_config);
 
+    if (!http_client)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WebhookPublish: failed to initialize HTTP client for Uri " + _webhookURI);
+        cJSON_Delete(jsonArray);
+        free(jsonString);
+        return numbersWithError;
+    }
+
     esp_http_client_set_header(http_client, "Content-Type", "application/json");
     esp_http_client_set_header(http_client, "APIKEY", _webhookApiKey.c_str());
 
@@ -98,6 +112,12 @@ bool WebhookPublish(std::vector<NumberPost*>* numbers)
 }
 
 void WebhookUploadPic(ImageData *Img) {
+    if (_webhookURI.empty())
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WebhookUploadPic aborted: no Uri configured");
+        return;
+    }
+
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Starting WebhookUploadPic");
 
     std::string fullURI = _webhookURI + "?timestamp=" + std::to_string(_lastTimestamp);
@@ -112,6 +132,12 @@ void WebhookUploadPic(ImageData *Img) {
     };
 
     esp_http_client_handle_t http_client = esp_http_client_init(&http_config);
+
+    if (!http_client)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "WebhookUploadPic: failed to initialize HTTP client for Uri " + fullURI);
+        return;
+    }
 
     esp_http_client_set_header(http_client, "Content-Type", "image/jpeg");
     esp_http_client_set_header(http_client, "APIKEY", _webhookApiKey.c_str());
