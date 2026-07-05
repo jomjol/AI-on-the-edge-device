@@ -218,7 +218,13 @@ bool MQTThomeassistantDiscovery(int qos) {
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "error",                      "Error",                                "alert-circle-outline",      "",                    "",                "",                 "diagnostic",     qos);
         /* Not announcing "rate" as it is better to use rate_per_time_unit resp. rate_per_digitization_round */
      // allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate",                       "Rate (Unit/Minute)",                   "swap-vertical",             "",                    "",                "",                 "",               qos); // Legacy, always Unit per Minute
-        allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit",         "Rate (" + rateUnit + ")",              "swap-vertical",             rateUnit,              rate_device_class, "measurement",      "",               qos);
+        if (meterType == "temperature") {
+            allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit",         "Rate (" + rateUnit + ")",              "swap-vertical",             rateUnit,              "",                "measurement",      "",               qos);
+        }
+        else {
+            allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_time_unit",         "Rate (" + rateUnit + ")",              "swap-vertical",             rateUnit,              rate_device_class, "measurement",      "",               qos);
+        }
+
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "rate_per_digitization_round","Change since last Digitization round", "arrow-expand-vertical",     valueUnit,             "",                "measurement",      "",               qos); // correctly the Unit is Unit/Interval!
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "timestamp",                  "Timestamp",                            "clock-time-eight-outline",  "",                    "timestamp",       "",                 "diagnostic",     qos);
         allSendsSuccessed |= sendHomeAssistantDiscoveryTopic(group,   "json",                       "JSON",                                 "code-json",                 "",                    "",                "",                 "diagnostic",     qos);
