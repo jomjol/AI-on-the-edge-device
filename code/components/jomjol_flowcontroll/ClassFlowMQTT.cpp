@@ -191,6 +191,15 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
             else if (toUpper(splitted[1]) == "TEMPERATURE_K") {
                 mqttServer_setMeterType("temperature", "K", "min", "K/m"); // min = Minutes
             }
+            else if (toUpper(splitted[1]) == "PRESSURE_BAR") {
+                mqttServer_setMeterType("pressure", "bar", "min", "bar/m"); // min = Minutes
+            }
+            else if (toUpper(splitted[1]) == "PRESSURE_MBAR") {
+                mqttServer_setMeterType("pressure", "mbar", "min", "mbar/m"); // min = Minutes
+            }
+            else if (toUpper(splitted[1]) == "PRESSURE_PSI") {
+                mqttServer_setMeterType("pressure", "psi", "min", "psi/m"); // min = Minutes
+            }
         }
 
         if ((toUpper(_param) == "CLIENTID") && (splitted.size() > 1))
