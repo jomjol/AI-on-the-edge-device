@@ -90,6 +90,14 @@ void setPreValue(UnderTestPost* _UnderTestPost, double _preValue);
 void setExtendedResolution(UnderTestPost* _UnderTestPost, bool _extendedResolution);
 
 /**
+ * @brief Toggle extended-resolution inversion on the test object.
+ *
+ * @param _UnderTestPost Object under test.
+ * @param _extendedResolutionInvert True to invert the derived fractional digit.
+ */
+void setExtendedResolutionInvert(UnderTestPost* _UnderTestPost, bool _extendedResolutionInvert);
+
+/**
  * @brief Set the Decimal Shift (Nachkomma)
  * 
  * @param _UnderTestPost the testobject  

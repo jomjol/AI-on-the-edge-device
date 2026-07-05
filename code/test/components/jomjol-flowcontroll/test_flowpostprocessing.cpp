@@ -542,4 +542,31 @@ void test_doFlowPP4() {
 
 }
 
+void test_doFlowPPExtendedResolutionInvert() {
+        std::vector<float> digits = { 3.0, 2.0, 2.0, 8.0, 9.0, 4.0, 1.7, 9.8 };
+        std::vector<float> analogs = {};
+
+        UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digit100, false, true, -3);
+        std::string result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("32289.4198", result.c_str());
+        delete undertestPost;
+
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, true, -3);
+        setExtendedResolutionInvert(undertestPost, true);
+        result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("32289.4192", result.c_str());
+        delete undertestPost;
+
+        digits = { 1.0, 2.0, 3.0 };
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, true, 0);
+        result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("123.0", result.c_str());
+        delete undertestPost;
+
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, true, 0);
+        setExtendedResolutionInvert(undertestPost, true);
+        result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("123.0", result.c_str());
+        delete undertestPost;
+}
 

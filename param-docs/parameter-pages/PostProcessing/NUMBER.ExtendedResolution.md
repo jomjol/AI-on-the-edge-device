@@ -3,6 +3,8 @@ Default Value: `false`
 
 Use the decimal place of the last analog counter for increased accuracy.
 
+If the intermediate values run in the wrong direction on your meter, use [`NUMBER.ExtendedResolutionInvert`](NUMBER.ExtendedResolutionInvert) to flip the fractional digit mapping.
+
 !!! Note
     This parameter is only supported on the `*-class*` and `*-const` models! See [Choosing-the-Model](../Choosing-the-Model) for details.
 

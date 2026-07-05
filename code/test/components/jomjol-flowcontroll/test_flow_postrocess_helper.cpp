@@ -146,6 +146,15 @@ void setExtendedResolution(UnderTestPost* _underTestPost, bool _extendedResoluti
     }
 }
 
+void setExtendedResolutionInvert(UnderTestPost* _underTestPost, bool _extendedResolutionInvert) {
+    if (_extendedResolutionInvert) {
+        std::vector<NumberPost*>* NUMBERS = _underTestPost->GetNumbers();
+        for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
+            (*NUMBERS)[_n]->isExtendedResolutionInverted = true;
+        }
+    }
+}
+
 void setDecimalShift(UnderTestPost* _underTestPost, int _decimal_shift) {
     if (_decimal_shift!=0) {
         std::vector<NumberPost*>* NUMBERS = _underTestPost->GetNumbers();    

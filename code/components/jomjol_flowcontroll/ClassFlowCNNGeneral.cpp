@@ -35,14 +35,18 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     imagesRetention = 5;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart) {
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog,
+                                       float AnalogToDigitTransitionStart, bool _extendedResolutionInverted) {
     string result = "";    
 
     if (GENERAL[_analog]->ROI.size() == 0) {
         return result;
     }
     
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout _analog=" + std::to_string(_analog) + ", _extendedResolution=" + std::to_string(_extendedResolution) + ", prev=" + std::to_string(prev));
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout _analog=" + std::to_string(_analog) +
+                                                ", _extendedResolution=" + std::to_string(_extendedResolution) +
+                                                ", _extendedResolutionInverted=" + std::to_string(_extendedResolutionInverted) +
+                                                ", prev=" + std::to_string(prev));
  
     if (CNNType == Analogue || CNNType == Analogue100) {
         float number = GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float;
@@ -82,6 +86,9 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             // is only set if it is the first digit (no analogue before!)
             if (_extendedResolution) {
                 int result_after_decimal_point = ((int) floor(number * 10)) % 10;
+                if (_extendedResolutionInverted) {
+                    result_after_decimal_point = (10 - result_after_decimal_point) % 10;
+                }
                 int result_before_decimal_point = ((int) floor(number)) % 10;
 
                 result = std::to_string(result_before_decimal_point) + std::to_string(result_after_decimal_point);
