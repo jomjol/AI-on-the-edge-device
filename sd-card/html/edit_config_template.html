@@ -1520,6 +1520,60 @@
             <td><input type="text" id="GPIO_IO0_value6"></td>
             <td></td>
         </tr>
+
+        <!-- Reed Contact Configuration for GPIO0 -->
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Reed Contact Enable</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO0_ReedEnable"></td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Reed Contact Trigger</span>
+            </td>
+            <td>
+                <select id="GPIO_IO0_ReedTrigger">
+                    <option value="on-close">on close</option>
+                    <option value="on-open">on open</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Reed Contact Debounce (ms)</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO0_ReedDebounce" min="0" max="10000" value="500"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10000)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Reed Contact Digit Index</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO0_ReedDigitIndex" min="0" max="10" value="0"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO0 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO0 GPIO_item">GPIO0 Publish on Increment</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO0_ReedPublish" checked></td>
+            <td></td>
+        </tr>
         <!------------- GPIO0 end ------------------>
 
         <!------------- GPIO1 begin ------------------>
@@ -1591,6 +1645,60 @@
             <td><input type="text" id="GPIO_IO1_value6"></td>
             <td></td>
         </tr>
+
+        <!-- Reed Contact Configuration for GPIO1 -->
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item">GPIO1 Reed Contact Enable</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO1_ReedEnable"></td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item">GPIO1 Reed Contact Trigger</span>
+            </td>
+            <td>
+                <select id="GPIO_IO1_ReedTrigger">
+                    <option value="on-close">on close</option>
+                    <option value="on-open">on open</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item">GPIO1 Reed Contact Debounce (ms)</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO1_ReedDebounce" min="0" max="10000" value="500"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10000)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item">GPIO1 Reed Contact Digit Index</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO1_ReedDigitIndex" min="0" max="10" value="0"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO1 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO1 GPIO_item">GPIO1 Publish on Increment</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO1_ReedPublish" checked></td>
+            <td></td>
+        </tr>
         <!------------- GPIO1 end ------------------>
 
         <!------------- GPIO3 begin ------------------>
@@ -1660,6 +1768,60 @@
                 <span class="GPIO_IO3 GPIO_item">GPIO3 Name</span>
             </td>
             <td><input type="text" id="GPIO_IO3_value6"></td>
+            <td></td>
+        </tr>
+
+        <!-- Reed Contact Configuration for GPIO3 -->
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Reed Contact Enable</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO3_ReedEnable"></td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Reed Contact Trigger</span>
+            </td>
+            <td>
+                <select id="GPIO_IO3_ReedTrigger">
+                    <option value="on-close">on close</option>
+                    <option value="on-open">on open</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Reed Contact Debounce (ms)</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO3_ReedDebounce" min="0" max="10000" value="500"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10000)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Reed Contact Digit Index</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO3_ReedDigitIndex" min="0" max="10" value="0"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO3 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO3 GPIO_item">GPIO3 Publish on Increment</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO3_ReedPublish" checked></td>
             <td></td>
         </tr>
         <!------------- GPIO3 end ------------------>
@@ -1743,6 +1905,60 @@
             <td><input type="text" id="GPIO_IO4_value6"></td>
             <td></td>
         </tr>
+
+        <!-- Reed Contact Configuration for GPIO4 -->
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Reed Contact Enable</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO4_ReedEnable"></td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Reed Contact Trigger</span>
+            </td>
+            <td>
+                <select id="GPIO_IO4_ReedTrigger">
+                    <option value="on-close">on close</option>
+                    <option value="on-open">on open</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Reed Contact Debounce (ms)</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO4_ReedDebounce" min="0" max="10000" value="500"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10000)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Reed Contact Digit Index</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO4_ReedDigitIndex" min="0" max="10" value="0"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO4 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO4 GPIO_item">GPIO4 Publish on Increment</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO4_ReedPublish" checked></td>
+            <td></td>
+        </tr>
         <!------------- GPIO4 end ------------------>
 
         <!------------- GPIO12 begin ------------------>
@@ -1815,6 +2031,60 @@
                 <span class="GPIO_IO12 GPIO_item">GPIO12 Name</span>
             </td>
             <td><input type="text" id="GPIO_IO12_value6"></td>
+            <td></td>
+        </tr>
+
+        <!-- Reed Contact Configuration for GPIO12 -->
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Reed Contact Enable</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO12_ReedEnable"></td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Reed Contact Trigger</span>
+            </td>
+            <td>
+                <select id="GPIO_IO12_ReedTrigger">
+                    <option value="on-close">on close</option>
+                    <option value="on-open">on open</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Reed Contact Debounce (ms)</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO12_ReedDebounce" min="0" max="10000" value="500"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10000)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Reed Contact Digit Index</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO12_ReedDigitIndex" min="0" max="10" value="0"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO12 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO12 GPIO_item">GPIO12 Publish on Increment</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO12_ReedPublish" checked></td>
             <td></td>
         </tr>
 
@@ -1942,6 +2212,60 @@
                 <span class="GPIO_IO13 GPIO_item">GPIO13 Name</span>
             </td>
             <td><input type="text" id="GPIO_IO13_value6"></td>
+            <td></td>
+        </tr>
+
+        <!-- Reed Contact Configuration for GPIO13 -->
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Reed Contact Enable</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO13_ReedEnable"></td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Reed Contact Trigger</span>
+            </td>
+            <td>
+                <select id="GPIO_IO13_ReedTrigger">
+                    <option value="on-close">on close</option>
+                    <option value="on-open">on open</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Reed Contact Debounce (ms)</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO13_ReedDebounce" min="0" max="10000" value="500"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10000)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Reed Contact Digit Index</span>
+            </td>
+            <td>
+                <input required type="number" id="GPIO_IO13_ReedDigitIndex" min="0" max="10" value="0"
+                    oninput="(!validity.rangeUnderflow||(value=0)) && (!validity.rangeOverflow||(value=10)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td></td>
+        </tr>
+
+        <tr class="GPIO_IO13 GPIO_item expert">
+            <td class="indent2">
+                <span class="GPIO_IO13 GPIO_item">GPIO13 Publish on Increment</span>
+            </td>
+            <td><input type="checkbox" id="GPIO_IO13_ReedPublish" checked></td>
             <td></td>
         </tr>
         <!------------- GPIO13 end ------------------>
@@ -2397,6 +2721,12 @@ function UpdateInput() {
     WriteParameter(param, category, "GPIO", "IO4", true);
     WriteParameter(param, category, "GPIO", "IO12", true);
     WriteParameter(param, category, "GPIO", "IO13", true);
+    WriteParameter(param, category, "GPIO", "ReedContactIO0", true);
+    WriteParameter(param, category, "GPIO", "ReedContactIO1", true);
+    WriteParameter(param, category, "GPIO", "ReedContactIO3", true);
+    WriteParameter(param, category, "GPIO", "ReedContactIO4", true);
+    WriteParameter(param, category, "GPIO", "ReedContactIO12", true);
+    WriteParameter(param, category, "GPIO", "ReedContactIO13", true);
     WriteParameter(param, category, "GPIO", "LEDType", false);
     WriteParameter(param, category, "GPIO", "LEDNumbers", false);
     WriteParameter(param, category, "GPIO", "LEDColor", false);
@@ -2565,6 +2895,12 @@ function ReadParameterAll() {
     ReadParameter(param, "GPIO", "IO4", true);
     ReadParameter(param, "GPIO", "IO12", true);
     ReadParameter(param, "GPIO", "IO13", true);
+    ReadParameter(param, "GPIO", "ReedContactIO0", true);
+    ReadParameter(param, "GPIO", "ReedContactIO1", true);
+    ReadParameter(param, "GPIO", "ReedContactIO3", true);
+    ReadParameter(param, "GPIO", "ReedContactIO4", true);
+    ReadParameter(param, "GPIO", "ReedContactIO12", true);
+    ReadParameter(param, "GPIO", "ReedContactIO13", true);
     ReadParameter(param, "GPIO", "LEDType", false);
     ReadParameter(param, "GPIO", "LEDNumbers", false);
     ReadParameter(param, "GPIO", "LEDColor", false);

@@ -249,6 +249,15 @@ function ParseConfig() {
     ParamAddValue(param, catname, "IO4", 6, false, "",  [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
     ParamAddValue(param, catname, "IO12", 6, false, "",  [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
     ParamAddValue(param, catname, "IO13", 6, false, "",  [null, null, /^[0-9]*$/, null, null, /^[a-zA-Z0-9_-]*$/]);
+    
+    // Reed Contact Parameters for each GPIO
+    ParamAddValue(param, catname, "ReedContactIO0", 5, false, "", [null, /^(on-close|on-open)$/, /^[0-9]{0,5}$/, /^[0-9]{0,2}$/, null]);
+    ParamAddValue(param, catname, "ReedContactIO1", 5, false, "", [null, /^(on-close|on-open)$/, /^[0-9]{0,5}$/, /^[0-9]{0,2}$/, null]);
+    ParamAddValue(param, catname, "ReedContactIO3", 5, false, "", [null, /^(on-close|on-open)$/, /^[0-9]{0,5}$/, /^[0-9]{0,2}$/, null]);
+    ParamAddValue(param, catname, "ReedContactIO4", 5, false, "", [null, /^(on-close|on-open)$/, /^[0-9]{0,5}$/, /^[0-9]{0,2}$/, null]);
+    ParamAddValue(param, catname, "ReedContactIO12", 5, false, "", [null, /^(on-close|on-open)$/, /^[0-9]{0,5}$/, /^[0-9]{0,2}$/, null]);
+    ParamAddValue(param, catname, "ReedContactIO13", 5, false, "", [null, /^(on-close|on-open)$/, /^[0-9]{0,5}$/, /^[0-9]{0,2}$/, null]);
+    
     ParamAddValue(param, catname, "LEDType");
     ParamAddValue(param, catname, "LEDNumbers");
     ParamAddValue(param, catname, "LEDColor", 3);
