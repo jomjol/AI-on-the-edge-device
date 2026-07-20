@@ -2,6 +2,7 @@
 
 ### Core Changes and Bug fixes
 - Added opt-in history-anchored post-processing reconciliation (`HistoryReconcile`, with `HistoryMaxJump`) that fixes premature analog-dial transitions (single-frame ±1 dial flips) and values getting stuck at digit rollovers, by trusting the reading on unambiguous frames and gating a most-significant analog-dial carry on an observed wrap of the dial below it [#4112](https://github.com/jomjol/AI-on-the-edge-device/issues/4112)
+- `HistoryReconcile` is now preserved by the config editor (previously silently dropped on every ROI/alignment save) and is directly editable in the expert config page
 
 
 # [16.1.0] - 2026-01-11
