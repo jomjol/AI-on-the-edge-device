@@ -43,6 +43,8 @@ protected:
     void handleIgnoreLeadingNaN(string _decsep, string _value);
     void handleChangeRateThreshold(string _decsep, string _value);
     void handlecheckDigitIncreaseConsistency(std::string _decsep, std::string _value);
+    void handleHistoryReconcile(std::string _decsep, std::string _value);
+    void handleHistoryMaxJump(std::string _decsep, std::string _value);
 
     void WriteDataLog(int _index);
 

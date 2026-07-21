@@ -109,6 +109,19 @@ jobs:
         cp -r ./sd-card/demo/* ./demo/
 
 #########################################################################################
+## Host unit tests (post-processing reconciliation logic)
+#########################################################################################
+  test-reconcile:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build & run reconciliation host unit tests
+      run: |
+        cd code/test/host
+        g++ -std=c++11 -Wall -Wextra -I ../../components/jomjol_flowcontroll test_meter_reconcile_host.cpp ../../components/jomjol_flowcontroll/MeterReconcile.cpp -o reconcile_test
+        ./reconcile_test
+
+#########################################################################################
 ## Pack for Update
 #########################################################################################
   pack-for-update:
