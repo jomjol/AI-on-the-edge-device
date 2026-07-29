@@ -1,3 +1,9 @@
+# [Unreleased]
+
+### Core Changes and Bug fixes
+- The `AntiAliasing` alignment option is now preserved by the config editor (previously silently dropped on every ROI/alignment save) and is directly editable in the expert config page
+
+
 # [16.1.0] - 2026-01-11
 
 For a full list of changes see [Full list of changes](https://github.com/jomjol/AI-on-the-edge-device/compare/v16.0.0...v16.1.0)
