@@ -171,6 +171,7 @@ void InfluxDB::InfluxDBdestroy() {
  * It supports both InfluxDB v1 and v2 APIs.
  *
  * @param _measurement The measurement name to publish.
+ * @param _tags Optional tag-set (comma-separated key=value pairs), empty string for none.
  * @param _key The key associated with the measurement.
  * @param _content The content or value to publish.
  * @param _timeUTC The timestamp in UTC. If greater than 0, it will be included in the payload.
@@ -179,8 +180,8 @@ void InfluxDB::InfluxDBdestroy() {
  * It constructs the appropriate API URI based on the InfluxDB version and sends the data
  * using an HTTP POST request.
  */
-void InfluxDB::InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC) {
-    std::string apiURI;        
+void InfluxDB::InfluxDBPublish(std::string _measurement, std::string _tags, std::string _key, std::string _content, long int _timeUTC) {
+    std::string apiURI;
     std::string payload;
     char nowTimestamp[21];
 
@@ -189,16 +190,18 @@ void InfluxDB::InfluxDBPublish(std::string _measurement, std::string _key, std::
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "InfluxDBPublish - Key: " + _key + ", Content: " + _content + ", timeUTC: " + std::to_string(_timeUTC));
 
+    std::string measurementWithTags = _tags.empty() ? _measurement : _measurement + "," + _tags;
+
     if (_timeUTC > 0)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Timestamp (UTC): " + std::to_string(_timeUTC));
         sprintf(nowTimestamp,"%ld000000000", _timeUTC);           // UTC
-        payload = _measurement + " " + _key + "=" + _content + " " + nowTimestamp;
+        payload = measurementWithTags + " " + _key + "=" + _content + " " + nowTimestamp;
     }
     else
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "no timestamp given");
-        payload = _measurement + " " + _key + "=" + _content;
+        payload = measurementWithTags + " " + _key + "=" + _content;
     }
 
     payload.shrink_to_fit();

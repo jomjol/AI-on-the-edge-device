@@ -111,6 +111,10 @@ bool ClassFlowInfluxDB::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             handleFieldname(splitted[0], splitted[1]);
         }
+        if (((toUpper(_param) == "TAGS")) && (splitted.size() > 1))
+        {
+            handleTags(splitted[0], splitted[1]);
+        }
     }
 
     if ((uri.length() > 0) && (database.length() > 0)) 
@@ -173,10 +177,10 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
                     namenumber = namenumber + "/value";
             }
 
-            if (result.length() > 0)   
-//////////////////////// NEW //////////////////////////            
+            if (result.length() > 0)
+//////////////////////// NEW //////////////////////////
 //                InfluxDBPublish(measurement, namenumber, result, timeutc);
-                influxDB.InfluxDBPublish(measurement, namenumber, result, timeutc);
+                influxDB.InfluxDBPublish(measurement, (*NUMBERS)[i]->TagsV1, namenumber, result, timeutc);
 //////////////////////// NEW //////////////////////////
 
 
@@ -206,6 +210,28 @@ void ClassFlowInfluxDB::handleMeasurement(string _decsep, string _value)
         if (flowpostprocessing->NUMBERS[j]->name == _digit)
         {
             flowpostprocessing->NUMBERS[j]->MeasurementV1 = _value;
+        }
+    }
+}
+
+
+void ClassFlowInfluxDB::handleTags(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+    for (int j = 0; j < flowpostprocessing->NUMBERS.size(); ++j)
+    {
+        if (_digit == "default")                        //  Set to default first (if nothing else is set)
+        {
+            flowpostprocessing->NUMBERS[j]->TagsV1 = _value;
+        }
+        if (flowpostprocessing->NUMBERS[j]->name == _digit)
+        {
+            flowpostprocessing->NUMBERS[j]->TagsV1 = _value;
         }
     }
 }
