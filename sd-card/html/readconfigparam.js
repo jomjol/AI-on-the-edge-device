@@ -215,6 +215,7 @@ function ParseConfig() {
     ParamAddValue(param, catname, "password");
     ParamAddValue(param, catname, "Measurement", 1, true);
     ParamAddValue(param, catname, "Field", 1, true);
+    ParamAddValue(param, catname, "Tags", 1, true);
 
     var catname = "InfluxDBv2";
     category[catname] = new Object();
@@ -228,6 +229,7 @@ function ParseConfig() {
     ParamAddValue(param, catname, "Token");
     ParamAddValue(param, catname, "Measurement", 1, true);
     ParamAddValue(param, catname, "Field", 1, true);
+    ParamAddValue(param, catname, "Tags", 1, true);
 
     var catname = "Webhook";
     category[catname] = new Object();
