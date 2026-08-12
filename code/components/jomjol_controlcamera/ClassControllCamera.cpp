@@ -129,15 +129,47 @@ esp_err_t CCamera::InitCam(void)
 {
     ESP_LOGD(TAG, "Init Camera");
 
-    // De-init in case it was already initialized
-    PowerResetCamera();
-    vTaskDelay(pdMS_TO_TICKS(200));
-	
-    // initialize the camera
-    esp_err_t err = esp_camera_init(&camera_config);
+    constexpr int CAMERA_INIT_MAX_ATTEMPTS = 5;
+    constexpr int CAMERA_INIT_RETRY_DELAY_MS = 500;
+
+    esp_err_t err = ESP_FAIL;
+
+    for (int attempt = 1; attempt <= CAMERA_INIT_MAX_ATTEMPTS; ++attempt)
+    {
+        ESP_LOGI(TAG, "Camera init attempt %d/%d",
+                 attempt, CAMERA_INIT_MAX_ATTEMPTS);
+
+        PowerResetCamera();
+        vTaskDelay(pdMS_TO_TICKS(200));
+
+        err = esp_camera_init(&camera_config);
+
+        if (err == ESP_OK)
+        {
+            if (attempt > 1)
+            {
+                ESP_LOGW(TAG,
+                         "Camera initialized successfully after %d attempts",
+                         attempt);
+            }
+            break;
+        }
+
+        ESP_LOGW(TAG,
+                 "Camera init attempt %d/%d failed with error 0x%x",
+                 attempt, CAMERA_INIT_MAX_ATTEMPTS, err);
+
+        if (attempt < CAMERA_INIT_MAX_ATTEMPTS)
+        {
+            vTaskDelay(pdMS_TO_TICKS(CAMERA_INIT_RETRY_DELAY_MS));
+        }
+    }
+
     if (err != ESP_OK)
     {
-        ESP_LOGE(TAG, "Camera Init Failed");
+        ESP_LOGE(TAG,
+                 "Camera initialization failed after %d attempts, last error: 0x%x",
+                 CAMERA_INIT_MAX_ATTEMPTS, err);
         return err;
     }
 
