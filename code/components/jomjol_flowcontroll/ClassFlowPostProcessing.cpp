@@ -553,6 +553,53 @@ void ClassFlowPostProcessing::handlecheckDigitIncreaseConsistency(std::string _d
     }
 }
 
+void ClassFlowPostProcessing::handleHistoryReconcile(std::string _decsep, std::string _value)
+{
+    std::string _digit;
+    int _pospunkt = _decsep.find_first_of(".");
+
+    if (_pospunkt > -1) {
+        _digit = _decsep.substr(0, _pospunkt);
+    }
+    else {
+        _digit = "default";
+    }
+
+    for (int j = 0; j < NUMBERS.size(); ++j) {
+        bool _rt = alphanumericToBoolean(_value);
+
+        // Set to default first (if nothing else is set)
+        if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
+            NUMBERS[j]->useHistoryReconcile = _rt;
+        }
+    }
+}
+
+void ClassFlowPostProcessing::handleHistoryMaxJump(std::string _decsep, std::string _value)
+{
+    std::string _digit;
+    int _pospunkt = _decsep.find_first_of(".");
+
+    if (_pospunkt > -1) {
+        _digit = _decsep.substr(0, _pospunkt);
+    }
+    else {
+        _digit = "default";
+    }
+
+    for (int j = 0; j < NUMBERS.size(); ++j) {
+        if (!isStringNumeric(_value)) {
+            continue;
+        }
+        float _zwdc = std::stof(_value);
+
+        // Set to default first (if nothing else is set)
+        if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
+            NUMBERS[j]->reconcileParams.maxJump = _zwdc;
+        }
+    }
+}
+
 bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) {
     std::vector<string> splitted;
     int _n;
@@ -606,6 +653,14 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
 	    
         if ((toUpper(_param) == "CHECKDIGITINCREASECONSISTENCY") && (splitted.size() > 1)) {
             handlecheckDigitIncreaseConsistency(splitted[0], splitted[1]);
+        }
+
+        if ((toUpper(_param) == "HISTORYRECONCILE") && (splitted.size() > 1)) {
+            handleHistoryReconcile(splitted[0], splitted[1]);
+        }
+
+        if ((toUpper(_param) == "HISTORYMAXJUMP") && (splitted.size() > 1)) {
+            handleHistoryMaxJump(splitted[0], splitted[1]);
         }
 			
         if ((toUpper(_param) == "ALLOWNEGATIVERATES") && (splitted.size() > 1)) {
@@ -690,6 +745,8 @@ void ClassFlowPostProcessing::InitNUMBERS() {
         _number->MaxRateType = AbsoluteChange;
         _number->useMaxRateValue = false;
         _number->checkDigitIncreaseConsistency = false;
+        _number->useHistoryReconcile = false;
+        _number->prevAnalogDials.clear();
         _number->DecimalShift = 0;
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
@@ -903,7 +960,65 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                 }
             }
 
-            if ((!NUMBERS[j]->AllowNegativeRates) && (NUMBERS[j]->Value < NUMBERS[j]->PreValue)) {
+            // --- History-anchored reconciliation (issue #4112), opt-in via HistoryReconcile ---
+            // Replaces the AllowNegativeRates / MaxRateValue guards when enabled. A carry of the
+            // most-significant analog dial is accepted only with wrap evidence from the dial
+            // below (observed transition or inferred from the sub-position); within-step motion
+            // is trusted on unambiguous frames; a stuck value recovers on a clean, stable frame.
+            // See MeterReconcile.h for the full design rationale.
+            if (NUMBERS[j]->useHistoryReconcile && NUMBERS[j]->analog_roi) {
+                std::vector<float> _dials;
+                for (int _d = 0; _d < NUMBERS[j]->analog_roi->ROI.size(); ++_d) {
+                    _dials.push_back(NUMBERS[j]->analog_roi->ROI[_d]->result_float);
+                }
+                bool _hadN = (findDelimiterPos(NUMBERS[j]->ReturnRawValue, "N") != std::string::npos);
+                bool _clean = !_hadN && meter::framesClean(_dials, NUMBERS[j]->reconcileParams.band);
+                bool _wrap = false;
+                if ((_dials.size() >= 2) && (NUMBERS[j]->prevAnalogDials.size() == _dials.size())) {
+                    _wrap = meter::dialWrapped(NUMBERS[j]->prevAnalogDials[1], _dials[1], NUMBERS[j]->reconcileParams.band);
+                }
+                // Place value (in displayed units) of one step of the most-significant analog dial
+                // (ROI[0]). ROI[0] is followed by (AnzahlAnalog-1) lower dials plus, if extended
+                // resolution is on, one extra appended digit; the least-significant displayed place
+                // is 10^-Nachkomma. This holds for digit+analog and analog-only, extended or not.
+                int _msbExp = NUMBERS[j]->AnzahlAnalog - 1 - NUMBERS[j]->Nachkomma
+                              + (NUMBERS[j]->isExtendedResolution ? 1 : 0);
+                NUMBERS[j]->reconcileParams.msbStep = pow(10, _msbExp);
+                // A single analog dial offers no evidence channel for its own carry: there is no
+                // dial below to observe wrapping, and without extended resolution no sub-position
+                // to infer one from. Disable the carry gate then (other guards remain) instead of
+                // holding every legitimate step of that dial.
+                if ((_dials.size() < 2) && !NUMBERS[j]->isExtendedResolution) {
+                    NUMBERS[j]->reconcileParams.msbStep = 0.0;
+                }
+                // Backward jitter tolerance scales with the displayed resolution (a couple of ULPs).
+                NUMBERS[j]->reconcileParams.noiseTol = 2.0 * pow(10, -NUMBERS[j]->Nachkomma);
+                // Gross-misread ceiling: derive from the dial scale unless explicitly configured.
+                if (NUMBERS[j]->reconcileParams.maxJump <= 0.0) {
+                    NUMBERS[j]->reconcileParams.maxJump = 100.0 * NUMBERS[j]->reconcileParams.msbStep;
+                }
+                NUMBERS[j]->reconcileState.confirmed = NUMBERS[j]->PreValue;
+                NUMBERS[j]->reconcileState.hasConfirmed = NUMBERS[j]->PreValueOkay;
+
+                meter::ReconcileResult _rr = meter::reconcileStep(NUMBERS[j]->reconcileState,
+                        NUMBERS[j]->Value, _clean, _wrap, NUMBERS[j]->reconcileParams);
+                NUMBERS[j]->prevAnalogDials = _dials;
+
+                if (_rr.action != meter::RA_ACCEPT) {
+                    NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "History hold - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " ";
+                    NUMBERS[j]->Value = NUMBERS[j]->PreValue;
+                    NUMBERS[j]->ReturnValue = "";
+                    NUMBERS[j]->ReturnRateValue = "";
+                    NUMBERS[j]->timeStampLastValue = imagetime;
+                    string _zwh = NUMBERS[j]->name + ": Raw: " + NUMBERS[j]->ReturnRawValue + ", Value: " + NUMBERS[j]->ReturnValue + ", Status: " + NUMBERS[j]->ErrorMessageText;
+                    LogFile.WriteToFile(ESP_LOG_WARN, TAG, _zwh);
+                    WriteDataLog(j);
+                    continue;
+                }
+                NUMBERS[j]->Value = _rr.value;
+            }
+
+            if ((!NUMBERS[j]->AllowNegativeRates) && (NUMBERS[j]->Value < NUMBERS[j]->PreValue) && !(NUMBERS[j]->useHistoryReconcile && NUMBERS[j]->analog_roi)) {
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handleAllowNegativeRate for device: " + NUMBERS[j]->name);
 					
                 if ((NUMBERS[j]->Value < NUMBERS[j]->PreValue)) {
@@ -935,7 +1050,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
             NUMBERS[j]->FlowRateAct = (NUMBERS[j]->Value - NUMBERS[j]->PreValue) / LastPreValueTimeDifference;
             NUMBERS[j]->ReturnRateValue =  to_string(NUMBERS[j]->FlowRateAct);
 
-            if ((NUMBERS[j]->useMaxRateValue) && (NUMBERS[j]->Value != NUMBERS[j]->PreValue)) {
+            if ((NUMBERS[j]->useMaxRateValue) && (NUMBERS[j]->Value != NUMBERS[j]->PreValue) && !(NUMBERS[j]->useHistoryReconcile && NUMBERS[j]->analog_roi)) {
                 double _ratedifference;
 					
                 if (NUMBERS[j]->MaxRateType == RateChange) {
