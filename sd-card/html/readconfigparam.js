@@ -103,6 +103,7 @@ function ParseConfig() {
     ParamAddValue(param, catname, "RawImagesRetention");
     ParamAddValue(param, catname, "WaitBeforeTakingPicture");
     ParamAddValue(param, catname, "CamGainceiling");		// Image gain (GAINCEILING_x2, x4, x8, x16, x32, x64 or x128)
+    ParamAddValue(param, catname, "CamXclkFreqMhz");
     ParamAddValue(param, catname, "CamQuality");    		// 0 - 63
     ParamAddValue(param, catname, "CamBrightness"); 		// (-2 to 2) - set brightness
     ParamAddValue(param, catname, "CamContrast");   		//-2 - 2
@@ -345,6 +346,10 @@ function ParseConfig() {
         param["DataLogging"]["DataFilesRetention"]["found"] = true;
         param["DataLogging"]["DataFilesRetention"]["enabled"] = true;
         param["DataLogging"]["DataFilesRetention"]["value1"] = "3";
+    }
+
+    if (!param["TakeImage"]["CamXclkFreqMhz"]["found"]) {
+        param["TakeImage"]["CamXclkFreqMhz"]["value1"] = "20";
     }
 
     // Downward compatibility: Create RSSIThreshold if not available

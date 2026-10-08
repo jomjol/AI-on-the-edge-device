@@ -1,4 +1,5 @@
 #include "ClassControllCamera.h"
+#include "CameraClockConfig.h"
 #include "ClassLogFile.h"
 
 #include <stdio.h>
@@ -128,6 +129,11 @@ CCamera::CCamera(void)
 esp_err_t CCamera::InitCam(void)
 {
     ESP_LOGD(TAG, "Init Camera");
+
+    std::ifstream config(CONFIG_FILE);
+    const int clockMHz = readCameraClockMHz(config, xclk);
+    camera_config.xclk_freq_hz = clockMHz * 1000000;
+    ESP_LOGI(TAG, "Camera clock: %d MHz", clockMHz);
 
     // De-init in case it was already initialized
     PowerResetCamera();

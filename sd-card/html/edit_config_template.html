@@ -323,6 +323,23 @@
             <td>$TOOLTIP_TakeImage_CamGainceiling</td>
         </tr>		
 		
+        <tr class="expert">
+            <td class="indent1">
+                <input type="checkbox" id="TakeImage_CamXclkFreqMhz_enabled" value="1" onclick='InvertEnableItem("TakeImage", "CamXclkFreqMhz")'>
+                <label for="TakeImage_CamXclkFreqMhz_enabled"><span id="TakeImage_CamXclkFreqMhz_text">Camera Clock Frequency</span></label>
+            </td>
+            <td>
+                <select id="TakeImage_CamXclkFreqMhz_value1" aria-label="Camera clock frequency in MHz">
+                    <option value="8">8 MHz</option>
+                    <option value="10">10 MHz</option>
+                    <option value="16">16 MHz</option>
+                    <option value="20" selected>20 MHz</option>
+                </select>
+                <br>Disabled: firmware build default. Requires a reboot; verify images and readings.
+            </td>
+            <td>$TOOLTIP_TakeImage_CamXclkFreqMhz</td>
+        </tr>
+
         <tr class="expert" unused_id="TakeImage_CamQuality_ex3">
             <td class="indent1">
                 <class id="TakeImage_CamQuality_text" style="color:black;">Image Quality</class>
@@ -2311,6 +2328,7 @@ function UpdateInput() {
 
     WriteParameter(param, category, "TakeImage", "WaitBeforeTakingPicture", false);
     WriteParameter(param, category, "TakeImage", "CamGainceiling", false);	
+    WriteParameter(param, category, "TakeImage", "CamXclkFreqMhz", true);
     WriteParameter(param, category, "TakeImage", "CamQuality", false);
     WriteParameter(param, category, "TakeImage", "CamBrightness", false);
     WriteParameter(param, category, "TakeImage", "CamContrast", false);
@@ -2478,6 +2496,7 @@ function ReadParameterAll() {
     ReadParameter(param, "TakeImage", "RawImagesRetention", true);
     ReadParameter(param, "TakeImage", "WaitBeforeTakingPicture", false);
     ReadParameter(param, "TakeImage", "CamGainceiling", false);	
+    ReadParameter(param, "TakeImage", "CamXclkFreqMhz", true);
     ReadParameter(param, "TakeImage", "CamQuality", false);	
     ReadParameter(param, "TakeImage", "CamBrightness", false);
     ReadParameter(param, "TakeImage", "CamContrast", false);
