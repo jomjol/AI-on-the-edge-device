@@ -377,6 +377,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
         if (fseek(fd, 0, SEEK_END))
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to get to end of file!");
+            fclose(fd);
             return ESP_FAIL;
         }
         else
@@ -387,6 +388,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
             if (fseek(fd, pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos), SEEK_SET))
             { // Go LOGFILE_LAST_PART_BYTES bytes back from EOF
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to go back " + to_string(std::min((long)LOGFILE_LAST_PART_BYTES, pos)) + " bytes within the file!");
+                fclose(fd);
                 return ESP_FAIL;
             }
         }
@@ -468,6 +470,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
         if (fseek(fd, 0, SEEK_END))
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to get to end of file!");
+            fclose(fd);
             return ESP_FAIL;
         }
         else
@@ -478,6 +481,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
             if (fseek(fd, pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos), SEEK_SET))
             { // Go LOGFILE_LAST_PART_BYTES bytes back from EOF
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to go back " + to_string(std::min((long)LOGFILE_LAST_PART_BYTES, pos)) + " bytes within the file!");
+                fclose(fd);
                 return ESP_FAIL;
             }
         }

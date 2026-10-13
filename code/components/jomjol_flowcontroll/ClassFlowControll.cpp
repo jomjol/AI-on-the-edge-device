@@ -843,7 +843,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
             }
             else {
                 LogFile.WriteToFile(ESP_LOG_WARN, TAG, "ClassFlowControll::GetJPGStream: Not enough memory to create alg_roi.jpg -> alg.jpg is going to be served!");
-                
+                delete _send;
+                _send = NULL;
+
                 if (flowalignment && flowalignment->ImageBasis->ImageOkay()) {
                     _send = flowalignment->ImageBasis;
                 }
