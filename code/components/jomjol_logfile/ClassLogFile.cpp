@@ -141,6 +141,12 @@ std::string fileNameDate;
 
 void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time)
 {
+    // Return before doing any formatting work (localtime, strftime, string copies) if the message
+    // would be dropped by both the log file and the console (ESP log level of the tag)
+    if ((level > loglevel) && (level > esp_log_level_get(tag.c_str()))) {
+        return;
+    }
+
     time_t rawtime;
     struct tm* timeinfo;
     std::string fileNameDateNew;
