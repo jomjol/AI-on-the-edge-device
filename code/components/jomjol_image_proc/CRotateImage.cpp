@@ -20,6 +20,10 @@ CRotateImage::CRotateImage(std::string _name, CImageBasis *_org, CImageBasis *_t
 
 void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
 {
+    if ((_angle == 0) && !doflip) {  // identity transform, the copy would leave the image unchanged
+        return;
+    }
+
     int org_width, org_height;
     float m[2][3];
 
@@ -79,8 +83,9 @@ void CRotateImage::Rotate(float _angle, int _centerx, int _centery)
 
     RGBImageLock();
 
-    for (int x = 0; x < width; ++x)
-        for (int y = 0; y < height; ++y)
+    // y outer / x inner: write the target (and mostly read the source) sequentially in PSRAM
+    for (int y = 0; y < height; ++y)
+        for (int x = 0; x < width; ++x)
         {
             p_target = odata + (channels * (y * width + x));
 
@@ -181,8 +186,9 @@ void CRotateImage::RotateAntiAliasing(float _angle, int _centerx, int _centery)
 
     RGBImageLock();
 
-    for (int x = 0; x < width; ++x)
-        for (int y = 0; y < height; ++y)
+    // y outer / x inner: write the target (and mostly read the source) sequentially in PSRAM
+    for (int y = 0; y < height; ++y)
+        for (int x = 0; x < width; ++x)
         {
             p_target = odata + (channels * (y * width + x));
 
@@ -252,6 +258,10 @@ void CRotateImage::RotateAntiAliasing(float _angle)
 
 void CRotateImage::Translate(int _dx, int _dy)
 {
+    if ((_dx == 0) && (_dy == 0)) {  // identity transform, the copy would leave the image unchanged
+        return;
+    }
+
     int memsize = width * height * channels;
     uint8_t* odata;
     if (ImageTMP)
@@ -271,8 +281,9 @@ void CRotateImage::Translate(int _dx, int _dy)
 
     RGBImageLock();
 
-    for (int x = 0; x < width; ++x)
-        for (int y = 0; y < height; ++y)
+    // y outer / x inner: write the target (and mostly read the source) sequentially in PSRAM
+    for (int y = 0; y < height; ++y)
+        for (int x = 0; x < width; ++x)
         {
             p_target = odata + (channels * (y * width + x));
 
