@@ -30,7 +30,7 @@ protected:
     string ShiftDecimal(string in, int _decShift);
 
     string ErsetzteN(string, double _prevalue);
-    float checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue);
+    double checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue);
 
     void InitNUMBERS();
 	

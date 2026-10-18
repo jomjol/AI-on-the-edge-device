@@ -1107,11 +1107,11 @@ string ClassFlowPostProcessing::ErsetzteN(string input, double _prevalue) {
     return input;
 }
 
-float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue) {
+double ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue) {
     int aktdigit, olddigit;
     int aktdigit_before, olddigit_before;
     int pot, pot_max;
-    float zw;
+    double zw;
     bool no_nulldurchgang = false;
 
     pot = _decilamshift;
@@ -1143,13 +1143,13 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
 
         if (no_nulldurchgang) {
             if (aktdigit != olddigit) {
-                input = input + ((float) (olddigit - aktdigit)) * pow10_double(pot);     // New Digit is replaced by old Digit;
+                input = input + ((double)(olddigit - aktdigit)) * pow10_double(pot);     // New Digit is replaced by old Digit;
             }
         }
         else {
             // despite zero crossing, digit was not incremented --> add 1
             if (aktdigit == olddigit) {
-                input = input + ((float) (1)) * pow10_double(pot);   // add 1 at the point
+                input = input + ((double)(1)) * pow10_double(pot);   // add 1 at the point
             }
         }
 			
