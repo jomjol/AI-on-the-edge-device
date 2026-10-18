@@ -1,7 +1,15 @@
 # [Unreleased]
 
 ### Core Changes and Bug fixes
-- Fixed `checkDigitConsistency` corrupting the sub-digit part of large readings: it computed in `double` but returned `float`, so once a meter passed ~1,000,000 (7+ significant digits) the narrowing to 32-bit float mangled the decimals (e.g. a reading of `…691.67` was published as `…691.75`). The function now returns `double` and uses a `double` working variable throughout.
+- Fix crash when webhook enabled without configured URL [#4136](https://github.com/jomjol/AI-on-the-edge-device/pull/4136)
+- Fix checkDigitConsistency corrupting sub-digits of large readings [#4145](https://github.com/jomjol/AI-on-the-edge-device/pull/4145)
+- code optimization [#4175](https://github.com/jomjol/AI-on-the-edge-device/pull/4175)
+- Added useful functions [#4174](https://github.com/jomjol/AI-on-the-edge-device/pull/4174)
+- perf(camera): memcpy/memset instead of per-pixel loops in capture path [#4168](https://github.com/jomjol/AI-on-the-edge-device/pull/4168)
+- fix(http): don't terminate HTTP responses twice [#4167](https://github.com/jomjol/AI-on-the-edge-device/pull/4167)
+- Update submodules, Refactor OTA update process and clean up code [#4135](https://github.com/jomjol/AI-on-the-edge-device/pull/4135)
+- Power reset camera fix [#4127](https://github.com/jomjol/AI-on-the-edge-device/pull/4127)
+- Update platform espressif32 to 6.11.0 [#4049](https://github.com/jomjol/AI-on-the-edge-device/pull/4049)
 
 
 # [16.1.0] - 2026-01-11
