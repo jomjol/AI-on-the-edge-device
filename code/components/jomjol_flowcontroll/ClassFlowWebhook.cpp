@@ -118,10 +118,19 @@ bool ClassFlowWebhook::ReadParameter(FILE* pfile, string& aktparamgraph)
     }
     
     WebhookInit(uri,apikey);
-    WebhookEnable = true;
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Webhook Enabled for Uri " + uri);
 
-    printf("uri:         %s\n", uri.c_str());   
+    if (uri.empty())
+    {
+        WebhookEnable = false;
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Webhook not enabled: no Uri configured");
+    }
+    else
+    {
+        WebhookEnable = true;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Webhook Enabled for Uri " + uri);
+    }
+
+    printf("uri:         %s\n", uri.c_str());
     return true;
 }
 
