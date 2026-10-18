@@ -67,10 +67,11 @@ enum InfluxDBVersion {
  * @fn void InfluxDBdestroy()
  * Destroys the InfluxDB connection.
  * 
- * @fn void InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC)
+ * @fn void InfluxDBPublish(std::string _measurement, std::string _tags, std::string _key, std::string _content, long int _timeUTC)
  * Publishes data to the InfluxDB server.
- * 
+ *
  * @param _measurement The measurement name.
+ * @param _tags Optional tag-set (comma-separated key=value pairs), empty string for none.
  * @param _key The key for the data point.
  * @param _content The content or value of the data point.
  * @param _timeUTC The timestamp in UTC for the data point.
@@ -104,7 +105,7 @@ public:
     // Destroy the InfluxDB connection
     void InfluxDBdestroy();
     // Publish data to the InfluxDB server
-    void InfluxDBPublish(std::string _measurement, std::string _key, std::string _content, long int _timeUTC);
+    void InfluxDBPublish(std::string _measurement, std::string _tags, std::string _key, std::string _content, long int _timeUTC);
 };
 
 

@@ -70,9 +70,11 @@ struct NumberPost {
     
     string FieldV1;             // influxdbFieldName_v1; Name of the Field in InfluxDBv1
     string MeasurementV1;       // influxdbMeasurementName_v1; Name of the Measurement in InfluxDBv1
+    string TagsV1;              // influxdbTags_v1; Tag-set for InfluxDBv1 (key=value,key=value)
 
     string FieldV2;             // influxdbFieldName_v2; Name of the Field in InfluxDBv2
     string MeasurementV2;       // influxdbMeasurementName_v2; Name of the Measurement in InfluxDBv2
+    string TagsV2;              // influxdbTags_v2; Tag-set for InfluxDBv2 (key=value,key=value)
 
     bool isExtendedResolution;  // extendResolution; Adds the decimal place of the least significant analog ROI to the value
 

@@ -1313,6 +1313,17 @@
             <td>$TOOLTIP_InfluxDB_NUMBER.Field</td>
         </tr>
 
+        <tr class="InfluxDBv1Item">
+            <td class="indent2">
+                <input type="checkbox" id="InfluxDB_Tags_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDB", "Tags")' unchecked >
+                <label for=InfluxDB_Tags_enabled><class id="InfluxDB_Tags_text" style="color:black;">Tags</class></label>
+            </td>
+            <td>
+                <input type="text" id="InfluxDB_Tags_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDB_NUMBER.Tags</td>
+        </tr>
+
         <!------------- INFLUXDB v2 ------------------>
         <tr style="border-bottom: 2px solid lightgray;">
             <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
@@ -1394,6 +1405,17 @@
                 <input required type="text" id="InfluxDBv2_Field_value1">
             </td>
             <td>$TOOLTIP_InfluxDBv2_NUMBER.Field</td>
+        </tr>
+
+        <tr class="InfluxDBv2Item">
+            <td class="indent2">
+                <input type="checkbox" id="InfluxDBv2_Tags_enabled" value="1"  onclick = 'InvertEnableItem("InfluxDBv2", "Tags")' unchecked >
+                <label for=InfluxDBv2_Tags_enabled><class id="InfluxDBv2_Tags_text" style="color:black;">Tags</class></label>
+            </td>
+            <td>
+                <input type="text" id="InfluxDBv2_Tags_value1">
+            </td>
+            <td>$TOOLTIP_InfluxDBv2_NUMBER.Tags</td>
         </tr>
 
         <!------------- Webhook ------------------>
@@ -2261,6 +2283,8 @@ function UpdateInputIndividual(sel) {
         ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Measurement", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
+        ReadParameter(param, "InfluxDB", "Tags", true, NUNBERSAkt);
+        ReadParameter(param, "InfluxDBv2", "Tags", true, NUNBERSAkt);
         ReadParameter(param, "MQTT", "DomoticzIDX", true, NUNBERSAkt);
     }
 
@@ -2281,6 +2305,8 @@ function UpdateInputIndividual(sel) {
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Measurement", true, NUNBERSAkt);
+    WriteParameter(param, category, "InfluxDB", "Tags", true, NUNBERSAkt);
+    WriteParameter(param, category, "InfluxDBv2", "Tags", true, NUNBERSAkt);
     WriteParameter(param, category, "MQTT", "DomoticzIDX", true, NUNBERSAkt);
 }
 
