@@ -59,7 +59,6 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 
     delete ft;
 
-
     dx = _temp1->target_x - _temp1->found_x;
     dy = _temp1->target_y - _temp1->found_y;
 
@@ -71,8 +70,8 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 
     float w_org, w_ist, d_winkel;
 
-    w_org = fast_atan2((float)(_temp2->found_y - _temp1->found_y), (float)(_temp2->found_x - _temp1->found_x));
-    w_ist = fast_atan2((float)(r1_y - r0_y), (float)(r1_x - r0_x));
+	w_org = atan2((float)(_temp2->found_y - _temp1->found_y), (float)(_temp2->found_x - _temp1->found_x));
+    w_ist = atan2((float)(r1_y - r0_y), (float)(r1_x - r0_x));
 
     d_winkel = (w_ist - w_org) * 180 / M_PI;
 
@@ -93,13 +92,8 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
     return (isSimilar1 && isSimilar2);
 }
 
-
-
-
-
 void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int dx, int dy)
 {
-
     int x2, y2;
 
     x2 = x1 + dx;
@@ -133,7 +127,6 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
     stbi_write_bmp(_template1.c_str(), dx, dy, channels, odata);
 #endif
     
-
     RGBImageRelease();
 
     stbi_image_free(odata);
@@ -175,7 +168,6 @@ void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *
     RGBImageRelease();
     _target->RGBImageRelease();
 }
-
 
 CImageBasis* CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
 {

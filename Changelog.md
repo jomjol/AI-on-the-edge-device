@@ -3,8 +3,6 @@
 ### Core Changes and Bug fixes
 - Fix crash when webhook enabled without configured URL [#4136](https://github.com/jomjol/AI-on-the-edge-device/pull/4136)
 - Fix checkDigitConsistency corrupting sub-digits of large readings [#4145](https://github.com/jomjol/AI-on-the-edge-device/pull/4145)
-- code optimization [#4175](https://github.com/jomjol/AI-on-the-edge-device/pull/4175)
-- Added useful functions [#4174](https://github.com/jomjol/AI-on-the-edge-device/pull/4174)
 - perf(camera): memcpy/memset instead of per-pixel loops in capture path [#4168](https://github.com/jomjol/AI-on-the-edge-device/pull/4168)
 - fix(http): don't terminate HTTP responses twice [#4167](https://github.com/jomjol/AI-on-the-edge-device/pull/4167)
 - Update submodules, Refactor OTA update process and clean up code [#4135](https://github.com/jomjol/AI-on-the-edge-device/pull/4135)
