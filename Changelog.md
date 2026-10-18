@@ -1,6 +1,8 @@
 # [Unreleased]
 
 ### Core Changes and Bug fixes
+- perf(image): row-major loops in CRotateImage, skip identity transforms [#4176](https://github.com/jomjol/AI-on-the-edge-device/pull/4176)
+- Prevent Wi-Fi drops during alignment search [#4164](https://github.com/jomjol/AI-on-the-edge-device/pull/4164)
 - Fix crash / boot loop when /json or /metrics is polled before the flow is initialized [#4165](https://github.com/jomjol/AI-on-the-edge-device/pull/4165)
 - Fix crash when webhook enabled without configured URL [#4136](https://github.com/jomjol/AI-on-the-edge-device/pull/4136)
 - Fix checkDigitConsistency corrupting sub-digits of large readings [#4145](https://github.com/jomjol/AI-on-the-edge-device/pull/4145)
