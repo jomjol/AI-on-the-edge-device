@@ -5,6 +5,9 @@
 #include "../../include/defines.h"
 
 #include <esp_log.h>
+#include <esp_timer.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 static const char* TAG = "C FIND TEMPL";
 
@@ -95,7 +98,8 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
 
 
     double aktSAD;
-    double minSAD = pow(tpl_width * tpl_height * 255, 2);
+    double sadSpan = (double)tpl_width * tpl_height * 255;
+    double minSAD = sadSpan * sadSpan;
 
     RGBImageLock();
 
@@ -104,6 +108,10 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
     int _anzchannels = channels;
     if (_ref->alignment_algo == 0)  // 0 = "Default" (nur R-Kanal)
         _anzchannels = 1;
+
+    // PSRAM-Zugriffe auf Core 0 verdrängen den WiFi-Stack. Spätestens alle 50 ms
+    // den Core abgeben, damit Beacons weiter verarbeitet werden (Tick = 10 ms).
+    int64_t nextYieldUs = esp_timer_get_time() + 50000;
 
     for (xouter = ow_start; xouter <= ow_stop; xouter++)
         for (youter = oh_start; youter <= oh_stop; ++youter)
@@ -116,7 +124,8 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
                     stbi_uc* p_tpl = rgb_template + (channels * (tpl_y * tpl_width + tpl_x));
                     for (_ch = 0; _ch < _anzchannels; ++_ch)
                     {
-                        aktSAD += pow(p_tpl[_ch] - p_org[_ch], 2);
+                        int diff = (int)p_tpl[_ch] - (int)p_org[_ch];
+                        aktSAD += diff * diff;
                     }
                 }
             if (aktSAD < minSAD)
@@ -124,6 +133,12 @@ bool CFindTemplate::FindTemplate(RefInfo *_ref)
                 minSAD = aktSAD;
                 _ref->found_x = xouter;
                 _ref->found_y = youter;
+            }
+
+            if (esp_timer_get_time() >= nextYieldUs)
+            {
+                vTaskDelay(1);
+                nextYieldUs = esp_timer_get_time() + 50000;
             }
         }
 
@@ -178,8 +193,8 @@ bool CFindTemplate::CalculateSimularities(uint8_t* _rgb_tmpl, int _startx, int _
             stbi_uc* p_tpl = _rgb_tmpl + (channels * (youter * tpl_width + xouter));
             for (_ch = 0; _ch < channels; ++_ch)
             {
-                dif = p_tpl[_ch] - p_org[_ch];
-                aktSAD += pow(p_tpl[_ch] - p_org[_ch], 2);                
+                dif = (int)p_tpl[_ch] - (int)p_org[_ch];
+                aktSAD += dif * dif;                
                 if (dif < minDif) minDif = dif;
                 if (dif > maxDif) maxDif = dif;
                 avgDifSum += dif;
