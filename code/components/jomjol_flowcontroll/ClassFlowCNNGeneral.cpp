@@ -681,7 +681,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
 
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
-                        float result = fmod(fast_atan2(f1, f2) / (M_PI * 2) + 2, 1);
+						float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
                               
                         if(GENERAL[n]->ROI[roi]->CCW) {
                             GENERAL[n]->ROI[roi]->result_float = 10 - (result * 10);
