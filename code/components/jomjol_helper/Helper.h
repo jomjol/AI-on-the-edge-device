@@ -45,6 +45,14 @@ float temperatureRead();
 std::string intToHexString(int _valueInt);
 time_t addDays(time_t startTime, int days);
 
+bool copy_string(char *dst, size_t dst_size, const char *src);
+void mem_copy(uint8_t *_target, uint8_t *_source, int _size);
+void mem_copy32(void *_target, const void *_source, size_t size);
+float fast_atan2(float y, float x);
+
+double pow10_double(int pot); // faster than pow(10, pot)
+uint32_t pow10_int(int pot);  // faster than pow(10, pot)
+
 void memCopyGen(uint8_t* _source, uint8_t* _target, int _size);
 
 std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter);
