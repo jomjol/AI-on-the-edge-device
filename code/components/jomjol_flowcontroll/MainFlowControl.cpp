@@ -23,6 +23,7 @@
 #include "server_GPIO.h"
 
 #include "server_file.h"
+#include "server_ota.h"
 
 #include "read_wlanini.h"
 #include "connect_wlan.h"
@@ -359,13 +360,15 @@ esp_err_t handler_init(httpd_req_t *req)
 #endif
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    const char *resp_str = "Init started<br>";
+
+    // Rebuilding the flow at runtime is not safe: InitFlow() keeps the old ClassFlow objects (a second full
+    // pipeline, ~1.2 MB PSRAM, until allocations fail and the device panics) and races with a running round.
+    // Apply the configuration with a reboot instead.
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "/doinit requested -> rebooting to apply the configuration");
+    const char *resp_str = "Reboot to apply the configuration<br>";
     httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
 
-    doInit();
-
-    resp_str = "Init done<br>";
-    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+    doReboot();
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_init - Done");
