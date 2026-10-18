@@ -1514,9 +1514,6 @@ esp_err_t handler_current_date(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, formatedDateAndTime.c_str(), formatedDateAndTime.length());
 
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_sendstr_chunk(req, NULL);
-
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_uptime - End");
 #endif
