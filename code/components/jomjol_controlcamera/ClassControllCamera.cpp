@@ -710,8 +710,6 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         return ESP_OK;
     }
 
-    stbi_uc *p_target;
-    stbi_uc *p_source;
     int channels = 3;
     int width = CCstatus.ImageWidth;
     int height = CCstatus.ImageHeight;
@@ -722,19 +720,9 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, _zw);
 #endif
 
-    for (int x = 0; x < width; ++x)
-    {
-        for (int y = 0; y < height; ++y)
-        {
-            p_target = _Image->rgb_image + (channels * (y * width + x));
-            p_source = _zwImage->rgb_image + (channels * (y * width + x));
-
-            for (int c = 0; c < channels; c++)
-            {
-                p_target[c] = p_source[c];
-            }
-        }
-    }
+    // Both images are packed RGB888 with the same dimensions: copy the whole frame at once
+    // (the former per-pixel, column-by-column loop took ~2 s on an ESP32-CAM)
+    memcpy(_Image->rgb_image, _zwImage->rgb_image, width * height * channels);
 
     delete _zwImage;
 

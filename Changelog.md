@@ -1,7 +1,14 @@
 # [Unreleased]
 
 ### Core Changes and Bug fixes
-- Fixed a crash (and, after a crash, a boot loop) when the REST API `/json` or `/metrics` is polled before the flow is initialized: both handlers read the post-processing results while they did not exist yet (a NULL pointer) during startup, during the 5-minute init delay that follows any crash, and while `/doinit` rebuilds the flow. They now answer "not yet available" until the flow is initialized, and the underlying accessors no longer dereference a missing post-processing step
+- Fix crash / boot loop when /json or /metrics is polled before the flow is initialized [#4165](https://github.com/jomjol/AI-on-the-edge-device/pull/4165)
+- Fix crash when webhook enabled without configured URL [#4136](https://github.com/jomjol/AI-on-the-edge-device/pull/4136)
+- Fix checkDigitConsistency corrupting sub-digits of large readings [#4145](https://github.com/jomjol/AI-on-the-edge-device/pull/4145)
+- perf(camera): memcpy/memset instead of per-pixel loops in capture path [#4168](https://github.com/jomjol/AI-on-the-edge-device/pull/4168)
+- fix(http): don't terminate HTTP responses twice [#4167](https://github.com/jomjol/AI-on-the-edge-device/pull/4167)
+- Update submodules, Refactor OTA update process and clean up code [#4135](https://github.com/jomjol/AI-on-the-edge-device/pull/4135)
+- Power reset camera fix [#4127](https://github.com/jomjol/AI-on-the-edge-device/pull/4127)
+- Update platform espressif32 to 6.11.0 [#4049](https://github.com/jomjol/AI-on-the-edge-device/pull/4049)
 
 
 # [16.1.0] - 2026-01-11

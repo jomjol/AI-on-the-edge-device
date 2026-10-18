@@ -385,8 +385,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
-        /* Respond with an empty chunk to signal HTTP response completion */
-        httpd_resp_send_chunk(req, NULL, 0);
 
         ESP_LOGD(TAG, "Done empty directory /firmware");
         return ESP_OK;
@@ -448,7 +446,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         unzip_file(in, out + "/");
         std::string zw = "Web Interface Update Successfull!\nNo reboot necessary";
         httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
-        httpd_resp_sendstr_chunk(req, NULL);
         return ESP_OK;
     }
 
@@ -474,14 +471,12 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         std::string zw = "file deleted\n";
         ESP_LOGD(TAG, "%s", zw.c_str());
         httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
-        httpd_resp_send_chunk(req, NULL, 0);
         return ESP_OK;
     }
 
     std::string zw = "ota without parameter - should not be the case!";
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, zw.c_str(), strlen(zw.c_str()));
-    httpd_resp_send_chunk(req, NULL, 0);
 
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ota without parameter - should not be the case!");
 

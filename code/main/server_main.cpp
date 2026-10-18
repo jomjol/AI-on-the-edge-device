@@ -290,9 +290,7 @@ esp_err_t hello_main_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    res = send_file(req, filetosend);
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
+    res = send_file(req, filetosend);   // send_file() already terminates the chunked response
 
     if (res != ESP_OK)
         return res;
@@ -324,13 +322,8 @@ esp_err_t img_tmp_handler(httpd_req_t *req)
     filetosend = filetosend + "/img_tmp/" + std::string(filename);
     ESP_LOGD(TAG, "File to upload: %s", filetosend.c_str());
 
-    esp_err_t res = send_file(req, filetosend); 
-    if (res != ESP_OK)
-        return res;
-
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
-    return ESP_OK;
+    // send_file() already terminates the chunked response
+    return send_file(req, filetosend);
 }
 
 

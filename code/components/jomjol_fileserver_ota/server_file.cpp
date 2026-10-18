@@ -421,15 +421,12 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
             return ESP_FAIL;
         }
 
-        /* Keep looping till the whole file is sent */
+        /* Keep looping till the whole file is sent (the last, empty chunk terminates the response) */
     } while (chunksize != 0);
 
     /* Close file after sending complete */
     fclose(fd);
     ESP_LOGI(TAG, "File sending complete");
-
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
 }
 
@@ -515,15 +512,12 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
             return ESP_FAIL;
         }
 
-        /* Keep looping till the whole file is sent */
+        /* Keep looping till the whole file is sent (the last, empty chunk terminates the response) */
     } while (chunksize != 0);
 
     /* Close file after sending complete */
     fclose(fd);
     ESP_LOGD(TAG, "File sending complete");
-
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
 }
 

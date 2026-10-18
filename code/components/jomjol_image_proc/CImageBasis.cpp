@@ -398,15 +398,8 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
         return;
     }
 
-    stbi_uc* p_source;    
-
-    for (int x = 0; x < width; ++x)
-        for (int y = 0; y < height; ++y)
-        {
-            p_source = rgb_image + (channels * (y * width + x));
-            for (int _channels = 0; _channels < channels; ++_channels)
-                p_source[_channels] = (uint8_t) 0;
-        }
+    // One contiguous memset instead of a per-pixel, column-by-column loop through PSRAM
+    memset(rgb_image, 0, width * height * channels);
 
     RGBImageRelease();
 }
@@ -418,17 +411,10 @@ void CImageBasis::EmptyImage()
         LogFile.WriteHeapInfo("EmptyImage");
     #endif
 
-    stbi_uc* p_source;
-
     RGBImageLock();
 
-    for (int x = 0; x < width; ++x)
-        for (int y = 0; y < height; ++y)
-        {
-            p_source = rgb_image + (channels * (y * width + x));
-            for (int _channels = 0; _channels < channels; ++_channels)
-                p_source[_channels] = (uint8_t) 0;
-        }
+    // One contiguous memset instead of a per-pixel, column-by-column loop through PSRAM
+    memset(rgb_image, 0, width * height * channels);
 
     RGBImageRelease();
 }
