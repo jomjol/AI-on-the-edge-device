@@ -1,6 +1,7 @@
 # [Unreleased]
 
 ### Core Changes and Bug fixes
+- Fix crash / boot loop when /json or /metrics is polled before the flow is initialized [#4165](https://github.com/jomjol/AI-on-the-edge-device/pull/4165)
 - Fix crash when webhook enabled without configured URL [#4136](https://github.com/jomjol/AI-on-the-edge-device/pull/4136)
 - Fix checkDigitConsistency corrupting sub-digits of large readings [#4145](https://github.com/jomjol/AI-on-the-edge-device/pull/4145)
 - perf(camera): memcpy/memset instead of per-pixel loops in capture path [#4168](https://github.com/jomjol/AI-on-the-edge-device/pull/4168)

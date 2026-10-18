@@ -925,20 +925,36 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     return result;
 }
 
+// flowpostprocessing is NULL until InitFlow() has parsed the config, and InitFlow() resets it to NULL
+// whenever the flow is rebuilt; REST handlers can call these at any time.
 string ClassFlowControll::getNumbersName()
 {
-    return flowpostprocessing->getNumbersName();
+    if (flowpostprocessing) {
+        return flowpostprocessing->getNumbersName();
+    }
+
+    return "";
 }
 
 string ClassFlowControll::getJSON()
 {
-    return flowpostprocessing->GetJSON();
+    if (flowpostprocessing) {
+        return flowpostprocessing->GetJSON();
+    }
+
+    return "";
 }
 
-/** 
- * @returns a vector of all current sequences
+/**
+ * @returns a vector of all current sequences (empty while the flow is not initialized)
  **/
 const std::vector<NumberPost*> &ClassFlowControll::getNumbers()
 {
-    return *flowpostprocessing->GetNumbers();
+    static const std::vector<NumberPost*> noNumbers;
+
+    if (flowpostprocessing) {
+        return *flowpostprocessing->GetNumbers();
+    }
+
+    return noNumbers;
 }

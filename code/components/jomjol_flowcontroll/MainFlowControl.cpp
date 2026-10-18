@@ -40,6 +40,10 @@ camera_flow_config_temp_t CFstatus;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
 bool bTaskAutoFlowCreated = false;
+// True only while the flow objects are fully built. bTaskAutoFlowCreated is already true during the
+// post-panic init delay and while doInit() rebuilds the flow, when flowctrl's post-processing is NULL
+// or half-built, so REST handlers that read the results must check this flag instead.
+bool bFlowInitialized = false;
 bool flowisrunning = false;
 
 long auto_interval = 0;
@@ -113,10 +117,12 @@ void DeleteMainFlowTask(void)
 
 void doInit(void)
 {
+    bFlowInitialized = false;
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "Start flowctrl.InitFlow(config);");
 #endif
     flowctrl.InitFlow(CONFIG_FILE);
+    bFlowInitialized = true;
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "Finished flowctrl.InitFlow(config);");
 #endif
@@ -468,7 +474,7 @@ esp_err_t handler_json(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_JSON uri: %s", req->uri);
 
-    if (bTaskAutoFlowCreated)
+    if (bTaskAutoFlowCreated && bFlowInitialized)
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "application/json");
@@ -520,7 +526,7 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_openmetrics uri: %s", req->uri);
 
-    if (bTaskAutoFlowCreated)
+    if (bTaskAutoFlowCreated && bFlowInitialized)
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "text/plain"); // application/openmetrics-text is not yet supported by prometheus so we use text/plain for now
