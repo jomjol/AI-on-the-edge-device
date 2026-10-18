@@ -1,5 +1,4 @@
 #include "ClassFlowPostProcessing.h"
-#include "Helper.h"
 #include "ClassFlowTakeImage.h"
 #include "ClassLogFile.h"
 
@@ -11,7 +10,9 @@
 #include "time_sntp.h"
 
 #include "esp_log.h"
+
 #include "../../include/defines.h"
+#include "Helper.h"
 
 static const char* TAG = "POSTPROC";
 
@@ -894,8 +895,8 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
 
         if (PreValueUse && NUMBERS[j]->PreValueOkay) {
             if ((NUMBERS[j]->Nachkomma > 0) && (NUMBERS[j]->ChangeRateThreshold > 0)) {
-                double _difference1 = (NUMBERS[j]->PreValue - (NUMBERS[j]->ChangeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
-                double _difference2 = (NUMBERS[j]->PreValue + (NUMBERS[j]->ChangeRateThreshold / pow(10, NUMBERS[j]->Nachkomma)));
+                double _difference1 = (NUMBERS[j]->PreValue - (NUMBERS[j]->ChangeRateThreshold / pow10_double(NUMBERS[j]->Nachkomma)));
+                double _difference2 = (NUMBERS[j]->PreValue + (NUMBERS[j]->ChangeRateThreshold / pow10_double(NUMBERS[j]->Nachkomma)));
 
                 if ((NUMBERS[j]->Value >= _difference1) && (NUMBERS[j]->Value <= _difference2)) {
                     NUMBERS[j]->Value = NUMBERS[j]->PreValue;
@@ -911,7 +912,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                     if (NUMBERS[j]->isExtendedResolution) {
                         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Neg: value=" + std::to_string(NUMBERS[j]->Value) 
                                                     + ", preValue=" + std::to_string(NUMBERS[j]->PreValue) 
-                                                    + ", preToll=" + std::to_string(NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))));
+                                                    + ", preToll=" + std::to_string(NUMBERS[j]->PreValue - (2 / pow10_double(NUMBERS[j]->Nachkomma))));
                     } 
 
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
@@ -1096,7 +1097,7 @@ string ClassFlowPostProcessing::ErsetzteN(string input, double _prevalue) {
             pot = posPunkt - posN;
         }
 
-        zw =_prevalue / pow(10, pot);
+        zw =_prevalue / pow10_double(pot);
         ziffer = ((int) zw) % 10;
         input[posN] = ziffer + 48;
 
@@ -1128,27 +1129,27 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
     pot_max = ((int) log10(input)) + 1;
 	
     while (pot <= pot_max) {
-        zw = input / pow(10, pot-1);
+        zw = input / pow10_double(pot-1);
         aktdigit_before = ((int) zw) % 10;
-        zw = _preValue / pow(10, pot-1);
+        zw = _preValue / pow10_double(pot-1);
         olddigit_before = ((int) zw) % 10;
 
-        zw = input / pow(10, pot);
+        zw = input / pow10_double(pot);
         aktdigit = ((int) zw) % 10;
-        zw = _preValue / pow(10, pot);
+        zw = _preValue / pow10_double(pot);
         olddigit = ((int) zw) % 10;
 
         no_nulldurchgang = (olddigit_before <= aktdigit_before);
 
         if (no_nulldurchgang) {
             if (aktdigit != olddigit) {
-                input = input + ((float) (olddigit - aktdigit)) * pow(10, pot);     // New Digit is replaced by old Digit;
+                input = input + ((float) (olddigit - aktdigit)) * pow10_double(pot);     // New Digit is replaced by old Digit;
             }
         }
         else {
             // despite zero crossing, digit was not incremented --> add 1
             if (aktdigit == olddigit) {
-                input = input + ((float) (1)) * pow(10, pot);   // add 1 at the point
+                input = input + ((float) (1)) * pow10_double(pot);   // add 1 at the point
             }
         }
 			

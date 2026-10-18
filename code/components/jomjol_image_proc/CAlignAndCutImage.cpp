@@ -6,7 +6,9 @@
 #include <algorithm>
 #include <esp_log.h>
 #include "psram.h"
+
 #include "../../include/defines.h"
+#include "Helper.h"
 
 static const char* TAG = "c_align_and_cut_image";
 
@@ -69,8 +71,8 @@ bool CAlignAndCutImage::Align(RefInfo *_temp1, RefInfo *_temp2)
 
     float w_org, w_ist, d_winkel;
 
-    w_org = atan2(_temp2->found_y - _temp1->found_y, _temp2->found_x - _temp1->found_x);
-    w_ist = atan2(r1_y - r0_y, r1_x - r0_x);
+    w_org = fast_atan2((float)(_temp2->found_y - _temp1->found_y), (float)(_temp2->found_x - _temp1->found_x));
+    w_ist = fast_atan2((float)(r1_y - r0_y), (float)(r1_x - r0_x));
 
     d_winkel = (w_ist - w_org) * 180 / M_PI;
 
