@@ -384,7 +384,7 @@ esp_err_t handler_stream(httpd_req_t *req)
     ESP_LOGD(TAG, "handler_stream uri: %s", req->uri);
 #endif
 
-    char _query[50];
+    char _query[50] = ""; // stays empty when the request has no query string
     char _value[10];
     bool flashlightOn = false;
 
@@ -586,7 +586,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
         ESP_LOGD(TAG, "handler water counter uri: %s", req->uri);
 
-        char _query[100];
+        char _query[100] = ""; // stays empty when the request has no query string
         char _size[10];
 
         if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
@@ -815,7 +815,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_editflow uri: %s", req->uri);
 
-    char _query[512];
+    char _query[512] = ""; // stays empty when the request has no query string
     char _valuechar[30];
     std::string _task;
 
@@ -1567,7 +1567,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     // Default return error message when no return is programmed
     std::string sReturnMessage = "E90: Uninitialized";
 
-    char _query[100];
+    char _query[100] = ""; // stays empty when the request has no query string
     char _numbersname[50] = "default";
     char _value[20] = "";
 
