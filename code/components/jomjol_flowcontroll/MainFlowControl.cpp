@@ -659,7 +659,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             return ESP_OK;
         }
 
-        std::string *status = flowctrl.getActStatus();
+        std::string status = flowctrl.getActStatus();
         std::string query = std::string(_query);
         //    ESP_LOGD(TAG, "Query: %s, query.c_str());
 
@@ -668,10 +668,10 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             std::string txt;
             txt = "<body style=\"font-family: arial\">";
 
-            if ((countRounds <= 1) && (*status != std::string("Flow finished")))
+            if ((countRounds <= 1) && (status != std::string("Flow finished")))
             {
                 // First round not completed yet
-                txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
+                txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + status + "</h3>\n";
             }
             else
             {
@@ -692,7 +692,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         {
             std::string txt, zw;
 
-            if ((countRounds <= 1) && (*status != std::string("Flow finished")))
+            if ((countRounds <= 1) && (status != std::string("Flow finished")))
             {
                 // First round not completed yet
                 // Nothing to do
@@ -777,11 +777,11 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                  * Only show it after the image got taken */
                 txt = "<hr><h3>Full Image (current round)</h3>\n";
 
-                if ((*status == std::string("Initialization")) ||
-                    (*status == std::string("Initialization (delayed)")) ||
-                    (*status == std::string("Take Image")))
+                if ((status == std::string("Initialization")) ||
+                    (status == std::string("Initialization (delayed)")) ||
+                    (status == std::string("Take Image")))
                 {
-                    txt += "<p>Current state: " + *status + "</p>\n";
+                    txt += "<p>Current state: " + status + "</p>\n";
                 }
                 else
                 {
@@ -935,7 +935,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         std::string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
-        if ((flowctrl.SetupModeActive || (*flowctrl.getActStatus() == std::string("Flow finished"))) && psram_init_shared_memory_for_take_image_step())
+        if ((flowctrl.SetupModeActive || (flowctrl.getActStatus() == std::string("Flow finished"))) && psram_init_shared_memory_for_take_image_step())
         {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Taking image for Alignment Mark Update...");
 
@@ -958,7 +958,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         }
         else
         {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Taking image for Alignment Mark not possible while device") + " is busy with a round (Current State: '" + *flowctrl.getActStatus() + "')!");
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Taking image for Alignment Mark not possible while device") + " is busy with a round (Current State: '" + flowctrl.getActStatus() + "')!");
             zw = "Device Busy";
         }
 
@@ -967,9 +967,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
     }
 
     // wird beim Erstellen eines neuen Referenzbildes aufgerufen
-    std::string *sys_status = flowctrl.getActStatus();
+    std::string sys_status = flowctrl.getActStatus();
 
-    if ((sys_status->c_str() != std::string("Take Image")) && (sys_status->c_str() != std::string("Aligning")))
+    if ((sys_status != "Take Image") && (sys_status != "Aligning"))
     {
         if ((_task.compare("test_take") == 0) || (_task.compare("cam_settings") == 0))
         {
@@ -1453,8 +1453,8 @@ esp_err_t handler_statusflow(httpd_req_t *req)
         ESP_LOGD(TAG, "handler_statusflow: %s", req->uri);
 #endif
 
-        string *zw = flowctrl.getActStatusWithTime();
-        resp_str = zw->c_str();
+        std::string zw = flowctrl.getActStatusWithTime();
+        resp_str = zw.c_str();
 
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     }

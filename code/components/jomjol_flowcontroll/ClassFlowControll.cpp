@@ -214,8 +214,7 @@ void ClassFlowControll::SetInitialParameter(void)
     flowpostprocessing = NULL;
     disabled = false;
     aktRunNr = 0;
-    aktstatus = "Flow task not yet created";
-    aktstatusWithTime = aktstatus;
+    setStatus("Flow task not yet created", "Flow task not yet created");
 }
 
 bool ClassFlowControll::getIsAutoStart(void)
@@ -308,8 +307,7 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
 
 void ClassFlowControll::InitFlow(std::string config)
 {
-    aktstatus = "Initialization";
-    aktstatusWithTime = aktstatus;
+    setStatus("Initialization", "Initialization");
 
     //#ifdef ENABLE_MQTT
         //MQTTPublish(mqttServer_getMainTopic() + "/" + "status", "Initialization", 1, false); // Right now, not possible -> MQTT Service is going to be started later
@@ -354,20 +352,28 @@ void ClassFlowControll::InitFlow(std::string config)
     fclose(pFile);
 }
 
-std::string* ClassFlowControll::getActStatusWithTime()
+std::string ClassFlowControll::getActStatusWithTime()
 {
-    return &aktstatusWithTime;
+    std::lock_guard<std::mutex> lock(statusMutex);
+    return aktstatusWithTime;
 }
 
-std::string* ClassFlowControll::getActStatus()
+std::string ClassFlowControll::getActStatus()
 {
-    return &aktstatus;
+    std::lock_guard<std::mutex> lock(statusMutex);
+    return aktstatus;
+}
+
+void ClassFlowControll::setStatus(const std::string &_status, const std::string &_statusWithTime)
+{
+    std::lock_guard<std::mutex> lock(statusMutex);
+    aktstatus = _status;
+    aktstatusWithTime = _statusWithTime;
 }
 
 void ClassFlowControll::setActStatus(std::string _aktstatus)
 {
-    aktstatus = _aktstatus;
-    aktstatusWithTime = aktstatus;
+    setStatus(_aktstatus, _aktstatus);
 }
 
 void ClassFlowControll::doFlowTakeImageOnly(string time)
@@ -377,8 +383,8 @@ void ClassFlowControll::doFlowTakeImageOnly(string time)
     for (int i = 0; i < FlowControll.size(); ++i) {
         if (FlowControll[i]->name() == "ClassFlowTakeImage") {
             zw_time = getCurrentTimeString("%H:%M:%S");
-            aktstatus = TranslateAktstatus(FlowControll[i]->name());
-            aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+            std::string status = TranslateAktstatus(FlowControll[i]->name());
+            setStatus(status, status + " (" + zw_time + ")");
             #ifdef ENABLE_MQTT
                 MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, 1, false);
             #endif //ENABLE_MQTT
@@ -409,8 +415,8 @@ bool ClassFlowControll::doFlow(string time)
 
     for (int i = 0; i < FlowControll.size(); ++i) {
         zw_time = getCurrentTimeString("%H:%M:%S");
-        aktstatus = TranslateAktstatus(FlowControll[i]->name());
-        aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+        std::string status = TranslateAktstatus(FlowControll[i]->name());
+        setStatus(status, status + " (" + zw_time + ")");
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Status: " + aktstatusWithTime);
         #ifdef ENABLE_MQTT
             MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, qos, false);
@@ -442,8 +448,7 @@ bool ClassFlowControll::doFlow(string time)
     }
 
     zw_time = getCurrentTimeString("%H:%M:%S");
-    aktstatus = "Flow finished";
-    aktstatusWithTime = aktstatus + " (" + zw_time + ")";
+    setStatus("Flow finished", std::string("Flow finished (") + zw_time + ")");
     //LogFile.WriteToFile(ESP_LOG_INFO, TAG, aktstatusWithTime);
     #ifdef ENABLE_MQTT
         MQTTPublish(mqttServer_getMainTopic() + "/" + "status", aktstatus, qos, false);
@@ -706,8 +711,9 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
         }
     }
     else if (_fn == "alg_roi.jpg") {
+        std::string status = getActStatus(); // copy: the flow task changes it while this handler runs
         #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG      // no CImageBasis needed to create alg_roi.jpg (ca. 790kB less RAM)
-            if (aktstatus.find("Initialization (delayed)") != -1) {
+            if (status.find("Initialization (delayed)") != -1) {
                 std::string filename = "/sdcard/html/Flowstate_initialization_delayed.jpg";
                 result = send_file(req, filename);
                 /*    
@@ -738,7 +744,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 free(fileBuffer);
                 */
             }
-            else if (aktstatus.find("Initialization") != -1) {
+            else if (status.find("Initialization") != -1) {
                 std::string filename = "/sdcard/html/Flowstate_initialization.jpg";
                 result = send_file(req, filename);
                 /*
@@ -769,7 +775,7 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
                 free(fileBuffer);
                 */
             }
-            else if (aktstatus.find("Take Image") != -1) {
+            else if (status.find("Take Image") != -1) {
                 if (flowalignment && flowalignment->AlgROI) {
                     std::string filename = "/sdcard/html/Flowstate_take_image.jpg";
                     result = send_file(req, filename);

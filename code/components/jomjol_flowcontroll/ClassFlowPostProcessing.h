@@ -9,11 +9,14 @@
 #include "ClassFlowDefineTypes.h"
 
 #include <string>
+#include <mutex>
 
 class ClassFlowPostProcessing :
     public ClassFlow
 {
 protected:
+    std::mutex preValueMutex;   // PreValue is set from HTTP/MQTT tasks while the flow task post-processes
+
     bool UpdatePreValueINI;
 
     int PreValueAgeStartup; 

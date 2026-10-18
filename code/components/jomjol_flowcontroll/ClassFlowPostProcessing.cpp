@@ -102,6 +102,7 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number) {
 }
 
 bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, bool _extern) {
+    std::lock_guard<std::mutex> lock(preValueMutex);
     //ESP_LOGD(TAG, "SetPrevalue: %f, %s", zw, _numbers.c_str());
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
@@ -759,6 +760,7 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift) {
 }
 
 bool ClassFlowPostProcessing::doFlow(string zwtime) {
+    std::lock_guard<std::mutex> lock(preValueMutex);
     string zwvalue;
     time_t imagetime = flowTakeImage->getTimeImageTaken();
 	
