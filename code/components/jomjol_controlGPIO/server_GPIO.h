@@ -34,6 +34,13 @@ typedef enum {
     GPIO_SET_SOURCE_HTTP  = 2,
 } gpio_set_source;
 
+// Reed contact trigger type
+typedef enum {
+    REED_TRIGGER_DISABLED = 0,
+    REED_TRIGGER_ON_CLOSE = 1,
+    REED_TRIGGER_ON_OPEN = 2,
+} reed_trigger_type_t;
+
 class GpioPin {
 public:
     GpioPin(gpio_num_t gpio, const char* name, gpio_pin_mode_t mode, gpio_int_type_t interruptType, uint8_t dutyResolution, std::string mqttTopic, bool httpEnable);
@@ -51,6 +58,12 @@ public:
     gpio_pin_mode_t getMode() { return _mode; }
     gpio_num_t getGPIO(){return _gpio;};
 
+    // Reed contact methods
+    void setReedContactConfig(bool enabled, reed_trigger_type_t triggerType, uint16_t debounceMs, int digitIndex, bool publish);
+    bool isReedContactEnabled() { return _reedContactEnabled; }
+    int getReedContactDigitIndex() { return _reedDigitIndex; }
+    void handleReedTrigger();
+
 private:
     gpio_num_t _gpio;
     const char* _name;
@@ -58,6 +71,15 @@ private:
     gpio_int_type_t _interruptType;
     std::string _mqttTopic;
     int currentState = -1;
+
+    // Reed contact configuration
+    bool _reedContactEnabled = false;
+    reed_trigger_type_t _reedTriggerType = REED_TRIGGER_DISABLED;
+    uint16_t _reedDebounceMs = 500;
+    int _reedDigitIndex = -1;
+    bool _reedPublishOnIncrement = true;
+    uint32_t _lastReedTriggerTime = 0;
+    int _lastReedState = -1;
 };
 
 esp_err_t callHandleHttpRequest(httpd_req_t *req);
@@ -79,6 +101,11 @@ public:
 #ifdef ENABLE_MQTT
     void handleMQTTconnect();
 #endif //ENABLE_MQTT
+    
+    // Reed contact callback setter
+    void setReedContactCallback(std::function<void(int, int)> callback) {
+        _reedContactCallback = callback;
+    }
 
 private:
     std::string _configFile;
@@ -94,6 +121,8 @@ private:
     SmartLed *leds_global = NULL;
 #endif
 
+    std::function<void(int, int)> _reedContactCallback = nullptr;  // Callback for reed contact triggers (gpio, digitIndex)
+
     bool readConfig();
     void clear();
     
@@ -107,6 +136,7 @@ void gpio_handler_init();
 void gpio_handler_deinit();
 void gpio_handler_destroy();
 GpioHandler* gpio_handler_get();
+void gpio_handler_set_reed_contact_callback(std::function<void(int, int)> callback);
 
 
 
