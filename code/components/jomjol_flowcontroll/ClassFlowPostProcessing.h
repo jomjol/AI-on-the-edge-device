@@ -37,6 +37,7 @@ protected:
     void handleDecimalSeparator(string _decsep, string _value);
     void handleMaxRateValue(string _decsep, string _value);
     void handleDecimalExtendedResolution(string _decsep, string _value); 
+    void handleDecimalExtendedResolutionInverted(string _decsep, string _value);
     void handleMaxRateType(string _decsep, string _value);
     void handleAnalogToDigitTransitionStart(string _decsep, string _value);
     void handleAllowNegativeRate(string _decsep, string _value);
