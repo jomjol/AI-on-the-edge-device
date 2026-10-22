@@ -273,6 +273,11 @@ void ClassFlowAlignment::SaveReferenceAlignmentValues()
 
     pFile = fopen(FileStoreRefAlignment.c_str(), "w");
 
+    if (pFile == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SaveReferenceAlignmentValues: Failed to open " + FileStoreRefAlignment);
+        return;
+    }
+
     if (strlen(zwtime.c_str()) == 0) {
         time_t rawtime;
         struct tm *timeinfo;

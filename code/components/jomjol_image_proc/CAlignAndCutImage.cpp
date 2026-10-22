@@ -129,7 +129,7 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
     
     RGBImageRelease();
 
-    stbi_image_free(odata);
+    free_psram_heap(std::string(TAG) + "->odata", odata);
 }
 
 void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *_target)

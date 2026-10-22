@@ -1195,6 +1195,7 @@ void CCamera::useDemoMode(void)
     if (demoImage == NULL)
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unable to acquire required memory for demo image!");
+        fclose(fd);
         return;
     }
 
@@ -1243,6 +1244,7 @@ bool CCamera::loadNextDemoImage(camera_fb_t *fb)
         char buf[100];
         snprintf(buf, sizeof(buf), "Demo Image (%d bytes) is larger than provided buffer (%d bytes)!", (int)fileSize, DEMO_IMAGE_SIZE);
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, std::string(buf));
+        fclose(fp);
         return false;
     }
 

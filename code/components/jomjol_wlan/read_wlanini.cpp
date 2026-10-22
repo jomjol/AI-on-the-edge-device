@@ -233,6 +233,7 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
     if (fgets(zw, sizeof(zw), pFile) == NULL) {
         line = "";
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ChangeHostName: File opened, but empty or content not readable");
+        fclose(pFile);
         return false;
     }
     else {
@@ -317,6 +318,7 @@ bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
     if (fgets(zw, sizeof(zw), pFile) == NULL) {
         line = "";
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ChangeRSSIThreshold: File opened, but empty or content not readable");
+        fclose(pFile);
         return false;
     }
     else {
