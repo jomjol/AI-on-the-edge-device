@@ -1,6 +1,11 @@
 # [Unreleased]
 
 ### Core Changes and Bug fixes
+- Fix for PSRAM allocation [#4183](https://github.com/jomjol/AI-on-the-edge-device/pull/4183)
+- fix(http): web server hangs, cross-task races and leaks in the HTTP handlers [#4182](https://github.com/jomjol/AI-on-the-edge-device/pull/4182)
+- perf(alignment): integer SSD in CFindTemplate::FindTemplate [#4181](https://github.com/jomjol/AI-on-the-edge-device/pull/4181)
+- fix(log): don't share the log FILE handle between tasks; skip filtered messages early [#4178](https://github.com/jomjol/AI-on-the-edge-device/pull/4178)
+- fix(alignment): fill rotation gaps black like the reference image; fix Fast-mode template comparison [#4179](https://github.com/jomjol/AI-on-the-edge-device/pull/4179)
 - perf(image): row-major loops in CRotateImage, skip identity transforms [#4176](https://github.com/jomjol/AI-on-the-edge-device/pull/4176)
 - Prevent Wi-Fi drops during alignment search [#4164](https://github.com/jomjol/AI-on-the-edge-device/pull/4164)
 - Fix crash / boot loop when /json or /metrics is polled before the flow is initialized [#4165](https://github.com/jomjol/AI-on-the-edge-device/pull/4165)
