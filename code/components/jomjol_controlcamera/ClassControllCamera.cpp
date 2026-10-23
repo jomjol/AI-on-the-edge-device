@@ -674,15 +674,15 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         loadNextDemoImage(fb);
     }
 
-    CImageBasis *_zwImage = new CImageBasis("zwImage");
+    CImageBasis *tmpImage = new CImageBasis("tmpImage");
 
-    if (_zwImage)
+    if (tmpImage)
     {
-        _zwImage->LoadFromMemory(fb->buf, fb->len);
+        tmpImage->LoadFromMemory(fb->buf, fb->len);
     }
     else
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate _zwImage");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate tmpImage");
     }
 
     esp_camera_fb_return(fb);
@@ -705,7 +705,7 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
 #endif
 
-    if (_zwImage == NULL)
+    if (tmpImage == NULL)
     {
         return ESP_OK;
     }
@@ -716,15 +716,15 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
 
 #ifdef DEBUG_DETAIL_ON
     std::string _zw = "Targetimage: " + std::to_string((int)_Image->rgb_image) + " Size: " + std::to_string(_Image->width) + ", " + std::to_string(_Image->height);
-    _zw = _zw + " _zwImage: " + std::to_string((int)_zwImage->rgb_image) + " Size: " + std::to_string(_zwImage->width) + ", " + std::to_string(_zwImage->height);
+    _zw = _zw + " tmpImage: " + std::to_string((int)tmpImage->rgb_image) + " Size: " + std::to_string(tmpImage->width) + ", " + std::to_string(tmpImage->height);
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, _zw);
 #endif
 
     // Both images are packed RGB888 with the same dimensions: copy the whole frame at once
     // (the former per-pixel, column-by-column loop took ~2 s on an ESP32-CAM)
-    memcpy(_Image->rgb_image, _zwImage->rgb_image, width * height * channels);
+    memcpy(_Image->rgb_image, tmpImage->rgb_image, width * height * channels);
 
-    delete _zwImage;
+    delete tmpImage;
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - Done");
