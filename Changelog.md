@@ -1,6 +1,7 @@
 # [Unreleased]
 
 ### Core Changes and Bug fixes
+- Fixed a bug where an ROI reaching past the image border was silently cut to a smaller size (or, with its origin outside the image, filled with uninitialised memory) and then either fed to the CNN as noise or dropped for the whole round: `CAlignAndCutImage::CutAndSave` now always produces the ROI at its configured size and position, letting the few pixels outside the image replicate the nearest edge pixel; an ROI overhanging by more than 8 px is moved back inside with a warning. This also fixes an off-by-one that made the last row and column of the image unreachable by any ROI
 - Fix for PSRAM allocation [#4183](https://github.com/jomjol/AI-on-the-edge-device/pull/4183)
 - fix(http): web server hangs, cross-task races and leaks in the HTTP handlers [#4182](https://github.com/jomjol/AI-on-the-edge-device/pull/4182)
 - perf(alignment): integer SSD in CFindTemplate::FindTemplate [#4181](https://github.com/jomjol/AI-on-the-edge-device/pull/4181)

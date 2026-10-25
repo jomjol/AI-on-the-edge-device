@@ -12,6 +12,54 @@
 
 static const char* TAG = "c_align_and_cut_image";
 
+// How far a ROI may reach past the image edge and still be padded rather than moved. A row or two
+// of replicated edge pixels is invisible to the model after downsampling and keeps the dial exactly
+// where the ROI was drawn; a ROI overhanging by much more is misconfigured, and quietly synthesising a
+// large part of it would just be the old silent failure in new clothes.
+static const int ROI_PAD_MAX = 8;
+
+// Pixels of the span [a, a+d) lying outside [0, n): those before 0 plus those at or beyond n.
+static int Overhang(int a, int d, int n)
+{
+    return std::max(0, -a) + std::max(0, a + d - n);
+}
+
+// A ROI can reach outside the image in two ways: its origin can lie before the edge, or the origin
+// can be legal while the far side runs past it. Either way the crop is ALWAYS produced at the
+// configured size - pixels outside the image replicate the nearest edge pixel (see the copy loops) -
+// so the framing the operator chose is preserved. The origin is moved only when the overhang exceeds
+// ROI_PAD_MAX. Padding within the cap is intended behaviour and is noted at debug level; exceeding
+// the cap - whether the ROI is then moved, or is too large to fit at all - is a real deviation from
+// the configuration and is logged as a warning.
+static void FitROIToImage(int &x1, int &y1, int dx, int dy, int width, int height)
+{
+    const int orig_x1 = x1;
+    const int orig_y1 = y1;
+    const bool over_cap = (Overhang(x1, dx, width) > ROI_PAD_MAX) || (Overhang(y1, dy, height) > ROI_PAD_MAX);
+
+    if (over_cap)
+    {
+        // The copy loops read up to and including column width-1 / row height-1, so the last origin
+        // that still fits the whole ROI is width-dx / height-dy.
+        x1 = std::max(0, std::min(x1, width - dx));
+        y1 = std::max(0, std::min(y1, height - dy));
+    }
+
+    const int pad = Overhang(x1, dx, width) + Overhang(y1, dy, height);
+    const bool moved = (x1 != orig_x1) || (y1 != orig_y1);
+    if (moved || (pad > 0))
+    {
+        std::string msg = "CutAndSave: ROI (" + std::to_string(orig_x1) + "," + std::to_string(orig_y1) + " " +
+                          std::to_string(dx) + "x" + std::to_string(dy) + ") reaches outside the image (" +
+                          std::to_string(width) + "x" + std::to_string(height) + ") - ";
+        msg += moved ? ("moved to (" + std::to_string(x1) + "," + std::to_string(y1) + ")")
+                     : (over_cap ? "too large to fit" : "kept in place");
+        if (pad > 0)
+            msg += ", " + std::to_string(pad) + " px outside the image replicate the edge";
+        LogFile.WriteToFile(over_cap ? ESP_LOG_WARN : ESP_LOG_DEBUG, TAG, msg + ". Check the ROI configuration.");
+    }
+}
+
 CAlignAndCutImage::CAlignAndCutImage(std::string _name, CImageBasis *_org, CImageBasis *_temp) : CImageBasis(_name)
 {
     name = _name;
@@ -96,13 +144,12 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
 {
     int x2, y2;
 
+    FitROIToImage(x1, y1, dx, dy, width, height);
+
+    // Always the full configured size: FitROIToImage has already decided whether the origin moves,
+    // and the copy loop pads whatever still lies outside the image.
     x2 = x1 + dx;
     y2 = y1 + dy;
-    x2 = std::min(x2, width - 1);
-    y2 = std::min(y2, height - 1);
-
-    dx = x2 - x1;
-    dy = y2 - y1;
 
     int memsize = dx * dy * channels;
     uint8_t* odata = (unsigned char*) malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
@@ -115,8 +162,11 @@ void CAlignAndCutImage::CutAndSave(std::string _template1, int x1, int y1, int d
     for (int x = x1; x < x2; ++x)
         for (int y = y1; y < y2; ++y)
         {
+            // Pixels outside the image replicate the nearest edge pixel (see FitROIToImage).
+            const int sx = std::min(std::max(x, 0), width - 1);
+            const int sy = std::min(std::max(y, 0), height - 1);
             p_target = odata + (channels * ((y - y1) * dx + (x - x1)));
-            p_source = rgb_image + (channels * (y * width + x));
+            p_source = rgb_image + (channels * (sy * width + sx));
             for (int _channels = 0; _channels < channels; ++_channels)
                 p_target[_channels] = p_source[_channels];
         }
@@ -136,17 +186,23 @@ void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *
 {
     int x2, y2;
 
+    FitROIToImage(x1, y1, dx, dy, width, height);
+
+    // Always the full configured size: FitROIToImage has already decided whether the origin moves,
+    // and the copy loop pads whatever still lies outside the image.
     x2 = x1 + dx;
     y2 = y1 + dy;
-    x2 = std::min(x2, width - 1);
-    y2 = std::min(y2, height - 1);
-
-    dx = x2 - x1;
-    dy = y2 - y1;
 
     if ((_target->height != dy) || (_target->width != dx) || (_target->channels != channels))
     {
-        ESP_LOGD(TAG, "CAlignAndCutImage::CutAndSave - Image size does not match!");
+        // dx/dy are never altered above, so this can only trip if the caller sized the target for a
+        // different ROI. Skipping leaves the target holding stale content that reaches the CNN as if
+        // it were a fresh reading, so it must not stay silent.
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "CutAndSave: ROI cannot be cut to the expected size (" +
+                             std::to_string(_target->width) + "x" + std::to_string(_target->height) + "x" +
+                             std::to_string(_target->channels) + " expected, " + std::to_string(dx) + "x" +
+                             std::to_string(dy) + "x" + std::to_string(channels) +
+                             " available) - ROI skipped. Check the ROI configuration.");
         return;
     }
 
@@ -159,8 +215,11 @@ void CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy, CImageBasis *
     for (int x = x1; x < x2; ++x)
         for (int y = y1; y < y2; ++y)
         {
+            // Pixels outside the image replicate the nearest edge pixel (see FitROIToImage).
+            const int sx = std::min(std::max(x, 0), width - 1);
+            const int sy = std::min(std::max(y, 0), height - 1);
             p_target = odata + (channels * ((y - y1) * dx + (x - x1)));
-            p_source = rgb_image + (channels * (y * width + x));
+            p_source = rgb_image + (channels * (sy * width + sx));
             for (int _channels = 0; _channels < channels; ++_channels)
                 p_target[_channels] = p_source[_channels];
         }
@@ -173,13 +232,12 @@ CImageBasis* CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
 {
     int x2, y2;
 
+    FitROIToImage(x1, y1, dx, dy, width, height);
+
+    // Always the full configured size: FitROIToImage has already decided whether the origin moves,
+    // and the copy loop pads whatever still lies outside the image.
     x2 = x1 + dx;
     y2 = y1 + dy;
-    x2 = std::min(x2, width - 1);
-    y2 = std::min(y2, height - 1);
-
-    dx = x2 - x1;
-    dy = y2 - y1;
 
     int memsize = dx * dy * channels;
     uint8_t* odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
@@ -192,8 +250,11 @@ CImageBasis* CAlignAndCutImage::CutAndSave(int x1, int y1, int dx, int dy)
     for (int x = x1; x < x2; ++x)
         for (int y = y1; y < y2; ++y)
         {
+            // Pixels outside the image replicate the nearest edge pixel (see FitROIToImage).
+            const int sx = std::min(std::max(x, 0), width - 1);
+            const int sy = std::min(std::max(y, 0), height - 1);
             p_target = odata + (channels * ((y - y1) * dx + (x - x1)));
-            p_source = rgb_image + (channels * (y * width + x));
+            p_source = rgb_image + (channels * (sy * width + sx));
             for (int _channels = 0; _channels < channels; ++_channels)
                 p_target[_channels] = p_source[_channels];
         }
