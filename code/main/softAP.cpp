@@ -409,11 +409,14 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
 
 
 
+    int timeouts = 0;
+
     while (remaining > 0) {
 
         ESP_LOGI(TAG, "Remaining size: %d", remaining);
         if ((received = httpd_req_recv(req, buf, MIN(remaining, 1024))) <= 0) {
-            if (received == HTTPD_SOCK_ERR_TIMEOUT) {
+            // Give up when the client is gone, retrying forever blocks the HTTP server task
+            if ((received == HTTPD_SOCK_ERR_TIMEOUT) && (++timeouts < UPLOAD_MAX_RECV_TIMEOUTS)) {
                 continue;
             }
 
@@ -435,6 +438,7 @@ esp_err_t upload_post_handlerAP(httpd_req_t *req)
         }
 
         remaining -= received;
+        timeouts = 0;
     }
     fclose(fd);
     isConfigINI = true;

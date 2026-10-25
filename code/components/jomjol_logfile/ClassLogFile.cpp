@@ -141,6 +141,12 @@ std::string fileNameDate;
 
 void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::string message, bool _time)
 {
+    // Return before doing any formatting work (localtime, strftime, string copies) if the message
+    // would be dropped by both the log file and the console (ESP log level of the tag)
+    if ((level > loglevel) && (level > esp_log_level_get(tag.c_str()))) {
+        return;
+    }
+
     time_t rawtime;
     struct tm* timeinfo;
     std::string fileNameDateNew;
@@ -221,22 +227,22 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::stri
 
         fileNameDate = fileNameDateNew;
     }
-#else
-    std::string logpath = logroot + "/" + fileNameDateNew; 
-    logFileAppendHandle = fopen(logpath.c_str(), "a+");
-    if (logFileAppendHandle==NULL) {
-        ESP_LOGE(TAG, "Can't open log file %s", logpath.c_str());
-        return;
-    }
-  #endif
 
     fputs(fullmessage.c_str(), logFileAppendHandle);
-    
-#ifdef KEEP_LOGFILE_OPEN_FOR_APPENDING
     fflush(logFileAppendHandle);
     fsync(fileno(logFileAppendHandle));
 #else
-    CloseLogFileAppendHandle();
+    // Local handle: WriteToFile is called from several tasks, a shared member handle
+    // could be overwritten/closed by another task (FILE leak, fputs on NULL)
+    std::string logpath = logroot + "/" + fileNameDateNew;
+    FILE* pLogFile = fopen(logpath.c_str(), "a+");
+    if (pLogFile==NULL) {
+        ESP_LOGE(TAG, "Can't open log file %s", logpath.c_str());
+        return;
+    }
+
+    fputs(fullmessage.c_str(), pLogFile);
+    fclose(pLogFile);
 #endif
 }
 

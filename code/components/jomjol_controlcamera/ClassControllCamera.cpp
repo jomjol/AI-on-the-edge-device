@@ -26,6 +26,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "server_camera.h"
 #include "esp_camera.h"
 
 #include "driver/ledc.h"
@@ -115,6 +116,10 @@ CCamera::CCamera(void)
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "CreateClassCamera");
 #endif
+
+	CCstatus.ImageQuality = camera_config.jpeg_quality;
+    CCstatus.ImageFrameSize = camera_config.frame_size;
+	SetLEDIntensity(LedIntensity);
     CCstatus.WaitBeforePicture = 2;
 
     ledc_init();
@@ -124,19 +129,12 @@ esp_err_t CCamera::InitCam(void)
 {
     ESP_LOGD(TAG, "Init Camera");
 
-    TickType_t cam_xDelay = 100 / portTICK_PERIOD_MS;
-
-    CCstatus.ImageQuality = camera_config.jpeg_quality;
-    CCstatus.ImageFrameSize = camera_config.frame_size;
-
     // De-init in case it was already initialized
-    esp_camera_deinit();
-    vTaskDelay(cam_xDelay);
-
+    PowerResetCamera();
+    vTaskDelay(pdMS_TO_TICKS(200));
+	
     // initialize the camera
     esp_err_t err = esp_camera_init(&camera_config);
-    vTaskDelay(cam_xDelay);
-
     if (err != ESP_OK)
     {
         ESP_LOGE(TAG, "Camera Init Failed");
@@ -147,7 +145,6 @@ esp_err_t CCamera::InitCam(void)
 
     // Get a reference to the sensor
     sensor_t *s = esp_camera_sensor_get();
-
     if (s != NULL)
     {
         CCstatus.CamSensor_id = s->id.PID;
@@ -677,15 +674,15 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
         loadNextDemoImage(fb);
     }
 
-    CImageBasis *_zwImage = new CImageBasis("zwImage");
+    CImageBasis *tmpImage = new CImageBasis("tmpImage");
 
-    if (_zwImage)
+    if (tmpImage)
     {
-        _zwImage->LoadFromMemory(fb->buf, fb->len);
+        tmpImage->LoadFromMemory(fb->buf, fb->len);
     }
     else
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate _zwImage");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CaptureToBasisImage: Can't allocate tmpImage");
     }
 
     esp_camera_fb_return(fb);
@@ -708,38 +705,26 @@ esp_err_t CCamera::CaptureToBasisImage(CImageBasis *_Image, int delay)
     LogFile.WriteHeapInfo("CaptureToBasisImage - After LoadFromMemory");
 #endif
 
-    if (_zwImage == NULL)
+    if (tmpImage == NULL)
     {
         return ESP_OK;
     }
 
-    stbi_uc *p_target;
-    stbi_uc *p_source;
     int channels = 3;
     int width = CCstatus.ImageWidth;
     int height = CCstatus.ImageHeight;
 
 #ifdef DEBUG_DETAIL_ON
     std::string _zw = "Targetimage: " + std::to_string((int)_Image->rgb_image) + " Size: " + std::to_string(_Image->width) + ", " + std::to_string(_Image->height);
-    _zw = _zw + " _zwImage: " + std::to_string((int)_zwImage->rgb_image) + " Size: " + std::to_string(_zwImage->width) + ", " + std::to_string(_zwImage->height);
+    _zw = _zw + " tmpImage: " + std::to_string((int)tmpImage->rgb_image) + " Size: " + std::to_string(tmpImage->width) + ", " + std::to_string(tmpImage->height);
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, _zw);
 #endif
 
-    for (int x = 0; x < width; ++x)
-    {
-        for (int y = 0; y < height; ++y)
-        {
-            p_target = _Image->rgb_image + (channels * (y * width + x));
-            p_source = _zwImage->rgb_image + (channels * (y * width + x));
+    // Both images are packed RGB888 with the same dimensions: copy the whole frame at once
+    // (the former per-pixel, column-by-column loop took ~2 s on an ESP32-CAM)
+    memcpy(_Image->rgb_image, tmpImage->rgb_image, width * height * channels);
 
-            for (int c = 0; c < channels; c++)
-            {
-                p_target[c] = p_source[c];
-            }
-        }
-    }
-
-    delete _zwImage;
+    delete tmpImage;
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("CaptureToBasisImage - Done");
@@ -1210,6 +1195,7 @@ void CCamera::useDemoMode(void)
     if (demoImage == NULL)
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Unable to acquire required memory for demo image!");
+        fclose(fd);
         return;
     }
 
@@ -1258,6 +1244,7 @@ bool CCamera::loadNextDemoImage(camera_fb_t *fb)
         char buf[100];
         snprintf(buf, sizeof(buf), "Demo Image (%d bytes) is larger than provided buffer (%d bytes)!", (int)fileSize, DEMO_IMAGE_SIZE);
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, std::string(buf));
+        fclose(fp);
         return false;
     }
 

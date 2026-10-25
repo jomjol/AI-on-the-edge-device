@@ -5,6 +5,21 @@
 - Added opt-in history-anchored post-processing reconciliation (`HistoryReconcile`, with `HistoryMaxJump`) that fixes premature analog-dial transitions (single-frame ±1 dial flips) and values getting stuck at digit rollovers, by trusting the reading on unambiguous frames and gating a most-significant analog-dial carry on an observed wrap of the dial below it [#4112](https://github.com/jomjol/AI-on-the-edge-device/issues/4112)
 - `HistoryReconcile` is now preserved by the config editor (previously silently dropped on every ROI/alignment save) and is directly editable in the expert config page
 - `HistoryReconcile`: the stuck-recovery path is now limited to a single dial step, so a misread that merely stays clean and stable long enough (e.g. a digit reading one position ahead while the meter is idle) can no longer be re-anchored onto and put the total a whole digit out
+- Fix for PSRAM allocation [#4183](https://github.com/jomjol/AI-on-the-edge-device/pull/4183)
+- fix(http): web server hangs, cross-task races and leaks in the HTTP handlers [#4182](https://github.com/jomjol/AI-on-the-edge-device/pull/4182)
+- perf(alignment): integer SSD in CFindTemplate::FindTemplate [#4181](https://github.com/jomjol/AI-on-the-edge-device/pull/4181)
+- fix(log): don't share the log FILE handle between tasks; skip filtered messages early [#4178](https://github.com/jomjol/AI-on-the-edge-device/pull/4178)
+- fix(alignment): fill rotation gaps black like the reference image; fix Fast-mode template comparison [#4179](https://github.com/jomjol/AI-on-the-edge-device/pull/4179)
+- perf(image): row-major loops in CRotateImage, skip identity transforms [#4176](https://github.com/jomjol/AI-on-the-edge-device/pull/4176)
+- Prevent Wi-Fi drops during alignment search [#4164](https://github.com/jomjol/AI-on-the-edge-device/pull/4164)
+- Fix crash / boot loop when /json or /metrics is polled before the flow is initialized [#4165](https://github.com/jomjol/AI-on-the-edge-device/pull/4165)
+- Fix crash when webhook enabled without configured URL [#4136](https://github.com/jomjol/AI-on-the-edge-device/pull/4136)
+- Fix checkDigitConsistency corrupting sub-digits of large readings [#4145](https://github.com/jomjol/AI-on-the-edge-device/pull/4145)
+- perf(camera): memcpy/memset instead of per-pixel loops in capture path [#4168](https://github.com/jomjol/AI-on-the-edge-device/pull/4168)
+- fix(http): don't terminate HTTP responses twice [#4167](https://github.com/jomjol/AI-on-the-edge-device/pull/4167)
+- Update submodules, Refactor OTA update process and clean up code [#4135](https://github.com/jomjol/AI-on-the-edge-device/pull/4135)
+- Power reset camera fix [#4127](https://github.com/jomjol/AI-on-the-edge-device/pull/4127)
+- Update platform espressif32 to 6.11.0 [#4049](https://github.com/jomjol/AI-on-the-edge-device/pull/4049)
 
 
 # [16.1.0] - 2026-01-11

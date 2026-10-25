@@ -93,7 +93,9 @@
          
     #define LOGFILE_LAST_PART_BYTES 80 * 1024 // 80 kBytes  // Size of partial log file to return 
 
-    #define SERVER_FILER_SCRATCH_BUFSIZE  4096 
+    #define UPLOAD_MAX_RECV_TIMEOUTS 6 // Uploads give up after this many consecutive receive timeouts (recv_wait_timeout = 5 s each)
+
+    #define SERVER_FILER_SCRATCH_BUFSIZE  4096
     #define SERVER_HELPER_SCRATCH_BUFSIZE  4096
     #define SERVER_OTA_SCRATCH_BUFSIZE  1024 
 
