@@ -143,6 +143,7 @@ function ParseConfig() {
     ParamAddValue(param, catname, "SearchFieldX");
     ParamAddValue(param, catname, "SearchFieldY");
     ParamAddValue(param, catname, "AlignmentAlgo");
+    ParamAddValue(param, catname, "AntiAliasing", 1, false, "false");
 
     var catname = "Digits";
     category[catname] = new Object();

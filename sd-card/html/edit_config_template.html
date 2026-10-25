@@ -742,6 +742,19 @@
             <td>$TOOLTIP_Alignment_AlignmentAlgo</td>
         </tr>
 
+        <tr class="expert" unused_id="Alignment_AntiAliasing_ex8">
+            <td class="indent1">
+                <label><class id="Alignment_AntiAliasing_text" style="color:black;">Anti-Aliasing</class></label>
+            </td>
+            <td>
+                <select id="Alignment_AntiAliasing_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_Alignment_AntiAliasing</td>
+        </tr>
+
         <tr unused_id="Alignment_InitialRotate_ex8">
             <td class="indent1">
                 <class id="Alignment_InitialRotate_text" style="color:black;">Rotation angle</class>
@@ -2344,7 +2357,8 @@ function UpdateInput() {
 	
     WriteParameter(param, category, "Alignment", "SearchFieldX", false);		
     WriteParameter(param, category, "Alignment", "SearchFieldY", false);		
-    WriteParameter(param, category, "Alignment", "AlignmentAlgo", true);			
+    WriteParameter(param, category, "Alignment", "AlignmentAlgo", true);
+    WriteParameter(param, category, "Alignment", "AntiAliasing", false);
     WriteParameter(param, category, "Alignment", "InitialRotate", false);
 
     WriteParameter(param, category, "Digits", "CNNGoodThreshold", true);
@@ -2512,6 +2526,7 @@ function ReadParameterAll() {
     ReadParameter(param, "Alignment", "SearchFieldX", false);	
     ReadParameter(param, "Alignment", "SearchFieldY", false);
     ReadParameter(param, "Alignment", "AlignmentAlgo", true);
+    ReadParameter(param, "Alignment", "AntiAliasing", false);
     ReadParameter(param, "Alignment", "InitialRotate", false);
 
     ReadParameter(param, "Digits", "Model", false);
