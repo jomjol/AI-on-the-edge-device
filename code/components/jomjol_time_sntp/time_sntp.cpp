@@ -278,9 +278,9 @@ bool setupTime() {
         esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG(timeServer.c_str());
         config.sync_cb = time_sync_notification_cb;
         esp_netif_sntp_init(&config);
-
-        setTimeZone(timeZone);
     }
+
+    setTimeZone(timeZone);
 
     /* The RTC keeps the time after a restart (Except on Power On or Pin Reset) 
      * There should only be a minor correction through NTP */
