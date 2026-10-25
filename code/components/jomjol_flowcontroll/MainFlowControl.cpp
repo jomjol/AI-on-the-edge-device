@@ -23,6 +23,7 @@
 #include "server_GPIO.h"
 
 #include "server_file.h"
+#include "server_ota.h"
 
 #include "read_wlanini.h"
 #include "connect_wlan.h"
@@ -40,6 +41,10 @@ camera_flow_config_temp_t CFstatus;
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
 bool bTaskAutoFlowCreated = false;
+// True only while the flow objects are fully built. bTaskAutoFlowCreated is already true during the
+// post-panic init delay and while doInit() rebuilds the flow, when flowctrl's post-processing is NULL
+// or half-built, so REST handlers that read the results must check this flag instead.
+bool bFlowInitialized = false;
 bool flowisrunning = false;
 
 long auto_interval = 0;
@@ -113,10 +118,12 @@ void DeleteMainFlowTask(void)
 
 void doInit(void)
 {
+    bFlowInitialized = false;
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "Start flowctrl.InitFlow(config);");
 #endif
     flowctrl.InitFlow(CONFIG_FILE);
+    bFlowInitialized = true;
 #ifdef DEBUG_DETAIL_ON
     ESP_LOGD(TAG, "Finished flowctrl.InitFlow(config);");
 #endif
@@ -353,13 +360,15 @@ esp_err_t handler_init(httpd_req_t *req)
 #endif
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-    const char *resp_str = "Init started<br>";
+
+    // Rebuilding the flow at runtime is not safe: InitFlow() keeps the old ClassFlow objects (a second full
+    // pipeline, ~1.2 MB PSRAM, until allocations fail and the device panics) and races with a running round.
+    // Apply the configuration with a reboot instead.
+    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "/doinit requested -> rebooting to apply the configuration");
+    const char *resp_str = "Reboot to apply the configuration<br>";
     httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
 
-    doInit();
-
-    resp_str = "Init done<br>";
-    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+    doReboot();
 
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_init - Done");
@@ -375,7 +384,7 @@ esp_err_t handler_stream(httpd_req_t *req)
     ESP_LOGD(TAG, "handler_stream uri: %s", req->uri);
 #endif
 
-    char _query[50];
+    char _query[50] = ""; // stays empty when the request has no query string
     char _value[10];
     bool flashlightOn = false;
 
@@ -468,7 +477,7 @@ esp_err_t handler_json(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_JSON uri: %s", req->uri);
 
-    if (bTaskAutoFlowCreated)
+    if (bTaskAutoFlowCreated && bFlowInitialized)
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "application/json");
@@ -520,7 +529,7 @@ esp_err_t handler_openmetrics(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_openmetrics uri: %s", req->uri);
 
-    if (bTaskAutoFlowCreated)
+    if (bTaskAutoFlowCreated && bFlowInitialized)
     {
         httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
         httpd_resp_set_type(req, "text/plain"); // application/openmetrics-text is not yet supported by prometheus so we use text/plain for now
@@ -577,7 +586,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
 
         ESP_LOGD(TAG, "handler water counter uri: %s", req->uri);
 
-        char _query[100];
+        char _query[100] = ""; // stays empty when the request has no query string
         char _size[10];
 
         if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
@@ -650,7 +659,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             return ESP_OK;
         }
 
-        std::string *status = flowctrl.getActStatus();
+        std::string status = flowctrl.getActStatus();
         std::string query = std::string(_query);
         //    ESP_LOGD(TAG, "Query: %s, query.c_str());
 
@@ -659,10 +668,10 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
             std::string txt;
             txt = "<body style=\"font-family: arial\">";
 
-            if ((countRounds <= 1) && (*status != std::string("Flow finished")))
+            if ((countRounds <= 1) && (status != std::string("Flow finished")))
             {
                 // First round not completed yet
-                txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + *status + "</h3>\n";
+                txt += "<h3>Please wait for the first round to complete!</h3><h3>Current state: " + status + "</h3>\n";
             }
             else
             {
@@ -683,7 +692,7 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         {
             std::string txt, zw;
 
-            if ((countRounds <= 1) && (*status != std::string("Flow finished")))
+            if ((countRounds <= 1) && (status != std::string("Flow finished")))
             {
                 // First round not completed yet
                 // Nothing to do
@@ -768,11 +777,11 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
                  * Only show it after the image got taken */
                 txt = "<hr><h3>Full Image (current round)</h3>\n";
 
-                if ((*status == std::string("Initialization")) ||
-                    (*status == std::string("Initialization (delayed)")) ||
-                    (*status == std::string("Take Image")))
+                if ((status == std::string("Initialization")) ||
+                    (status == std::string("Initialization (delayed)")) ||
+                    (status == std::string("Take Image")))
                 {
-                    txt += "<p>Current state: " + *status + "</p>\n";
+                    txt += "<p>Current state: " + status + "</p>\n";
                 }
                 else
                 {
@@ -806,7 +815,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
     ESP_LOGD(TAG, "handler_editflow uri: %s", req->uri);
 
-    char _query[512];
+    char _query[512] = ""; // stays empty when the request has no query string
     char _valuechar[30];
     std::string _task;
 
@@ -926,7 +935,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 
         std::string out2 = out.substr(0, out.length() - 4) + "_org.jpg";
 
-        if ((flowctrl.SetupModeActive || (*flowctrl.getActStatus() == std::string("Flow finished"))) && psram_init_shared_memory_for_take_image_step())
+        if ((flowctrl.SetupModeActive || (flowctrl.getActStatus() == std::string("Flow finished"))) && psram_init_shared_memory_for_take_image_step())
         {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Taking image for Alignment Mark Update...");
 
@@ -949,7 +958,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
         }
         else
         {
-            LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Taking image for Alignment Mark not possible while device") + " is busy with a round (Current State: '" + *flowctrl.getActStatus() + "')!");
+            LogFile.WriteToFile(ESP_LOG_WARN, TAG, std::string("Taking image for Alignment Mark not possible while device") + " is busy with a round (Current State: '" + flowctrl.getActStatus() + "')!");
             zw = "Device Busy";
         }
 
@@ -958,9 +967,9 @@ esp_err_t handler_editflow(httpd_req_t *req)
     }
 
     // wird beim Erstellen eines neuen Referenzbildes aufgerufen
-    std::string *sys_status = flowctrl.getActStatus();
+    std::string sys_status = flowctrl.getActStatus();
 
-    if ((sys_status->c_str() != std::string("Take Image")) && (sys_status->c_str() != std::string("Aligning")))
+    if ((sys_status != "Take Image") && (sys_status != "Aligning"))
     {
         if ((_task.compare("test_take") == 0) || (_task.compare("cam_settings") == 0))
         {
@@ -1444,8 +1453,8 @@ esp_err_t handler_statusflow(httpd_req_t *req)
         ESP_LOGD(TAG, "handler_statusflow: %s", req->uri);
 #endif
 
-        string *zw = flowctrl.getActStatusWithTime();
-        resp_str = zw->c_str();
+        std::string zw = flowctrl.getActStatusWithTime();
+        resp_str = zw.c_str();
 
         httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
     }
@@ -1514,9 +1523,6 @@ esp_err_t handler_current_date(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, formatedDateAndTime.c_str(), formatedDateAndTime.length());
 
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_sendstr_chunk(req, NULL);
-
 #ifdef DEBUG_DETAIL_ON
     LogFile.WriteHeapInfo("handler_uptime - End");
 #endif
@@ -1561,7 +1567,7 @@ esp_err_t handler_prevalue(httpd_req_t *req)
     // Default return error message when no return is programmed
     std::string sReturnMessage = "E90: Uninitialized";
 
-    char _query[100];
+    char _query[100] = ""; // stays empty when the request has no query string
     char _numbersname[50] = "default";
     char _value[20] = "";
 

@@ -398,15 +398,8 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
         return;
     }
 
-    stbi_uc* p_source;    
-
-    for (int x = 0; x < width; ++x)
-        for (int y = 0; y < height; ++y)
-        {
-            p_source = rgb_image + (channels * (y * width + x));
-            for (int _channels = 0; _channels < channels; ++_channels)
-                p_source[_channels] = (uint8_t) 0;
-        }
+    // One contiguous memset instead of a per-pixel, column-by-column loop through PSRAM
+    memset(rgb_image, 0, width * height * channels);
 
     RGBImageRelease();
 }
@@ -418,17 +411,10 @@ void CImageBasis::EmptyImage()
         LogFile.WriteHeapInfo("EmptyImage");
     #endif
 
-    stbi_uc* p_source;
-
     RGBImageLock();
 
-    for (int x = 0; x < width; ++x)
-        for (int y = 0; y < height; ++y)
-        {
-            p_source = rgb_image + (channels * (y * width + x));
-            for (int _channels = 0; _channels < channels; ++_channels)
-                p_source[_channels] = (uint8_t) 0;
-        }
+    // One contiguous memset instead of a per-pixel, column-by-column loop through PSRAM
+    memset(rgb_image, 0, width * height * channels);
 
     RGBImageRelease();
 }
@@ -719,19 +705,39 @@ void CImageBasis::SaveToFile(std::string _imageout)
 
 void CImageBasis::Resize(int _new_dx, int _new_dy)
 {
-    memsize = _new_dx * _new_dy * channels;
-    uint8_t* odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->odata", memsize, MALLOC_CAP_SPIRAM);
+    // tmpImage lives in the shared PSRAM region and its destructor relies on that; never resize it in place
+    if ((rgb_image == NULL) || (name == "tmpImage")) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Resize: not possible for image " + name);
+        return;
+    }
+
+    int new_memsize = _new_dx * _new_dy * channels;
+    uint8_t* odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis Resize (" + name + ")", new_memsize, MALLOC_CAP_SPIRAM);
+
+    if (odata == NULL) {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Resize: Can't allocate enough memory: " + std::to_string(new_memsize));
+        return;
+    }
 
     RGBImageLock();
 
     stbir_resize_uint8(rgb_image, width, height, 0, odata, _new_dx, _new_dy, 0, channels);
 
-    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis Resize (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
-    memCopy(odata, rgb_image, memsize);
+    // Release the old buffer with the allocator it came from (same rule as the destructor)
+    if (!externalImage) {
+        if (memsize == 0) { // Loaded via STBI (STBI_MALLOC)
+            stbi_image_free(rgb_image);
+        }
+        else {
+            free_psram_heap(std::string(TAG) + "->CImageBasis Resize old (" + name + ")", rgb_image);
+        }
+    }
+
+    rgb_image = odata;
+    memsize = new_memsize;
+    externalImage = false; // The image now owns a normal PSRAM buffer
     width = _new_dx;
     height = _new_dy;
-
-    free_psram_heap(std::string(TAG) + "->odata", odata);
 
     RGBImageRelease();
 }

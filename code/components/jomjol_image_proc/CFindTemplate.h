@@ -36,7 +36,7 @@ class CFindTemplate : public CImageBasis
 
         bool FindTemplate(RefInfo *_ref);
 
-        bool CalculateSimularities(uint8_t* _rgb_tmpl, int _startx, int _starty, int _sizex, int _sizey, int &min, float &avg, int &max, float &SAD, float _SADold, float _SADcrit);
+        bool CalculateSimularities(uint8_t* _rgb_tmpl, int _startx, int _starty, int &min, float &avg, int &max, float &SAD, float _SADold, float _SADcrit);
 };
 
 #endif //CFINDTEMPLATE_H
