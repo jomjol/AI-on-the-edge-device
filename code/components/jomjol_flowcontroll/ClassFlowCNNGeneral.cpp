@@ -8,7 +8,9 @@
 #include "CTfLiteClass.h"
 #include "ClassLogFile.h"
 #include "esp_log.h"
+
 #include "../../include/defines.h"
+#include "Helper.h"
 
 static const char* TAG = "CNN";
 
@@ -671,8 +673,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
                 case Analogue:
                     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "CNN Type: Analogue");
                     {
-                        float f1, f2;
-                        f1 = 0; f2 = 0;
+                        float f1 = 0, f2 = 0;
 
                         tflite->LoadInputImageBasis(GENERAL[n]->ROI[roi]->image);        
                         tflite->Invoke();
@@ -680,7 +681,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
 
                         f1 = tflite->GetOutputValue(0);
                         f2 = tflite->GetOutputValue(1);
-                        float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
+						float result = fmod(atan2(f1, f2) / (M_PI * 2) + 2, 1);
                               
                         if(GENERAL[n]->ROI[roi]->CCW) {
                             GENERAL[n]->ROI[roi]->result_float = 10 - (result * 10);

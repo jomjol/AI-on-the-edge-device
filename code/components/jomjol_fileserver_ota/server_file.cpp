@@ -377,6 +377,7 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
         if (fseek(fd, 0, SEEK_END))
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to get to end of file!");
+            fclose(fd);
             return ESP_FAIL;
         }
         else
@@ -387,18 +388,17 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
             if (fseek(fd, pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos), SEEK_SET))
             { // Go LOGFILE_LAST_PART_BYTES bytes back from EOF
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to go back " + to_string(std::min((long)LOGFILE_LAST_PART_BYTES, pos)) + " bytes within the file!");
+                fclose(fd);
                 return ESP_FAIL;
             }
         }
 
-        /* Find end of line */
-        while (1)
+        /* Find end of line (a file without a newline, e.g. empty after a power cut, must not loop forever) */
+        int c;
+        do
         {
-            if (fgetc(fd) == '\n')
-            {
-                break;
-            }
-        }
+            c = fgetc(fd);
+        } while ((c != EOF) && (c != '\n'));
     }
 
     /* Retrieve the pointer to scratch buffer for temporary storage */
@@ -421,15 +421,12 @@ static esp_err_t send_datafile(httpd_req_t *req, bool send_full_file)
             return ESP_FAIL;
         }
 
-        /* Keep looping till the whole file is sent */
+        /* Keep looping till the whole file is sent (the last, empty chunk terminates the response) */
     } while (chunksize != 0);
 
     /* Close file after sending complete */
     fclose(fd);
     ESP_LOGI(TAG, "File sending complete");
-
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
 }
 
@@ -471,6 +468,7 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
         if (fseek(fd, 0, SEEK_END))
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to get to end of file!");
+            fclose(fd);
             return ESP_FAIL;
         }
         else
@@ -481,18 +479,17 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
             if (fseek(fd, pos - std::min((long)LOGFILE_LAST_PART_BYTES, pos), SEEK_SET))
             { // Go LOGFILE_LAST_PART_BYTES bytes back from EOF
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to go back " + to_string(std::min((long)LOGFILE_LAST_PART_BYTES, pos)) + " bytes within the file!");
+                fclose(fd);
                 return ESP_FAIL;
             }
         }
 
-        /* Find end of line */
-        while (1)
+        /* Find end of line (a file without a newline, e.g. empty after a power cut, must not loop forever) */
+        int c;
+        do
         {
-            if (fgetc(fd) == '\n')
-            {
-                break;
-            }
-        }
+            c = fgetc(fd);
+        } while ((c != EOF) && (c != '\n'));
     }
 
     /* Retrieve the pointer to scratch buffer for temporary storage */
@@ -515,15 +512,12 @@ static esp_err_t send_logfile(httpd_req_t *req, bool send_full_file)
             return ESP_FAIL;
         }
 
-        /* Keep looping till the whole file is sent */
+        /* Keep looping till the whole file is sent (the last, empty chunk terminates the response) */
     } while (chunksize != 0);
 
     /* Close file after sending complete */
     fclose(fd);
     ESP_LOGD(TAG, "File sending complete");
-
-    /* Respond with an empty chunk to signal HTTP response completion */
-    httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
 }
 
@@ -706,6 +700,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     /* Content length of the request gives
      * the size of the file being uploaded */
     int remaining = req->content_len;
+    int timeouts = 0;
 
     while (remaining > 0)
     {
@@ -714,9 +709,10 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         /* Receive the file part by part into a buffer */
         if ((received = httpd_req_recv(req, buf, MIN(remaining, SERVER_FILER_SCRATCH_BUFSIZE))) <= 0)
         {
-            if (received == HTTPD_SOCK_ERR_TIMEOUT)
+            /* Retry if timeout occurred, but give up when the client is gone (no FIN/RST after a
+             * Wi-Fi drop): retrying forever blocks the only HTTP server task */
+            if ((received == HTTPD_SOCK_ERR_TIMEOUT) && (++timeouts < UPLOAD_MAX_RECV_TIMEOUTS))
             {
-                /* Retry if timeout occurred */
                 continue;
             }
 
@@ -748,6 +744,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         /* Keep track of remaining size of
          * the file left to be uploaded */
         remaining -= received;
+        timeouts = 0;
     }
 
     /* Close file upon upload completion */

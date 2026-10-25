@@ -1,5 +1,4 @@
 #include "ClassFlowPostProcessing.h"
-#include "Helper.h"
 #include "ClassFlowTakeImage.h"
 #include "ClassLogFile.h"
 
@@ -11,7 +10,9 @@
 #include "time_sntp.h"
 
 #include "esp_log.h"
+
 #include "../../include/defines.h"
+#include "Helper.h"
 
 static const char* TAG = "POSTPROC";
 
@@ -101,6 +102,7 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number) {
 }
 
 bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, bool _extern) {
+    std::lock_guard<std::mutex> lock(preValueMutex);
     //ESP_LOGD(TAG, "SetPrevalue: %f, %s", zw, _numbers.c_str());
 
     for (int j = 0; j < NUMBERS.size(); ++j) {
@@ -758,6 +760,7 @@ string ClassFlowPostProcessing::ShiftDecimal(string in, int _decShift) {
 }
 
 bool ClassFlowPostProcessing::doFlow(string zwtime) {
+    std::lock_guard<std::mutex> lock(preValueMutex);
     string zwvalue;
     time_t imagetime = flowTakeImage->getTimeImageTaken();
 	
@@ -911,7 +914,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
                     if (NUMBERS[j]->isExtendedResolution) {
                         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Neg: value=" + std::to_string(NUMBERS[j]->Value) 
                                                     + ", preValue=" + std::to_string(NUMBERS[j]->PreValue) 
-                                                    + ", preToll=" + std::to_string(NUMBERS[j]->PreValue-(2/pow(10, NUMBERS[j]->Nachkomma))));
+                                                    + ", preToll=" + std::to_string(NUMBERS[j]->PreValue - (2 / pow(10, NUMBERS[j]->Nachkomma))));
                     } 
 
                     NUMBERS[j]->ErrorMessageText = NUMBERS[j]->ErrorMessageText + "Neg. Rate - Read: " + zwvalue + " - Raw: " + NUMBERS[j]->ReturnRawValue + " - Pre: " + RundeOutput(NUMBERS[j]->PreValue, NUMBERS[j]->Nachkomma) + " "; 
@@ -1106,11 +1109,11 @@ string ClassFlowPostProcessing::ErsetzteN(string input, double _prevalue) {
     return input;
 }
 
-float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue) {
+double ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue) {
     int aktdigit, olddigit;
     int aktdigit_before, olddigit_before;
     int pot, pot_max;
-    float zw;
+    double zw;
     bool no_nulldurchgang = false;
 
     pot = _decilamshift;
@@ -1142,13 +1145,13 @@ float ClassFlowPostProcessing::checkDigitConsistency(double input, int _decilams
 
         if (no_nulldurchgang) {
             if (aktdigit != olddigit) {
-                input = input + ((float) (olddigit - aktdigit)) * pow(10, pot);     // New Digit is replaced by old Digit;
+                input = input + ((double)(olddigit - aktdigit)) * pow(10, pot);     // New Digit is replaced by old Digit;
             }
         }
         else {
             // despite zero crossing, digit was not incremented --> add 1
             if (aktdigit == olddigit) {
-                input = input + ((float) (1)) * pow(10, pot);   // add 1 at the point
+                input = input + ((double)(1)) * pow(10, pot);   // add 1 at the point
             }
         }
 			
