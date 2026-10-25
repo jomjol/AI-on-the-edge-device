@@ -27,7 +27,7 @@ void PowerResetCamera()
     {
         ESP_LOGD(TAG, "Resetting camera by power down line");
         gpio_config_t conf = {
-            .pin_bit_mask = 1LL << CAM_PIN_PWDN,
+            .pin_bit_mask = 1ULL << CAM_PIN_PWDN,
             .mode = GPIO_MODE_OUTPUT,
             .pull_up_en = GPIO_PULLUP_DISABLE,
             .pull_down_en = GPIO_PULLDOWN_DISABLE,
