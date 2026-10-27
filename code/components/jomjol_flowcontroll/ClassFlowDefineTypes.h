@@ -4,6 +4,7 @@
 #define CLASSFLOWDEFINETYPES_H
 
 #include "ClassFlowImage.h"
+#include "MeterReconcile.h"
 
 /**
  * Properties of one ROI
@@ -75,6 +76,12 @@ struct NumberPost {
     string MeasurementV2;       // influxdbMeasurementName_v2; Name of the Measurement in InfluxDBv2
 
     bool isExtendedResolution;  // extendResolution; Adds the decimal place of the least significant analog ROI to the value
+
+    // History-anchored reconciliation (issue #4112), opt-in via HistoryReconcile
+    bool useHistoryReconcile;               // enable the history-anchored reconciler for this sequence
+    meter::ReconcileState reconcileState;   // persistent per-sequence reconciliation state
+    meter::ReconcileParams reconcileParams; // tuning; msbStep/cleanBigDelta derived per frame
+    std::vector<float> prevAnalogDials;     // previous frame's analog dial floats (for wrap detection)
 
     general *digit_roi;         // digitRoi; set of digit ROIs for the sequence
     general *analog_roi;        // analogRoi; set of analog ROIs for the sequence

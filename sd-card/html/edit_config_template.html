@@ -1027,6 +1027,19 @@
             <td>$TOOLTIP_PostProcessing_NUMBER.CheckDigitIncreaseConsistency</td>
         </tr>
 
+        <tr class="expert" unused_id="ex1hist">
+            <td class="indent2">
+                <label><class id="PostProcessing_HistoryReconcile_text" style="color:black;">History Reconcile</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_HistoryReconcile_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.HistoryReconcile</td>
+        </tr>
+
         <!------------- MQTT ------------------>
         <tr style="border-bottom: 2px solid lightgray;">
             <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
@@ -2257,6 +2270,7 @@ function UpdateInputIndividual(sel) {
         // ReadParameter(param, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "CheckDigitIncreaseConsistency", false, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "HistoryReconcile", false, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDBv2", "Field", true, NUNBERSAkt);
         ReadParameter(param, "InfluxDB", "Measurement", true, NUNBERSAkt);
@@ -2277,6 +2291,7 @@ function UpdateInputIndividual(sel) {
     // WriteParameter(param, category, "PostProcessing", "IgnoreAllNaN", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AllowNegativeRates", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "CheckDigitIncreaseConsistency", false, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "HistoryReconcile", false, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDBv2", "Field", true, NUNBERSAkt);
     WriteParameter(param, category, "InfluxDB", "Measurement", true, NUNBERSAkt);
