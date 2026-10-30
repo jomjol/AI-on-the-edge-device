@@ -139,6 +139,8 @@ void task_UnityTesting(void *pvParameter)
         RUN_TEST(test_doFlowPP3);
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP4);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPPExtendedResolutionInvert);
     UNITY_END();
 
     while(1);
@@ -165,6 +167,7 @@ extern "C" void app_main()
     RUN_TEST(test_doFlowPP2);
     RUN_TEST(test_doFlowPP3);
     RUN_TEST(test_doFlowPP4);
+    RUN_TEST(test_doFlowPPExtendedResolutionInvert);
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);
