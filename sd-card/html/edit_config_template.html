@@ -938,6 +938,19 @@
 
         <tr>
             <td class="indent2">
+                <label><class id="PostProcessing_ContinuousLastDigit_text" style="color:black;">Continuous Last Digit</class></label>
+            </td>
+            <td>
+                <select id="PostProcessing_ContinuousLastDigit_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.ContinuousLastDigit</td>
+        </tr>
+
+        <tr>
+            <td class="indent2">
                 <input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
                 <label for=PostProcessing_MaxRateValue_enabled><class id="PostProcessing_MaxRateValue_text" style="color:black;">Maximum Rate Value</class></label>
             </td>
@@ -2249,6 +2262,7 @@ function UpdateInputIndividual(sel) {
         // ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AnalogToDigitTransitionStart", true, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "ContinuousLastDigit", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "ChangeRateThreshold", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
@@ -2269,6 +2283,7 @@ function UpdateInputIndividual(sel) {
     // WriteParameter(param, category, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AnalogToDigitTransitionStart", true, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "ContinuousLastDigit", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "ChangeRateThreshold", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);

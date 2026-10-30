@@ -113,4 +113,12 @@ void setAnalogdigitTransistionStart(UnderTestPost* _underTestPost, float _analog
  */
 void setAllowNegatives(UnderTestPost* _underTestPost, bool _allowNegatives);
 
+/**
+ * @brief Set ContinuousLastDigit in testobject
+ * 
+ * @param _underTestPost the testobject  
+ * @param _continuousLastDigit true if the last digit drum rolls continuously with the first analog pointer
+ */
+void setContinuousLastDigit(UnderTestPost* _underTestPost, bool _continuousLastDigit);
+
 #endif // TEST_FLOW_H

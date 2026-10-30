@@ -64,6 +64,7 @@ struct NumberPost {
     int DecimalShift;           // decimalShift; each increment shifts the decimal separator by one digit; value=value*10^decimalShift; pos. value shifts to the right
     int DecimalShiftInitial;    // decimalShiftInitial; same as decimalShift but is a const to reset decimalShift after calculations
     float AnalogToDigitTransitionStart; // AnalogToDigitTransitionStartValue; FIXME: need a better description; When is the digit > x.1, i.e. when does it start to tilt?
+    bool ContinuousLastDigit;   // continuousLastDigit; last digit drum rolls continuously with the first analog pointer (drum = digit + pointer/10)
     int Nachkomma;              // decimalPlaces; usually defined by the number of analog ROIs; affected by DecimalShift
 
     string DomoticzIdx;         // Domoticz counter Idx

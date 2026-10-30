@@ -37,7 +37,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     imagesRetention = 5;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart) {
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart, bool ContinuousLastDigit) {
     string result = "";    
 
     if (GENERAL[_analog]->ROI.size() == 0) {
@@ -92,7 +92,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
             }
             else {
                 if (_before_narrow_Analog >= 0) {
-                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _before_narrow_Analog, prev, true, AnalogToDigitTransitionStart);
+                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _before_narrow_Analog, prev, true, AnalogToDigitTransitionStart, ContinuousLastDigit);
                 }
                 else {
                     prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
@@ -146,10 +146,11 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
  * @param Analog_Predecessors false/true if the last ROI is an analog or digit ROI (default=false)
  *                              runs in special handling because analog is much less precise
  * @param digitAnalogTransitionStart start of the transitionlogic begins on number_of_predecessor (default=9.2)
+ * @param ContinuousLastDigit the digit before the analog ROIs rolls continuously with the first pointer (default=false)
  *
  * @return int the determined number of the current ROI
  */
-int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitAnalogTransitionStart) {
+int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitAnalogTransitionStart, bool ContinuousLastDigit) {
     int result;
     int result_after_decimal_point = ((int) floor(number * 10)) % 10;
     int result_before_decimal_point = ((int) floor(number) + 10) % 10;
@@ -169,7 +170,7 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     }
 
     if (Analog_Predecessors) {
-        result = PointerEvalAnalogToDigitNew(number, number_of_predecessors, eval_predecessors, digitAnalogTransitionStart);
+        result = PointerEvalAnalogToDigitNew(number, number_of_predecessors, eval_predecessors, digitAnalogTransitionStart, ContinuousLastDigit);
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - Analog predecessor, evaluation over PointerEvalAnalogNew = " + std::to_string(result) +
                                                     " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty));
         return result;
@@ -227,11 +228,39 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     return result;
 }
 
-int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float AnalogToDigitTransitionStart) {
+int ClassFlowCNNGeneral::PointerEvalAnalogToDigitNew(float number, float numeral_preceder,  int eval_predecessors, float AnalogToDigitTransitionStart, bool ContinuousLastDigit) {
     int result;
     int result_after_decimal_point = ((int) floor(number * 10)) % 10;
     int result_before_decimal_point = ((int) floor(number) + 10) % 10;
     bool roundedUp = false;
+
+    // Drum geared continuously to the first analog pointer: its position is digit + pointer/10
+    // (e.g. 7.6 at pointer 6), so there is no step to detect. Remove the pointer's share and round;
+    // this tolerates +/-0.5 of combined reading error and wraps 9 <-> 0 in both directions.
+    // AnalogToDigitTransitionStart is not used in this mode.
+    if (ContinuousLastDigit) {
+        float pointer = numeral_preceder;
+
+        // Near 0 the pointer reading can be on the wrong side (e.g. 9.8 although the next pointer shows
+        // it has passed 0). The analog evaluation already resolved this (eval_predecessors), so move the
+        // reading to that side: 9.8 evaluated as 0 -> -0.2, 0.1 evaluated as 9 -> 10.1.
+        if (eval_predecessors >= 0) {
+            int pointer_before_decimal_point = (int) floor(pointer);
+
+            if (pointer_before_decimal_point - eval_predecessors >= 5) {
+                pointer -= 10;
+            }
+            else if (eval_predecessors - pointer_before_decimal_point >= 5) {
+                pointer += 10;
+            }
+        }
+
+        result = ((int) round(number - pointer / 10.0) + 10) % 10;
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalAnalogToDigitNew - Continuous last digit - Result = " + std::to_string(result) +
+                                                    " number: " + std::to_string(number) + " numeral_preceder = " + std::to_string(numeral_preceder) +
+                                                    " eval_predecessors = " + std::to_string(eval_predecessors));
+        return result;
+    }
 
     // Within the digit inequalities 
     if ((result_after_decimal_point >= (10-Digit_Uncertainty * 10))     // Band around the digit --> Round off, as digit reaches inaccuracy in the frame

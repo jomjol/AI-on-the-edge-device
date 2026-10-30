@@ -129,6 +129,8 @@ void task_UnityTesting(void *pvParameter)
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_analogToDigit_Transition);
         printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_analogToDigit_ContinuousLastDigit);
+        printf("---------------------------------------------------------------------------\n");
 
         RUN_TEST(test_doFlowPP);
         printf("---------------------------------------------------------------------------\n");
@@ -137,6 +139,8 @@ void task_UnityTesting(void *pvParameter)
         RUN_TEST(test_doFlowPP2);
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP3);
+        printf("---------------------------------------------------------------------------\n");
+        RUN_TEST(test_doFlowPP_ContinuousLastDigit);
         printf("---------------------------------------------------------------------------\n");
         RUN_TEST(test_doFlowPP4);
     UNITY_END();

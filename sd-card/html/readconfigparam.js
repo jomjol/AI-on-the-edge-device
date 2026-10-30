@@ -170,6 +170,7 @@ function ParseConfig() {
     param[catname] = new Object();
     ParamAddValue(param, catname, "DecimalShift", 1, true, "0");
     ParamAddValue(param, catname, "AnalogToDigitTransitionStart", 1, true, "9.2");
+    ParamAddValue(param, catname, "ContinuousLastDigit", 1, true, "false");
     ParamAddValue(param, catname, "ChangeRateThreshold", 1, true, "2");
     // ParamAddValue(param, catname, "PreValueUse", 1, true, "true");
     ParamAddValue(param, catname, "PreValueUse");
@@ -352,6 +353,16 @@ function ParseConfig() {
         param["System"]["RSSIThreshold"]["found"] = true;
         param["System"]["RSSIThreshold"]["enabled"] = false;
         param["System"]["RSSIThreshold"]["value1"] = "0";
+    }
+
+    // Downward compatibility: Create ContinuousLastDigit for each number if not available.
+    // It has no enable checkbox, so a parameter missing in the config would stay locked in the UI.
+    for (var _num in NUMBERS) {
+        if (NUMBERS[_num]["PostProcessing"]["ContinuousLastDigit"]["found"] == false) {
+            NUMBERS[_num]["PostProcessing"]["ContinuousLastDigit"]["found"] = true;
+            NUMBERS[_num]["PostProcessing"]["ContinuousLastDigit"]["enabled"] = true;
+            NUMBERS[_num]["PostProcessing"]["ContinuousLastDigit"]["value1"] = "false";
+        }
     }
 }
 

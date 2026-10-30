@@ -102,3 +102,48 @@ void test_analogToDigit_Transition() {
     TEST_ASSERT_EQUAL_INT(1,  undertest->PointerEvalAnalogToDigitNew( 1.8, 7.8, 7, 7.7));
 
 }
+
+/**
+ * @brief Last digit drum geared continuously to the first analog pointer
+ * (drum = digit + pointer/10), evaluated with ContinuousLastDigit = true.
+ *
+ * Readings from a meter with such a drum (dig-cont / ana-cont models):
+ * the drum reads x.6 at pointer 6, x.8 at pointer 8 and a clean (x+1).0
+ * at pointer 9.5 .. 9.99, before the pointer has passed 0.
+ */
+void test_analogToDigit_ContinuousLastDigit() {
+    UnderTestCNNGeneral* undertest = new UnderTestCNNGeneral(nullptr, Digit100);
+
+    // Drum already shows the next number while the pointer is just before 0.
+    // Default: dig=8.0, ana=9.88 => erg=8 (raw value 1 m³ too high)
+    TEST_ASSERT_EQUAL_INT(8,  undertest->PointerEvalAnalogToDigitNew( 8.0, 9.88, 9, 9.2));
+    // Continuous: 8.0 - 0.988 = 7.01 => erg=7
+    TEST_ASSERT_EQUAL_INT(7,  undertest->PointerEvalAnalogToDigitNew( 8.0, 9.88, 9, 9.2, true));
+
+    // Mid-turn, drum at x.6 .. x.8 with the pointer at 6 .. 7
+    // Default with AnalogToDigitTransitionStart 9.2: dig=7.8, ana=6.3 => erg=8
+    TEST_ASSERT_EQUAL_INT(8,  undertest->PointerEvalAnalogToDigitNew( 7.8, 6.3, 6, 9.2));
+    TEST_ASSERT_EQUAL_INT(7,  undertest->PointerEvalAnalogToDigitNew( 7.8, 6.3, 6, 9.2, true));
+    TEST_ASSERT_EQUAL_INT(7,  undertest->PointerEvalAnalogToDigitNew( 7.6, 6.0, 6, 9.2, true));
+
+    // After the pointer passed 0 the drum shows the new number
+    TEST_ASSERT_EQUAL_INT(8,  undertest->PointerEvalAnalogToDigitNew( 8.0, 0.1, 0, 9.2, true));
+    TEST_ASSERT_EQUAL_INT(8,  undertest->PointerEvalAnalogToDigitNew( 8.2, 2.2, 2, 9.2, true));
+
+    // Wrap around 9 <-> 0 in both directions
+    // Drum just below 0, pointer just past 0 => erg=0
+    TEST_ASSERT_EQUAL_INT(0,  undertest->PointerEvalAnalogToDigitNew( 9.996, 0.05, 0, 9.2, true));
+    // Drum just past 0, pointer not yet at 0 => erg=9
+    TEST_ASSERT_EQUAL_INT(9,  undertest->PointerEvalAnalogToDigitNew( 0.02, 9.9, 9, 9.2, true));
+
+    // AnalogToDigitTransitionStart has no effect in this mode
+    TEST_ASSERT_EQUAL_INT(7,  undertest->PointerEvalAnalogToDigitNew( 8.0, 9.88, 9, 6.0, true));
+
+    // Pointer read on the wrong side of 0; the analog evaluation (eval_predecessors) decides the side
+    // Pointer reads 9.8 but has passed 0 (eval 0): 9.0 - (-0.02) => erg=9 (not 8)
+    TEST_ASSERT_EQUAL_INT(9,  undertest->PointerEvalAnalogToDigitNew( 9.0, 9.8, 0, 9.2, true));
+    TEST_ASSERT_EQUAL_INT(0,  undertest->PointerEvalAnalogToDigitNew( 0.0, 9.8, 0, 9.2, true));
+    // Pointer reads 0.0 but has not passed 0 yet (eval 9): 8.98 - 1.0 => erg=8 (not 9)
+    TEST_ASSERT_EQUAL_INT(8,  undertest->PointerEvalAnalogToDigitNew( 8.98, 0.0, 9, 9.2, true));
+    TEST_ASSERT_EQUAL_INT(9,  undertest->PointerEvalAnalogToDigitNew( 9.98, 0.1, 9, 9.2, true));
+}
