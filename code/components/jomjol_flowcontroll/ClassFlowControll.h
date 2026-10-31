@@ -61,6 +61,8 @@ public:
 	const std::vector<NumberPost*> &getNumbers();
 	string getNumbersName();
 
+	ClassFlowPostProcessing* getPostProcessing() { return flowpostprocessing; }
+
 	string TranslateAktstatus(std::string _input);
 
 	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
