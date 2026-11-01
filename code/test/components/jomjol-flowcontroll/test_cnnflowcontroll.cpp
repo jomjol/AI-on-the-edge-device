@@ -114,6 +114,19 @@ void test_ZeigerEvalHybrid() {
     // prev (pointer) = 6.2, but on digit readout = 6.0 (prev is int parameter)
     // zahl = 4.6
     TEST_ASSERT_EQUAL(4, undertest.PointerEvalHybridNew(4.6, 6.0, 6));    
+
+    // DigitToDigitTransitionStart: the higher digit turns early and slowly with the lower digit.
+    // Lower digit 9.8 (no zero crossing yet), higher digit 3.3 -> real value is 3.
+    // Default (9.7) reduces it to 2 (reading 429 instead of 439, rejected as negative rate)
+    TEST_ASSERT_EQUAL(2, undertest.PointerEvalHybridNew(3.3, 9.8, 9));
+    // with DigitToDigitTransitionStart = 10.0 the reduction is disabled
+    TEST_ASSERT_EQUAL(3, undertest.PointerEvalHybridNew(3.3, 9.8, 9, false, 9.2, 10.0));
+    // 9.9: no reduction up to 9.9, reduction above
+    TEST_ASSERT_EQUAL(3, undertest.PointerEvalHybridNew(3.3, 9.8, 9, false, 9.2, 9.9));
+    TEST_ASSERT_EQUAL(2, undertest.PointerEvalHybridNew(3.3, 9.95, 9, false, 9.2, 9.9));
+    // after the zero crossing of the lower digit the parameter has no effect
+    TEST_ASSERT_EQUAL(4, undertest.PointerEvalHybridNew(3.9, 0.1, 0, false, 9.2, 10.0));
+    TEST_ASSERT_EQUAL(4, undertest.PointerEvalHybridNew(4.1, 0.3, 0, false, 9.2, 10.0));
  
     
     // issue #879 vorgaenger is -1, zahl = 6.7
