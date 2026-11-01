@@ -410,6 +410,33 @@ void ClassFlowPostProcessing::handleAnalogToDigitTransitionStart(string _decsep,
     }
 }
 
+void ClassFlowPostProcessing::handleDigitToDigitTransitionStart(string _decsep, string _value) {
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+    // ESP_LOGD(TAG, "Name: %s, Pospunkt: %d", _decsep.c_str(), _pospunkt);
+	
+    if (_pospunkt > -1) {
+        _digit = _decsep.substr(0, _pospunkt);
+    }
+    else {
+        _digit = "default";
+    }
+
+    for (int j = 0; j < NUMBERS.size(); ++j) {
+        float _zwdc = Digit_Transition_Area_Forward;
+	    
+        if (isStringNumeric(_value)) {
+            _zwdc = std::stof(_value);
+        }
+
+        // Set to default first (if nothing else is set)
+        if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
+            NUMBERS[j]->DigitToDigitTransitionStart = _zwdc;
+
+        }
+    }
+}
+
 void ClassFlowPostProcessing::handleAllowNegativeRate(string _decsep, string _value) {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
@@ -589,6 +616,10 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
         if ((toUpper(_param) == "ANALOGTODIGITTRANSITIONSTART") && (splitted.size() > 1)) {
             handleAnalogToDigitTransitionStart(splitted[0], splitted[1]);
         }
+
+        if ((toUpper(_param) == "DIGITTODIGITTRANSITIONSTART") && (splitted.size() > 1)) {
+            handleDigitToDigitTransitionStart(splitted[0], splitted[1]);
+        }
 	    
         if ((toUpper(_param) == "MAXRATEVALUE") && (splitted.size() > 1)) {
             handleMaxRateValue(splitted[0], splitted[1]);
@@ -696,6 +727,7 @@ void ClassFlowPostProcessing::InitNUMBERS() {
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
         _number->AnalogToDigitTransitionStart=9.2;
+        _number->DigitToDigitTransitionStart=Digit_Transition_Area_Forward;
         _number->ChangeRateThreshold = 2;
 
         _number->Value = 0; // last value read out, incl. corrections
@@ -815,10 +847,10 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
 
         if (NUMBERS[j]->digit_roi) {
             if (NUMBERS[j]->analog_roi) {
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogToDigitTransitionStart) + NUMBERS[j]->ReturnRawValue;
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogToDigitTransitionStart, NUMBERS[j]->DigitToDigitTransitionStart) + NUMBERS[j]->ReturnRawValue;
             }
             else {
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution only if there are no analogue digits
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value, -1, NUMBERS[j]->AnalogToDigitTransitionStart, NUMBERS[j]->DigitToDigitTransitionStart);        // Extended Resolution only if there are no analogue digits
             }
         }
 	    

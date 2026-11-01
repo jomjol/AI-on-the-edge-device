@@ -936,6 +936,19 @@
             <td>$TOOLTIP_PostProcessing_NUMBER.AnalogToDigitTransitionStart</td>
         </tr>
 
+        <tr class="expert" unused_id="PostProcessing_DigitToDigitTransitionStart_ex1">
+            <td class="indent2">
+                <input type="checkbox" id="PostProcessing_DigitToDigitTransitionStart_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "DigitToDigitTransitionStart")' unchecked >
+                <label for=PostProcessing_DigitToDigitTransitionStart_enabled><class id="PostProcessing_DigitToDigitTransitionStart_text" style="color:black;">Digit to Digit Transition Start</class></label>
+            </td>
+            <td>
+                <input required type="number" id="PostProcessing_DigitToDigitTransitionStart_value1" step="0.1" min="9.0" max="10.0" value="9.7"
+                    oninput="(!validity.rangeUnderflow||(value=9.0)) && (!validity.rangeOverflow||(value=10.0)) && 
+                        (!validity.stepMismatch||(value=parseInt(this.value)));">
+            </td>
+            <td>$TOOLTIP_PostProcessing_NUMBER.DigitToDigitTransitionStart</td>
+        </tr>
+
         <tr>
             <td class="indent2">
                 <input type="checkbox" id="PostProcessing_MaxRateValue_enabled" value="1"  onclick = 'InvertEnableItem("PostProcessing", "MaxRateValue")' unchecked >
@@ -2249,6 +2262,7 @@ function UpdateInputIndividual(sel) {
         // ReadParameter(param, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "AnalogToDigitTransitionStart", true, NUNBERSAkt);
+        ReadParameter(param, "PostProcessing", "DigitToDigitTransitionStart", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "ChangeRateThreshold", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
         ReadParameter(param, "PostProcessing", "MaxRateType", true, NUNBERSAkt);
@@ -2269,6 +2283,7 @@ function UpdateInputIndividual(sel) {
     // WriteParameter(param, category, "PostProcessing", "PreValueUse", false, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "DecimalShift", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "AnalogToDigitTransitionStart", true, NUNBERSAkt);
+    WriteParameter(param, category, "PostProcessing", "DigitToDigitTransitionStart", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "ChangeRateThreshold", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateValue", true, NUNBERSAkt);
     WriteParameter(param, category, "PostProcessing", "MaxRateType", true, NUNBERSAkt);

@@ -37,7 +37,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     imagesRetention = 5;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart) {
+string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart, float DigitToDigitTransitionStart) {
     string result = "";    
 
     if (GENERAL[_analog]->ROI.size() == 0) {
@@ -95,7 +95,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
                     prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, _before_narrow_Analog, prev, true, AnalogToDigitTransitionStart);
                 }
                 else {
-                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev);
+                    prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[GENERAL[_analog]->ROI.size() - 1]->result_float, prev, prev, false, AnalogToDigitTransitionStart, DigitToDigitTransitionStart);
                 }
 
                 // is necessary because a number greater than 9.994999 returns a 10! (for further details see check in PointerEvalHybridNew)
@@ -117,7 +117,7 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
 
         for (int i = GENERAL[_analog]->ROI.size() - 2; i >= 0; --i) {
             if ((GENERAL[_analog]->ROI[i]->result_float >= 0) && (GENERAL[_analog]->ROI[i]->result_float < 10)) {
-                prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev);
+                prev = PointerEvalHybridNew(GENERAL[_analog]->ROI[i]->result_float, GENERAL[_analog]->ROI[i+1]->result_float, prev, false, AnalogToDigitTransitionStart, DigitToDigitTransitionStart);
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout#PointerEvalHybridNew()= " + std::to_string(prev));
                 result = std::to_string(prev) + result;
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "getReadout#result= " + result);
@@ -146,10 +146,14 @@ string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution
  * @param Analog_Predecessors false/true if the last ROI is an analog or digit ROI (default=false)
  *                              runs in special handling because analog is much less precise
  * @param digitAnalogTransitionStart start of the transitionlogic begins on number_of_predecessor (default=9.2)
+ * @param digitDigitTransitionStart only used with a digit predecessor that has not yet crossed zero (9.x):
+ *                          above this value a current digit showing x.0 .. x.3 is considered to run ahead
+ *                          of its predecessor and is reduced by 1 (default=Digit_Transition_Area_Forward=9.7).
+ *                          10.0 disables the reduction, for meters whose digit only starts to turn late.
  *
  * @return int the determined number of the current ROI
  */
-int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitAnalogTransitionStart) {
+int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors, float digitAnalogTransitionStart, float digitDigitTransitionStart) {
     int result;
     int result_after_decimal_point = ((int) floor(number * 10)) % 10;
     int result_before_decimal_point = ((int) floor(number) + 10) % 10;
@@ -208,11 +212,11 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     }
 
     // remains only >= 9.x --> no zero crossing yet --> 2.8 --> 2, 
-    // and from 9.7(DigitTransitionRangeLead) 3.1 --> 2
+    // and from 9.7(DigitTransitionRangeLead, configurable via DigitToDigitTransitionStart) 3.1 --> 2
     // everything >=x.4 can be considered as current number in transition. With 9.x predecessor the current
     // number can still be x.6 - x.7. 
     // Preceding (else - branch) does not already happen from 9.
-    if (Digit_Transition_Area_Forward>=number_of_predecessors || result_after_decimal_point >= 4) {
+    if (digitDigitTransitionStart>=number_of_predecessors || result_after_decimal_point >= 4) {
         // The current digit, like the previous digit, does not yet have a zero crossing. 
         result =  result_before_decimal_point % 10;
     }
@@ -223,7 +227,7 @@ int ClassFlowCNNGeneral::PointerEvalHybridNew(float number, float number_of_pred
     }
 
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "PointerEvalHybridNew - O analogue predecessor, >= 9.5 --> no zero crossing yet = " + std::to_string(result) +
-                                                " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty) + " result_after_decimal_point = " + std::to_string(result_after_decimal_point));
+                                                " number: " + std::to_string(number) + " number_of_predecessors = " + std::to_string(number_of_predecessors)+ " eval_predecessors = " + std::to_string(eval_predecessors) + " Digit_Uncertainty = " +  std::to_string(Digit_Uncertainty) + " result_after_decimal_point = " + std::to_string(result_after_decimal_point) + " digitDigitTransitionStart = " + std::to_string(digitDigitTransitionStart));
     return result;
 }
 

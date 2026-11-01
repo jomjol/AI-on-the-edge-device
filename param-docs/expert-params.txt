@@ -30,6 +30,7 @@ SearchFieldY
 AlignmentAlgo
 CNNGoodThreshold
 PreValueAgeStartup
+DigitToDigitTransitionStart
 ErrorMessage
 IO0
 IO1
