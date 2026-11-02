@@ -453,6 +453,27 @@ void ClassFlowPostProcessing::handleIgnoreLeadingNaN(string _decsep, string _val
     }
 }
 
+void ClassFlowPostProcessing::handleContinuousLastDigit(string _decsep, string _value) {
+    string _digit;
+    int _pospunkt = _decsep.find_first_of(".");
+
+    if (_pospunkt > -1) {
+        _digit = _decsep.substr(0, _pospunkt);
+    }
+    else {
+        _digit = "default";
+    }
+
+    for (int j = 0; j < NUMBERS.size(); ++j) {
+        bool _zwdc = alphanumericToBoolean(_value);
+
+        // Set to default first (if nothing else is set)
+        if ((_digit == "default") || (NUMBERS[j]->name == _digit)) {
+            NUMBERS[j]->ContinuousLastDigit = _zwdc;
+        }
+    }
+}
+
 void ClassFlowPostProcessing::handleMaxRateType(string _decsep, string _value) {
     string _digit, _decpos;
     int _pospunkt = _decsep.find_first_of(".");
@@ -622,6 +643,10 @@ bool ClassFlowPostProcessing::ReadParameter(FILE* pfile, string& aktparamgraph) 
             handleIgnoreLeadingNaN(splitted[0], splitted[1]);
         }
 
+        if ((toUpper(_param) == "CONTINUOUSLASTDIGIT") && (splitted.size() > 1)) {
+            handleContinuousLastDigit(splitted[0], splitted[1]);
+        }
+
         if ((toUpper(_param) == "PREVALUEAGESTARTUP") && (splitted.size() > 1)) {
             if (isStringNumeric(splitted[1])) {
                 PreValueAgeStartup = std::stoi(splitted[1]);
@@ -696,6 +721,7 @@ void ClassFlowPostProcessing::InitNUMBERS() {
         _number->DecimalShiftInitial = 0;
         _number->isExtendedResolution = false;
         _number->AnalogToDigitTransitionStart=9.2;
+        _number->ContinuousLastDigit = false;
         _number->ChangeRateThreshold = 2;
 
         _number->Value = 0; // last value read out, incl. corrections
@@ -815,7 +841,7 @@ bool ClassFlowPostProcessing::doFlow(string zwtime) {
 
         if (NUMBERS[j]->digit_roi) {
             if (NUMBERS[j]->analog_roi) {
-                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogToDigitTransitionStart) + NUMBERS[j]->ReturnRawValue;
+                NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, false, previous_value, NUMBERS[j]->analog_roi->ROI[0]->result_float, NUMBERS[j]->AnalogToDigitTransitionStart, NUMBERS[j]->ContinuousLastDigit) + NUMBERS[j]->ReturnRawValue;
             }
             else {
                 NUMBERS[j]->ReturnRawValue = flowDigit->getReadout(j, NUMBERS[j]->isExtendedResolution, previous_value);        // Extended Resolution only if there are no analogue digits

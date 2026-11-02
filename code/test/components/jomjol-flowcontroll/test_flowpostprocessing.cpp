@@ -522,6 +522,64 @@ void test_doFlowPP3() {
         delete undertestPost;
 }
 
+/**
+ * @brief Whole readout with ContinuousLastDigit = true
+ */
+void test_doFlowPP_ContinuousLastDigit() {
+        // Last drum geared continuously to ana1 (water meter, dig-cont / ana-cont).
+        // Default result 998.9683 (Rate too high), true value 997.9683
+        std::vector<float> digits = { 0.0, 0.1, 9.1, 9.0, 8.0};
+        std::vector<float> analogs = { 9.88, 6.6, 8.3, 3.6};
+
+        std::string result = process_doFlow(analogs, digits, Digit100, false, false, 0);
+        TEST_ASSERT_EQUAL_STRING("998.9683", result.c_str());
+
+        UnderTestPost* undertestPost = init_do_flow(analogs, digits, Digit100, false, false, 0);
+        setContinuousLastDigit(undertestPost, true);
+        result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("997.9683", result.c_str());
+        delete undertestPost;
+
+        // ana1 reads 9.8 just after passing 0; ana2 shows it has passed (true value 999.0000)
+        digits = { 0.0, 9.0, 9.0, 9.0};
+        analogs = { 9.8, 0.1, 0.1, 0.2};
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, false, 0);
+        setContinuousLastDigit(undertestPost, true);
+        result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("999.0000", result.c_str());
+        delete undertestPost;
+
+        // ana1 reads 0.0 just before passing 0; ana2 shows it has not (true value 998.9801)
+        digits = { 0.0, 0.1, 9.1, 9.0, 8.98};
+        analogs = { 0.0, 8.01, 0.1, 1.0};
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, false, 0);
+        setContinuousLastDigit(undertestPost, true);
+        result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("998.9801", result.c_str());
+        delete undertestPost;
+
+        // The two "last digit runs with the analog pointer" cases of test_doFlowPP3,
+        // solved there with AnalogToDigitTransitionStart = 7.7, give the same
+        // results with the default transition start and ContinuousLastDigit.
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1262626388
+        digits = { 1.2, 6.8, 0.0, 0.0, 5.0, 2.8};
+        analogs = { 8.7};
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, false, -3);
+        setContinuousLastDigit(undertestPost, true);
+        result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("170.0528", result.c_str());
+        delete undertestPost;
+
+        // https://github.com/jomjol/AI-on-the-edge-device/issues/1110#issuecomment-1282168030
+        digits = { 1.2, 7.0, 1.2, 2.0, 4.0, 1.8};
+        analogs = { 7.8};
+        undertestPost = init_do_flow(analogs, digits, Digit100, false, false, -3);
+        setContinuousLastDigit(undertestPost, true);
+        result = process_doFlow(undertestPost);
+        TEST_ASSERT_EQUAL_STRING("171.2417", result.c_str());
+        delete undertestPost;
+}
+
 void test_doFlowPP4() {
 
         // Fehler  V13.0.4 

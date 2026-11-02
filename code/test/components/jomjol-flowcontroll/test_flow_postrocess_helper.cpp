@@ -166,3 +166,10 @@ void setAnalogdigitTransistionStart(UnderTestPost* _underTestPost, float _analog
         }       
     }
 }
+
+void setContinuousLastDigit(UnderTestPost* _underTestPost, bool _continuousLastDigit) {
+    std::vector<NumberPost*>* NUMBERS = _underTestPost->GetNumbers();
+    for (int _n = 0; _n < (*NUMBERS).size(); ++_n) {
+        (*NUMBERS)[_n]->ContinuousLastDigit = _continuousLastDigit;
+    }
+}

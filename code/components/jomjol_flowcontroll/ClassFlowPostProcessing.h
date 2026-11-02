@@ -44,6 +44,7 @@ protected:
     void handleAnalogToDigitTransitionStart(string _decsep, string _value);
     void handleAllowNegativeRate(string _decsep, string _value);
     void handleIgnoreLeadingNaN(string _decsep, string _value);
+    void handleContinuousLastDigit(string _decsep, string _value);
     void handleChangeRateThreshold(string _decsep, string _value);
     void handlecheckDigitIncreaseConsistency(std::string _decsep, std::string _value);
 
