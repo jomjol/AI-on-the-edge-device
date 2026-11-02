@@ -1,6 +1,9 @@
 # [Unreleased]
 
 ### Core Changes and Bug fixes
+- feat(postprocessing): support rolling last digits (ContinuousLastDigit) [#4191](https://github.com/jomjol/AI-on-the-edge-device/pull/4191)
+- Use unsigned literal for camera power-down pin bit mask [#4186](https://github.com/jomjol/AI-on-the-edge-device/pull/4186)
+- Apply configured time zone even when NTP is disabled [#4185](https://github.com/jomjol/AI-on-the-edge-device/pull/4185)
 - Fix for PSRAM allocation [#4183](https://github.com/jomjol/AI-on-the-edge-device/pull/4183)
 - fix(http): web server hangs, cross-task races and leaks in the HTTP handlers [#4182](https://github.com/jomjol/AI-on-the-edge-device/pull/4182)
 - perf(alignment): integer SSD in CFindTemplate::FindTemplate [#4181](https://github.com/jomjol/AI-on-the-edge-device/pull/4181)
