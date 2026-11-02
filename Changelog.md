@@ -1,6 +1,7 @@
 # [Unreleased]
 
 ### Core Changes and Bug fixes
+- The `AntiAliasing` alignment option is now preserved by the config editor (previously silently dropped on every ROI/alignment save) and is directly editable in the expert config page
 - Fix for PSRAM allocation [#4183](https://github.com/jomjol/AI-on-the-edge-device/pull/4183)
 - fix(http): web server hangs, cross-task races and leaks in the HTTP handlers [#4182](https://github.com/jomjol/AI-on-the-edge-device/pull/4182)
 - perf(alignment): integer SSD in CFindTemplate::FindTemplate [#4181](https://github.com/jomjol/AI-on-the-edge-device/pull/4181)
