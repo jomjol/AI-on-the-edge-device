@@ -154,6 +154,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
 
     payload += string("\"device\": {")  +
         "\"identifiers\": [\"" + maintopic + "\"],"  +
+        "\"connections\": [[\"mac\", \"" + getMac() + "\"]],"  +
         "\"name\": \"" + maintopic + "\","  +
         "\"model\": \"Meter Digitizer\","  +
         "\"manufacturer\": \"AI on the Edge Device\","  +
