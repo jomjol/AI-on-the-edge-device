@@ -867,7 +867,7 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 	 * As a workaround and to not break any legacy usage, we enforce to only use the
 	 * equal sign, if the key is "password"
 	 */
-	if ((input.find("password") != string::npos) || (input.find("Token") != string::npos))
+	if ((input.find("password") != string::npos) || (input.find("Token") != string::npos) || (input.find("Tags") != string::npos))
 	{
 		// Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
 		size_t pos = input.find("=");
