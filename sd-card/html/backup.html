@@ -50,9 +50,9 @@ function startBackup() {
     // Get hostname
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", getDomainname() + "/info?type=Hostname", false);
+        xhttp.open("GET", getDomainname() + "/api/v1/info", false);
         xhttp.send();
-        hostname = xhttp.responseText;
+        hostname = JSON.parse(xhttp.responseText).system.hostname;
     }
     catch(err) {
         setStatus("<span style=\"color: red\">Failed to fetch hostname: " + err.message + "!</span>");
