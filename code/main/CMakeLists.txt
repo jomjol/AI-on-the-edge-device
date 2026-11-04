@@ -8,6 +8,7 @@ execute_process(COMMAND git log --pretty=format:'%h' -n 1
                 ERROR_QUIET)
 
 string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M")
+string(TIMESTAMP BUILD_TIME_UTC "%Y-%m-%dT%H:%M:%SZ" UTC)
 
 # Check whether we got any revision (which isn't
 # always the case, e.g. when someone downloaded a zip
@@ -38,7 +39,8 @@ endif()
 set(VERSION "const char* GIT_REV=\"${GIT_REV}${GIT_DIFF}\";
 const char* GIT_TAG=\"${GIT_TAG}\";
 const char* GIT_BRANCH=\"${GIT_BRANCH}\";
-const char* BUILD_TIME=\"${BUILD_TIME}\";")
+const char* BUILD_TIME=\"${BUILD_TIME}\";
+const char* BUILD_TIME_UTC=\"${BUILD_TIME_UTC}\";")
 
 if ("${GIT_TAG}" STREQUAL "") # Tag not set, show branch
     set(VERSION_HTML "Development-Branch: ${GIT_BRANCH} (Commit: ${GIT_REV}${GIT_DIFF})\n${GIT_REV}")
