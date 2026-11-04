@@ -28,6 +28,7 @@
 #include "server_main.h"
 #include "server_camera.h"
 #include "basic_auth.h"
+#include "api_router.h"
 
 #ifdef ENABLE_MQTT
 #include "server_mqtt.h"
@@ -544,6 +545,9 @@ extern "C" void app_main(void)
 #endif // ENABLE_MQTT
 
     gpio_handler_create(server);
+
+    // Has to come before register_server_main_uri(): handlers match in registration order and that one ends with "/*"
+    register_api_uri(server);
 
     ESP_LOGD(TAG, "Before reg server main");
     register_server_main_uri(server, "/sdcard");
