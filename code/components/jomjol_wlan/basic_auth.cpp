@@ -48,13 +48,27 @@ static char *http_auth_basic(const char *username, const char *password)
     return digest;
 }
 
+static esp_err_t send_unauthorized_text(httpd_req_t *req)
+{
+    char unauthorized[] = "You are not authorized to use this website!";
+
+    httpd_resp_set_status(req, HTTPD_401);
+    httpd_resp_set_type(req, HTTPD_TYPE_TEXT);
+    httpd_resp_set_hdr(req, "Connection", "keep-alive");
+    httpd_resp_set_hdr(req, "WWW-Authenticate", BASIC_AUTH_CHALLENGE);
+    return httpd_resp_send(req, unauthorized, strlen(unauthorized));
+}
+
 esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler(httpd_req_t *))
+{
+    return basic_auth_request_filter(req, original_handler, send_unauthorized_text);
+}
+
+esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler(httpd_req_t *), esp_err_t send_unauthorized(httpd_req_t *))
 {
     char *buf = NULL;
     size_t buf_len = 0;
     esp_err_t ret = ESP_OK;
-
-    char unauthorized[] = "You are not authorized to use this website!";
 
     if (basic_auth_info.username == NULL || basic_auth_info.password == NULL) {
         ret = original_handler(req);
@@ -82,11 +96,7 @@ esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler
 
             if (strncmp(auth_credentials, buf, buf_len)) {
                 ESP_LOGE(TAG, "Not authenticated");
-                httpd_resp_set_status(req, HTTPD_401);
-                httpd_resp_set_type(req, HTTPD_TYPE_TEXT);
-                httpd_resp_set_hdr(req, "Connection", "keep-alive");
-                httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"AIOTED\"");
-                httpd_resp_send(req, unauthorized, strlen(unauthorized));
+                ret = send_unauthorized(req);
             } else {
                 ESP_LOGI(TAG, "Authenticated calling http handler now!");
                 ret=original_handler(req);
@@ -95,11 +105,7 @@ esp_err_t basic_auth_request_filter(httpd_req_t *req, esp_err_t original_handler
             free(buf);
         } else {
             ESP_LOGE(TAG, "No auth header received");
-            httpd_resp_set_status(req, HTTPD_401);
-            httpd_resp_set_type(req, HTTPD_TYPE_TEXT);
-            httpd_resp_set_hdr(req, "Connection", "keep-alive");
-            httpd_resp_set_hdr(req, "WWW-Authenticate", "Basic realm=\"AIOTED\"");
-            httpd_resp_send(req, unauthorized, strlen(unauthorized));
+            ret = send_unauthorized(req);
         }
     }
 

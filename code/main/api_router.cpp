@@ -65,6 +65,15 @@ esp_err_t api_router_handler(httpd_req_t *req)
     return api_send_error(req, "405 Method Not Allowed", "method_not_allowed", "Method not supported on this endpoint");
 }
 
+// Runs the router behind basic auth, with the 401 in the same JSON format as the other errors.
+esp_err_t api_authorized_router_handler(httpd_req_t *req)
+{
+    return basic_auth_request_filter(req, api_router_handler, [](httpd_req_t *unauthorized_req) {
+        httpd_resp_set_hdr(unauthorized_req, "WWW-Authenticate", BASIC_AUTH_CHALLENGE);
+        return api_send_error(unauthorized_req, "401 Unauthorized", "unauthorized", "Valid credentials are required");
+    });
+}
+
 } // namespace
 
 void register_api_uri(httpd_handle_t server)
@@ -72,7 +81,7 @@ void register_api_uri(httpd_handle_t server)
     httpd_uri_t api_handle = {
         .uri      = "/api/v1/*",
         .method   = static_cast<httpd_method_t>(HTTP_ANY), // The router checks the method, so wrong ones get a JSON error
-        .handler  = APPLY_BASIC_AUTH_FILTER(api_router_handler),
+        .handler  = api_authorized_router_handler,
         .user_ctx = NULL
     };
     httpd_register_uri_handler(server, &api_handle);
