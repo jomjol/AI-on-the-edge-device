@@ -524,7 +524,26 @@ void task_reboot(void *DeleteMainFlow)
     MQTTdestroy_client(true);
 #endif // ENABLE_MQTT
     gpio_handler_destroy();
+
+    esp_camera_return_all();
     esp_camera_deinit();
+
+    if (CAM_PIN_PWDN != GPIO_NUM_NC)
+    {
+        gpio_config_t io_conf = {
+            .pin_bit_mask = (1ULL << CAM_PIN_PWDN),
+            .mode = GPIO_MODE_OUTPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE,
+        };
+        gpio_config(&io_conf);
+
+        // Kamera komplett ausschalten
+        ESP_LOGI(TAG, "Camera power down");
+        gpio_set_level(CAM_PIN_PWDN, 1);
+    }
+    
     WIFIDestroy();
 
     vTaskDelay(3000 / portTICK_PERIOD_MS);
@@ -557,7 +576,25 @@ void doRebootOTA()
 
     Camera.LightOnOff(false);
     StatusLEDOff();
+
+    esp_camera_return_all();
     esp_camera_deinit();
+
+    if (CAM_PIN_PWDN != GPIO_NUM_NC)
+    {
+        gpio_config_t io_conf = {
+            .pin_bit_mask = (1ULL << CAM_PIN_PWDN),
+            .mode = GPIO_MODE_OUTPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE,
+        };
+        gpio_config(&io_conf);
+
+        // Kamera komplett ausschalten
+        ESP_LOGI(TAG, "Camera power down");
+        gpio_set_level(CAM_PIN_PWDN, 1);
+    }
 
     vTaskDelay(5000 / portTICK_PERIOD_MS);
     esp_restart(); // Reset type: CPU reset (Reset both CPUs)
