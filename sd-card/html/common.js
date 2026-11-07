@@ -39,89 +39,49 @@ function UpdatePage(_dosession = true){
 }
 
         
-function LoadHostname() {
-    _domainname = getDomainname(); 
-
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.addEventListener('load', function(event) {
-        if (xhttp.status >= 200 && xhttp.status < 300) {
-            hostname = xhttp.responseText;
-                document.title = hostname + " - AI on the edge";
-                document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
-        } 
-        else {
-                console.warn(request.statusText, request.responseText);
-        }
-    });
-
-//     var xhttp = new XMLHttpRequest();
-    try {
-            url = _domainname + '/info?type=Hostname';     
-            xhttp.open("GET", url, true);
-            xhttp.send();
-
-    }
-    catch (error)
-    {
-//               alert("Loading Hostname failed");
-    }
-}
-
-
 var fwVersion = "";
 var webUiVersion = "";
 
-function LoadFwVersion() {
+/* Fills in the hostname and checks that the firmware and the web interface are on the same version. */
+function LoadDeviceInfo() {
     _domainname = getDomainname(); 
 
     var xhttp = new XMLHttpRequest();
     xhttp.addEventListener('load', function(event) {
         if (xhttp.status >= 200 && xhttp.status < 300) {
-            fwVersion = xhttp.responseText;
+            var info = JSON.parse(xhttp.responseText);
+
+            hostname = info.system.hostname;
+            document.title = hostname + " - AI on the edge";
+            document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
+
+            fwVersion = info.firmware.version;
             document.getElementById("Version").innerHTML  = fwVersion;
             console.log(fwVersion);
+
+            webUiVersion = info.web_ui.version;
+            console.log("Web UI Version: " + webUiVersion);
+
             compareVersions();
         } 
         else {
-            console.warn(request.statusText, request.responseText);
+            console.warn(xhttp.statusText, xhttp.responseText);
             fwVersion = "NaN";
+            webUiVersion = "NaN";
+
+            // Firmware older than this web interface has no /api/v1, so compareVersions() can't report it
+            firework.launch("Could not read the device info (HTTP " + xhttp.status + 
+                ")! The firmware might be older than the web interface.", 'warning', 30000);
         }
     });
 
     try {
-        url = _domainname + '/info?type=FirmwareVersion';     
+        url = _domainname + '/api/v1/info';     
         xhttp.open("GET", url, true);
         xhttp.send();
     }
     catch (error) {
         fwVersion = "NaN";
-    }
-}
-
-function LoadWebUiVersion() {
-    _domainname = getDomainname(); 
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.addEventListener('load', function(event) {
-        if (xhttp.status >= 200 && xhttp.status < 300) {
-            webUiVersion = xhttp.responseText;
-            console.log("Web UI Version: " + webUiVersion);
-            compareVersions();
-        } 
-        else {
-            console.warn(request.statusText, request.responseText);
-            webUiVersion = "NaN";
-        }
-    });
-
-    try {
-        url = _domainname + '/info?type=HTMLVersion';     
-        console.log("url");
-        xhttp.open("GET", url, true);
-        xhttp.send();
-    }
-    catch (error) {
         webUiVersion = "NaN";
     }
 }

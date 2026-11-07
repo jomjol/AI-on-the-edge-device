@@ -134,6 +134,12 @@ table {
 				<output id="wlan-ssid"></output>
 			</td>
 		</tr>
+		<tr>
+			<td>MAC Address:</td>	
+			<td>
+				<output id="mac-address"></output>
+			</td>
+		</tr>
 	</table>
 
 	<table>
@@ -249,294 +255,76 @@ Copyright &copy; 2020 - 2024 by <a href="https://github.com/jomjol/AI-on-the-edg
 
 <script type="text/javascript">
 
-	function loadLastRestart() 
+	// Input format: 2023-04-02T10:56:12+02:00
+	function formatTimestamp(timestamp)
 	{
-		url = getDomainname() + '/starttime';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				//Input format: 19700101-010019
-				var timestamp = xhttp.response.substr(6,2) + "." +
-						   xhttp.response.substr(4,2) + "." +
-						   xhttp.response.substr(0,4) + " " +
-						   xhttp.response.substr(9,2) + ":" +
-						   xhttp.response.substr(11,2) + ":" +
-						   xhttp.response.substr(13,2);
- 				document.getElementById("starttime").value = timestamp;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
+		return timestamp.substr(8,2) + "." +
+			   timestamp.substr(5,2) + "." +
+			   timestamp.substr(0,4) + " " +
+			   timestamp.substr(11,8);
 	}
 
-	function loadUptime() 
+	function formatUptime(seconds)
 	{
-		url = getDomainname() + '/uptime';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("uptime").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
+		var days = Math.floor(seconds / 86400);
+		var hours = Math.floor(seconds % 86400 / 3600);
+		var minutes = Math.floor(seconds % 3600 / 60);
+		var pad = function(number) { return String(number).padStart(2, "0"); };
+
+		return days + "d " + pad(hours) + "h " + pad(minutes) + "m " + pad(seconds % 60) + "s";
 	}
 
-	function loadFWVersion() 
+	function setValue(id, value)
 	{
-		url = getDomainname() + '/info?type=FirmwareVersion';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("firmware").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
+		document.getElementById(id).value = value;
 	}
 
-	function loadFWBuildTime() 
+	function showInfo(info)
 	{
-		url = getDomainname() + '/info?type=BuildTime';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				// Input format: 2023-04-02 10:56
-				var timestamp = xhttp.response.substr(8,2) + "." +
-								xhttp.response.substr(5,2) + "." +
-								xhttp.response.substr(0,4) + " " +
-								xhttp.response.substr(11,2) + ":" +
-								xhttp.response.substr(14,2);
- 				document.getElementById("build-time").value = timestamp;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
+		setValue("firmware", info.firmware.version);
+		setValue("build-time", formatTimestamp(info.firmware.build_time));
+		setValue("web-ui", info.web_ui.version);
 
-	function loadHTMLVersion() 
-	{
-		url = getDomainname() + '/info?type=HTMLVersion';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("web-ui").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
+		setValue("starttime", info.system.start_time ? formatTimestamp(info.system.start_time) : "Time not set");
+		setValue("uptime", formatUptime(info.system.uptime_s));
+		setValue("hostname", info.system.hostname);
 
-	function loadHostname() 
-	{
-		url = getDomainname() + '/info?type=Hostname';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("hostname").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
+		setValue("IP-address", info.network.ip);
+		setValue("wlan-ssid", info.network.ssid);
+		setValue("mac-address", info.network.mac);
 
-	function loadIPAddress() 
-	{
-		url = getDomainname() + '/info?type=IP';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("IP-address").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
+		setValue("chip-cores", info.chip.cores);
+		setValue("chip-revision", info.chip.revision);
+		setValue("chip-features", info.chip.features);
 
-	function loadWLANSSID() 
-	{
-		url = getDomainname() + '/info?type=SSID';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("wlan-ssid").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
+		setValue("SDCardManufacturer", info.sd_card.manufacturer);
+		setValue("SDCardName", info.sd_card.name);
+		setValue("SDCardCapacity", info.sd_card.capacity_mb + " MB");
+		setValue("SDCardSectorSize", info.sd_card.sector_size_bytes + " byte");
+		setValue("SDCardPartitionSize", info.sd_card.partition_size_mb + " MB");
+		setValue("SDCardFreePartitionSpace", info.sd_card.partition_free_mb + " MB");
+		setValue("SDCardPartitionAllocationSize", info.sd_card.partition_allocation_size_bytes + " byte");
 
-	function loadSDCardManufacturer() 
-	{
-		url = getDomainname() + '/info?type=SDCardManufacturer';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("SDCardManufacturer").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadSDCardName() 
-	{
-		url = getDomainname() + '/info?type=SDCardName';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("SDCardName").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadSDCardCapacity() 
-	{
-		url = getDomainname() + '/info?type=SDCardCapacity';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("SDCardCapacity").value = xhttp.response + " MB";
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadSDCardSectorSize() 
-	{
-		url = getDomainname() + '/info?type=SDCardSectorSize';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("SDCardSectorSize").value = xhttp.response + " byte";
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadSDCardPartitionSize() 
-	{
-		url = getDomainname() + '/info?type=SDCardPartitionSize';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("SDCardPartitionSize").value = xhttp.response + " MB";
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadSDCardFreePartitionSpace() 
-	{
-		url = getDomainname() + '/info?type=SDCardFreePartitionSpace';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("SDCardFreePartitionSpace").value = xhttp.response + " MB";
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadSDCardPartitionAllocationSize() 
-	{
-		url = getDomainname() + '/info?type=SDCardPartitionAllocationSize';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
- 				document.getElementById("SDCardPartitionAllocationSize").value = xhttp.response + " byte";
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadMemoryInfo() 
-	{
-		url = getDomainname() + '/heap';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				data = xhttp.response.split("|");
- 				document.getElementById("RAMTotalFree").value = data[0].split("l: ")[1] + " byte";
-				document.getElementById("IntRAMFree").value = data[4].split(":")[1] + " byte";
-				document.getElementById("IntRAMLargestFree").value = data[5].split(":")[1] + " byte";
-				document.getElementById("IntRAMMinFree").value = data[6].split(":")[1] + " byte";
-				document.getElementById("ExtRAMFree").value = data[1].split(":")[1] + " byte";
-				document.getElementById("ExtRAMLargestFree").value = data[2].split(":")[1] + " byte";
-				document.getElementById("ExtRAMMinFree").value = data[3].split(":")[1] + " byte";
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadChipCores() 
-	{
-		url = getDomainname() + '/info?type=ChipCores';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {				
- 				document.getElementById("chip-cores").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadChipRevision() 
-	{
-		url = getDomainname() + '/info?type=ChipRevision';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {				
- 				document.getElementById("chip-revision").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
-	}
-
-	function loadChipFeatures() 
-	{
-		url = getDomainname() + '/info?type=ChipFeatures';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {				
- 				document.getElementById("chip-features").value = xhttp.response;
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();
+		setValue("RAMTotalFree", info.memory.heap_free_bytes + " byte");
+		setValue("IntRAMFree", info.memory.internal.free_bytes + " byte");
+		setValue("IntRAMLargestFree", info.memory.internal.largest_free_block_bytes + " byte");
+		setValue("IntRAMMinFree", info.memory.internal.min_free_bytes + " byte");
+		setValue("ExtRAMFree", info.memory.external.free_bytes + " byte");
+		setValue("ExtRAMLargestFree", info.memory.external.largest_free_block_bytes + " byte");
+		setValue("ExtRAMMinFree", info.memory.external.min_free_bytes + " byte");
 	}
 
 	function init()
 	{
-		loadMemoryInfo();
-		loadLastRestart();
-		loadUptime();
-		loadFWVersion();
-		loadFWBuildTime();
-		loadHTMLVersion();
-		loadHostname();
-		loadIPAddress();
-		loadWLANSSID();
-		loadSDCardManufacturer();
-		loadSDCardName();
-		loadSDCardCapacity();
-		loadSDCardSectorSize();
-		loadSDCardPartitionSize();
-		loadSDCardFreePartitionSpace();
-		loadSDCardPartitionAllocationSize();
-		loadChipCores();
-		loadChipRevision();
-		loadChipFeatures();
+		url = getDomainname() + '/api/v1/info';     
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				showInfo(JSON.parse(xhttp.response));
+			}
+		}
+		xhttp.open("GET", url, true);
+		xhttp.send();
 	}
 
 	init();

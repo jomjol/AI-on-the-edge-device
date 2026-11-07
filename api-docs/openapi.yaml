@@ -1,0 +1,202 @@
+openapi: 3.0.3
+
+info:
+  title: AI-on-the-edge-device API
+  version: "1"
+  description: |
+    JSON API of the device, next to the older URLs, which stay as they are.
+
+    Within v1, changes only add to the API: nothing is removed or renamed.
+    `GET` only reads. Units are part of the key names. Values that aren't available are `null`.
+    Timestamps are ISO 8601 with an offset.
+
+servers:
+  - url: /api/v1
+
+# Basic auth applies only if http_username and http_password are set in wlan.ini
+security:
+  - {}
+  - basicAuth: []
+
+paths:
+  /info:
+    get:
+      summary: Firmware, system, network and SD card information
+      operationId: getInfo
+      responses:
+        "200":
+          description: Device information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Info"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  responses:
+    Unauthorized:
+      description: Basic auth is enabled and the credentials are missing or wrong
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    MethodNotAllowed:
+      description: The endpoint doesn't support this method
+      headers:
+        Allow:
+          description: The methods the endpoint supports
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      description: Body of every error response. An unknown endpoint gets the same body with status 404.
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              description: Fixed word for programs to check, such as `not_found`
+              type: string
+            message:
+              description: Text for people, which may change
+              type: string
+
+    Info:
+      type: object
+      required: [api_version, firmware, web_ui, system, memory, network, chip, sd_card]
+      properties:
+        api_version:
+          type: integer
+          example: 1
+        firmware:
+          type: object
+          required: [version, branch, tag, revision, build_time]
+          properties:
+            version:
+              type: string
+            branch:
+              type: string
+            tag:
+              description: Null for a build without a tag
+              type: string
+              nullable: true
+            revision:
+              type: string
+            build_time:
+              type: string
+              format: date-time
+              example: "2026-11-04T10:53:12Z"
+        web_ui:
+          type: object
+          required: [version]
+          properties:
+            version:
+              type: string
+        system:
+          type: object
+          required: [hostname, uptime_s, temperature_c, start_time]
+          properties:
+            hostname:
+              type: string
+            uptime_s:
+              type: integer
+            temperature_c:
+              description: Internal sensor of the chip. Good for comparing readings, not as an absolute temperature.
+              type: integer
+            start_time:
+              description: Null until the clock is set
+              type: string
+              format: date-time
+              nullable: true
+              example: "2026-11-04T13:55:12+02:00"
+        memory:
+          type: object
+          required: [heap_free_bytes, internal, external]
+          properties:
+            heap_free_bytes:
+              type: integer
+            internal:
+              $ref: "#/components/schemas/HeapRegion"
+            external:
+              $ref: "#/components/schemas/HeapRegion"
+        network:
+          type: object
+          required: [ip, ssid, mac, rssi_dbm]
+          properties:
+            ip:
+              type: string
+            ssid:
+              type: string
+            mac:
+              type: string
+              example: "AA:BB:CC:DD:EE:FF"
+            rssi_dbm:
+              type: integer
+        chip:
+          type: object
+          required: [cores, revision, features]
+          properties:
+            cores:
+              type: integer
+            revision:
+              type: integer
+            features:
+              description: Bit mask, the esp_chip_info_t features field of ESP-IDF
+              type: integer
+        sd_card:
+          type: object
+          required:
+            - manufacturer
+            - name
+            - capacity_mb
+            - sector_size_bytes
+            - partition_size_mb
+            - partition_free_mb
+            - partition_allocation_size_bytes
+          properties:
+            manufacturer:
+              type: string
+            name:
+              type: string
+            capacity_mb:
+              type: number
+            sector_size_bytes:
+              type: number
+            partition_size_mb:
+              type: number
+            partition_free_mb:
+              type: number
+            partition_allocation_size_bytes:
+              type: number
+
+    HeapRegion:
+      type: object
+      required: [free_bytes, largest_free_block_bytes, min_free_bytes]
+      properties:
+        free_bytes:
+          type: integer
+        largest_free_block_bytes:
+          type: integer
+        min_free_bytes:
+          description: The lowest free size since the boot
+          type: integer
