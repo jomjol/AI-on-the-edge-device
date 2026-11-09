@@ -124,8 +124,10 @@ void GpioPin::init()
 
 bool GpioPin::getValue(std::string* errorText)
 {   
-    if ((_mode != GPIO_PIN_MODE_INPUT) && (_mode != GPIO_PIN_MODE_INPUT_PULLUP) && (_mode != GPIO_PIN_MODE_INPUT_PULLDOWN)) {
-        (*errorText) = "GPIO is not in input mode";
+    if (_mode == GPIO_PIN_MODE_DISABLED) {
+        (*errorText) = "GPIO is not activated";
+    } else if ((_mode == GPIO_PIN_MODE_EXTERNAL_FLASH_PWM) || (_mode == GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X)) {
+        (*errorText) = "GPIO mode does not support digital read";
     }
 
     return gpio_get_level(_gpio) == 1;
