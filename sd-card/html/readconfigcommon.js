@@ -62,7 +62,7 @@ function ZerlegeZeile(input, delimiter = " =\t\r") {
      * As a workaround and to not break any legacy usage, we enforce to only use the
      * equal sign, if the key is "password"
      */
-    if (input.includes("password") || input.includes("Token")) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
+    if (input.includes("password") || input.includes("Token") || input.includes("Tags")) { // Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
         var pos = input.indexOf("=");
         delimiter = " \t\r"
         Output.push(trim(input.substr(0, pos), delimiter));

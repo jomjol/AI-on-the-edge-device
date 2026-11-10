@@ -109,6 +109,10 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             handleMeasurement(splitted[0], splitted[1]);
         }
+        if (((toUpper(_param) == "TAGS")) && (splitted.size() > 1))
+        {
+            handleTags(splitted[0], splitted[1]);
+        }
         if (((toUpper(splitted[0]) == "BUCKET")) && (splitted.size() > 1))
         {
             this->bucket = splitted[1];
@@ -192,6 +196,28 @@ void ClassFlowInfluxDBv2::handleMeasurement(string _decsep, string _value)
 }
 
 
+void ClassFlowInfluxDBv2::handleTags(string _decsep, string _value)
+{
+    string _digit, _decpos;
+    int _pospunkt = _decsep.find_first_of(".");
+    if (_pospunkt > -1)
+        _digit = _decsep.substr(0, _pospunkt);
+    else
+        _digit = "default";
+    for (int j = 0; j < flowpostprocessing->NUMBERS.size(); ++j)
+    {
+        if (_digit == "default")                        //  Set to default first (if nothing else is set)
+        {
+            flowpostprocessing->NUMBERS[j]->TagsV2 = _value;
+        }
+        if (flowpostprocessing->NUMBERS[j]->name == _digit)
+        {
+            flowpostprocessing->NUMBERS[j]->TagsV2 = _value;
+        }
+    }
+}
+
+
 bool ClassFlowInfluxDBv2::doFlow(string zwtime)
 {
     if (!InfluxDBenable)
@@ -238,8 +264,8 @@ bool ClassFlowInfluxDBv2::doFlow(string zwtime)
             
             printf("vor sende Influx_DB_V2 - namenumber. %s, result: %s, timestampt: %s", namenumber.c_str(), result.c_str(), resulttimestamp.c_str());
 
-            if (result.length() > 0)   
-                influxdb.InfluxDBPublish(measurement, namenumber, result, resulttimeutc);
+            if (result.length() > 0)
+                influxdb.InfluxDBPublish(measurement, (*NUMBERS)[i]->TagsV2, namenumber, result, resulttimeutc);
 //                InfluxDB_V2_Publish(measurement, namenumber, result, resulttimeutc);
         }
     }

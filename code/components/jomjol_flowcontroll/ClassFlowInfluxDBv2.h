@@ -27,8 +27,9 @@ protected:
 
     void SetInitialParameter(void);     
 
-    void handleFieldname(string _decsep, string _value);   
+    void handleFieldname(string _decsep, string _value);
     void handleMeasurement(string _decsep, string _value);
+    void handleTags(string _decsep, string _value);
 
 
 public:
