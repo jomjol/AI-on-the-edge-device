@@ -52,12 +52,12 @@ uint8_t * CImageBasis::RGBImageLock(int _waitmaxsec)
     return rgb_image;
 }
 
-void CImageBasis::RGBImageRelease()
+void CImageBasis::RGBImageRelease(void)
 {
     islocked = false;
 }
 
-uint8_t * CImageBasis::RGBImageGet()
+uint8_t * CImageBasis::RGBImageGet(void)
 {
     return rgb_image;
 }
@@ -77,7 +77,7 @@ void writejpghelp(void* context, void* data, int size)
         return;
     }
 
-    memcpy(image->data + image->size, data, size);
+    std::memcpy(image->data + image->size, data, size);
     image->size += size;
 }
 
@@ -170,7 +170,7 @@ bool CImageBasis::CopyFromMemory(uint8_t* _source, int _size)
     }
 
     RGBImageLock();
-    memCopy(_source, rgb_image, _size);
+    std::memcpy(rgb_image, _source, _size);
     RGBImageRelease();
 
     return true;
@@ -192,7 +192,7 @@ void CImageBasis::memCopy(uint8_t* _source, uint8_t* _target, int _size)
         *(_target + i) = *(_source + i);
     }
 #else
-    memcpy(_target, _source, _size);
+    std::memcpy(_target, _source, _size);
 #endif
 }
 
@@ -429,35 +429,40 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
 #ifdef DEBUG_DETAIL_ON 
     LogFile.WriteHeapInfo("CreateEmptyImage");
 #endif
+    
+    size_t newMemSize = (size_t)width * (size_t)height * (size_t)channels;
 
-    memsize = width * height * channels;
-
-    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
-
+    rgb_image = (unsigned char*)malloc_psram_heap("CImageBasis->" + name, newMemSize, MALLOC_CAP_SPIRAM);
+    
     if (rgb_image == NULL)
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CreateEmptyImage: Can't allocate enough memory: " + std::to_string(memsize));
+        ESP_LOGE(TAG, "CreateEmptyImage: Can't allocate enough memory: %d", (int)newMemSize);
         LogFile.WriteHeapInfo("CreateEmptyImage");
-        RGBImageRelease();
+        RGBImageRelease("CreateEmptyImage");
         return;
     }
 
-    // One contiguous memset instead of a per-pixel, column-by-column loop through PSRAM
-    memset(rgb_image, 0, width * height * channels);
+    std::memset(rgb_image, 0, width * height * channels);
+    memsize = newMemSize;
 
     RGBImageRelease();
 }
 
-void CImageBasis::EmptyImage()
+void CImageBasis::EmptyImage(void)
 {
 #ifdef DEBUG_DETAIL_ON 
     LogFile.WriteHeapInfo("EmptyImage");
 #endif
 
+    if (rgb_image == nullptr || memsize == 0)
+    {
+        return;
+    }
+    
     RGBImageLock();
 
     // One contiguous memset instead of a per-pixel, column-by-column loop through PSRAM
-    memset(rgb_image, 0, width * height * channels);
+    std::memset(rgb_image, 0, width * height * channels);
 
     RGBImageRelease();
 }
@@ -490,54 +495,21 @@ void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 
 void CImageBasis::crop_image(unsigned short cropLeft, unsigned short cropRight, unsigned short cropTop, unsigned short cropBottom)
 {
-    unsigned int maxTopIndex = cropTop * width * channels;
-    unsigned int minBottomIndex = ((width*height) - (cropBottom * width)) * channels;
-    unsigned short maxX = width - cropRight; // In pixels
-    unsigned short newWidth = width - cropLeft - cropRight;
-    unsigned short newHeight = height - cropTop - cropBottom;
+    int newWidth = width - cropLeft - cropRight;
+    int newHeight = height - cropTop - cropBottom;
 
-    unsigned int writeIndex = 0;
-    
-    // Loop over all bytes
-    for (int i = 0; i < width * height * channels; i += channels) 
+    RGBImageLock();
+
+    uint8_t* pSrc = rgb_image + (cropTop * width + cropLeft) * channels;
+    for (int y = 0; y < newHeight; ++y)
     {
-        // Calculate current X, Y pixel position
-        int x = (i/channels) % width;
-
-        // Crop from the top
-        if (i < maxTopIndex) 
-        { 
-            continue; 
-        }
-
-        // Crop from the bottom
-        if (i > minBottomIndex) 
-        { 
-            continue; 
-        }
-
-        // Crop from the left
-        if (x <= cropLeft) 
-        { 
-            continue; 
-        }
-
-        // Crop from the right
-        if (x > maxX) 
-        { 
-            continue; 
-        }
-
-        // If we get here, keep the pixels
-        for (int c = 0; c < channels; c++) 
-        {
-            rgb_image[writeIndex++] = rgb_image[i+c];
-        }
+        std::memmove(rgb_image + y * newWidth * channels, pSrc + y * width * channels, newWidth * channels);
     }
 
-    // Set the new dimensions of the framebuffer for further use.
     width = newWidth;
     height = newHeight;
+
+    RGBImageRelease();
 }
 
 CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom) 
@@ -564,7 +536,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
     }
     else 
     {
-        rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
+        rgb_image = (unsigned char*)malloc_psram_heap("CImageBasis->" + name, memsize, MALLOC_CAP_SPIRAM);
     }
 
     if (rgb_image == NULL)
@@ -575,7 +547,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
         return;
     }
 
-    memCopy(_copyfrom->rgb_image, rgb_image, memsize);
+    std::memcpy(rgb_image, _copyfrom->rgb_image, memsize);
     RGBImageRelease();
 
 #ifdef DEBUG_DETAIL_ON 
@@ -601,7 +573,7 @@ CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
 
     memsize = width * height * channels;
 
-    rgb_image = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ")", memsize, MALLOC_CAP_SPIRAM);
+    rgb_image = (unsigned char*)malloc_psram_heap("CImageBasis->" + name, memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -659,7 +631,7 @@ CImageBasis::CImageBasis(string _name, std::string _image)
 #endif
 }
 
-bool CImageBasis::ImageOkay()
+bool CImageBasis::ImageOkay(void)
 {
     return rgb_image != NULL;
 }
@@ -691,7 +663,8 @@ void CImageBasis::Negative(void)
     RGBImageRelease();
 }
 
-void CImageBasis::Contrast(float _contrast)  //input range [-100..100]
+//input range [-100..100]
+void CImageBasis::Contrast(float _contrast)
 {
     stbi_uc* p_source;
     
@@ -733,11 +706,11 @@ CImageBasis::~CImageBasis()
             //stbi_image_free(rgb_image);
             if (memsize == 0) 
             {
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not freeing (" + name + " as there was never PSRAM allocated for it)");
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not freeing (CImageBasis->" + name + " as there was never PSRAM allocated for it)");
             }
             else 
             {
-                free_psram_heap(std::string(TAG) + "->CImageBasis (" + name + ", " + to_string(memsize) + ")", rgb_image);
+                free_psram_heap("CImageBasis->" + name + "(" + std::to_string(memsize) + ")", rgb_image);
             }
         }
     }
@@ -775,9 +748,9 @@ void CImageBasis::Resize(int _new_dx, int _new_dy)
     }
 
     int new_memsize = _new_dx * _new_dy * channels;
-    uint8_t* odata = (unsigned char*)malloc_psram_heap(std::string(TAG) + "->CImageBasis Resize (" + name + ")", new_memsize, MALLOC_CAP_SPIRAM);
+    uint8_t* newImage = (unsigned char*)malloc_psram_heap("CImageBasis->" + name, new_memsize, MALLOC_CAP_SPIRAM);
 
-    if (odata == NULL) 
+    if (newImage == NULL) 
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Resize: Can't allocate enough memory: " + std::to_string(new_memsize));
         return;
@@ -785,7 +758,7 @@ void CImageBasis::Resize(int _new_dx, int _new_dy)
 
     RGBImageLock();
 
-    stbir_resize_uint8(rgb_image, width, height, 0, odata, _new_dx, _new_dy, 0, channels);
+    stbir_resize_uint8(rgb_image, width, height, 0, newImage, _new_dx, _new_dy, 0, channels);
 
     // Release the old buffer with the allocator it came from (same rule as the destructor)
     if (!externalImage) 
@@ -797,11 +770,11 @@ void CImageBasis::Resize(int _new_dx, int _new_dy)
         }
         else 
         {
-            free_psram_heap(std::string(TAG) + "->CImageBasis Resize old (" + name + ")", rgb_image);
+            free_psram_heap("CImageBasis->" + name, rgb_image);
         }
     }
 
-    rgb_image = odata;
+    rgb_image = newImage;
     memsize = new_memsize;
     externalImage = false; // The image now owns a normal PSRAM buffer
     width = _new_dx;
@@ -820,8 +793,7 @@ void CImageBasis::Resize(int _new_dx, int _new_dy, CImageBasis *_target)
 
     RGBImageLock();
 
-    uint8_t* odata = _target->rgb_image;
-    stbir_resize_uint8(rgb_image, width, height, 0, odata, _new_dx, _new_dy, 0, channels);
+    stbir_resize_uint8(rgb_image, width, height, 0, _target->rgb_image, _new_dx, _new_dy, 0, channels);
 
     RGBImageRelease();
 }
