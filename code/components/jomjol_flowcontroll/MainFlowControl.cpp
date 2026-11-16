@@ -36,7 +36,6 @@
 #endif
 
 ClassFlowControll flowctrl;
-camera_flow_config_temp_t CFstatus;
 
 TaskHandle_t xHandletask_autodoFlow = NULL;
 
