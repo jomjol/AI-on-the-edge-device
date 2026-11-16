@@ -36,23 +36,12 @@
 #include "ov2640_specialEffect.h"
 #include "ov2640_contrast_brightness.h"
 
-#if (ESP_IDF_VERSION_MAJOR >= 5)
-#include "soc/periph_defs.h"
-#include "esp_private/periph_ctrl.h"
-#include "soc/gpio_sig_map.h"
-#include "soc/gpio_periph.h"
-#include "soc/io_mux_reg.h"
-#include "esp_rom_gpio.h"
-#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
-#define gpio_matrix_in(a, b, c) esp_rom_gpio_connect_in_signal(a, b, c)
-#define gpio_matrix_out(a, b, c, d) esp_rom_gpio_connect_out_signal(a, b, c, d)
-#define ets_delay_us(a) esp_rom_delay_us(a)
-#endif
+static const char *TAG = "CAM";
 
 CCamera Camera;
-camera_controll_config_temp_t CCstatus;
 
-static const char *TAG = "CAM";
+camera_controll_config_temp_t CCstatus;
+camera_controll_config_temp_t CFstatus;
 
 /* Camera live stream */
 #define PART_BOUNDARY "123456789000000000000987654321"
