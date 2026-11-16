@@ -40,14 +40,17 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow *> *lfc)
     SetInitialParameter();
     ListFlowControll = lfc;
 
-    for (int i = 0; i < ListFlowControll->size(); ++i) {
-        if (((*ListFlowControll)[i])->name().compare("ClassFlowTakeImage") == 0) {
+    for (int i = 0; i < ListFlowControll->size(); ++i) 
+    {
+        if (((*ListFlowControll)[i])->name().compare("ClassFlowTakeImage") == 0) 
+        {
             ImageBasis = ((ClassFlowTakeImage *)(*ListFlowControll)[i])->rawImage;
         }
     }
 
     // the function take pictures does not exist --> must be created first ONLY FOR TEST PURPOSES
-    if (!ImageBasis)  {
+    if (!ImageBasis)  
+    {
         ESP_LOGD(TAG, "CImageBasis had to be created");
         ImageBasis = new CImageBasis("ImageBasis", namerawimage);
     }
@@ -55,16 +58,12 @@ ClassFlowAlignment::ClassFlowAlignment(std::vector<ClassFlow *> *lfc)
 
 bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
 {
-    std::vector<string> splitted;
-    int suchex = 40;
-    int suchey = 40;
-    int alg_algo = 0; // default=0; 1 =HIGHACCURACY; 2= FAST; 3= OFF //add disable aligment algo |01.2023
-
     aktparamgraph = trim(aktparamgraph);
 
     if (aktparamgraph.size() == 0)
     {
-        if (!this->GetNextParagraph(pfile, aktparamgraph)) {
+        if (!this->GetNextParagraph(pfile, aktparamgraph)) 
+        {
             return false;
         }
     }
@@ -75,70 +74,95 @@ bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
         return false;
     }
 
+    int suchex = 40;
+    int suchey = 40;
+    int alg_algo = 0; // default=0; 1 =HIGHACCURACY; 2= FAST; 3= OFF //add disable aligment algo |01.2023
+    
+    std::vector<string> splitted;
+    
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph))
     {
         splitted = ZerlegeZeile(aktparamgraph);
 
-        if ((toUpper(splitted[0]) == "FLIPIMAGESIZE") && (splitted.size() > 1)) {
-            initialflip = alphanumericToBoolean(splitted[1]);
-        }
-        else if (((toUpper(splitted[0]) == "initialrotate") || (toUpper(splitted[0]) == "INITIALROTATE")) && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1])) {
-                this->initialrotate = std::stod(splitted[1]);
-            }
-        }
-        else if ((toUpper(splitted[0]) == "SEARCHFIELDX") && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1])) {
-                suchex = std::stod(splitted[1]);
-            }
-        }
-        else if ((toUpper(splitted[0]) == "SEARCHFIELDY") && (splitted.size() > 1)) {
-            if (isStringNumeric(splitted[1])) {
-                suchey = std::stod(splitted[1]);
-            }
-        }
-        else if ((toUpper(splitted[0]) == "ANTIALIASING") && (splitted.size() > 1)) {
-            use_antialiasing = alphanumericToBoolean(splitted[1]);
-        }
-        else if ((splitted.size() == 3) && (anz_ref < 2)) {
-            if ((isStringNumeric(splitted[1])) && (isStringNumeric(splitted[2])))
+        if (splitted.size() > 1)
+        {
+            const std::string _param = toUpper(splitted[0]);
+            if (_param == "FLIPIMAGESIZE")
             {
-                References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
-                References[anz_ref].target_x = std::stod(splitted[1]);
-                References[anz_ref].target_y = std::stod(splitted[2]);
-                anz_ref++;
+                initialflip = alphanumericToBoolean(splitted[1]);
             }
-            else
+            else if ((_param == "initialrotate") || (_param == "INITIALROTATE")) 
             {
-                References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
-                References[anz_ref].target_x = 10;
-                References[anz_ref].target_y = 10;
-                anz_ref++;
+                if (isStringNumeric(splitted[1])) 
+                {
+                    this->initialrotate = std::stod(splitted[1]);
+                }
             }
-        }
-
-        else if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1)) {
-            SaveAllFiles = alphanumericToBoolean(splitted[1]);
-        }
-        else if ((toUpper(splitted[0]) == "ALIGNMENTALGO") && (splitted.size() > 1)) {
+            else if (_param == "SEARCHFIELDX")
+            {
+                if (isStringNumeric(splitted[1])) 
+                {
+                    suchex = std::stod(splitted[1]);
+                }
+            }
+            else if (_param == "SEARCHFIELDY")
+            {
+                if (isStringNumeric(splitted[1])) 
+                {
+                    suchey = std::stod(splitted[1]);
+                }
+            }
+            else if (_param == "ANTIALIASING")
+            {
+                use_antialiasing = alphanumericToBoolean(splitted[1]);
+            }
+            else if (_param == "SAVEALLFILES")
+            {
+                SaveAllFiles = alphanumericToBoolean(splitted[1]);
+            }
+            else if (_param == "ALIGNMENTALGO") 
+            {
 #ifdef DEBUG_DETAIL_ON
-            std::string zw2 = "Alignment mode selected: " + splitted[1];
-            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
+                std::string zw2 = "Alignment mode selected: " + splitted[1];
+                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw2);
 #endif
-            if (toUpper(splitted[1]) == "HIGHACCURACY") {
-                alg_algo = 1;
+                const std::string _valueUpper = toUpper(splitted[1]);
+                if (_valueUpper == "HIGHACCURACY") 
+                {
+                    alg_algo = 1;
+                }
+                else if (_valueUpper == "FAST") 
+                {
+                    alg_algo = 2;
+                }
+                else if (_valueUpper == "OFF") 
+                {
+                    // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
+                    alg_algo = 3;
+                }
             }
-            if (toUpper(splitted[1]) == "FAST") {
-                alg_algo = 2;
-            }
-            if (toUpper(splitted[1]) == "OFF") {
-                // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
-                alg_algo = 3;
+            else if ((splitted.size() == 3) && (anz_ref < 2)) 
+            {
+                if ((isStringNumeric(splitted[1])) && (isStringNumeric(splitted[2])))
+                {
+                    References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
+                    References[anz_ref].target_x = std::stod(splitted[1]);
+                    References[anz_ref].target_y = std::stod(splitted[2]);
+                    anz_ref++;
+                }
+                else
+                {
+                    References[anz_ref].image_file = FormatFileName("/sdcard" + splitted[0]);
+                    References[anz_ref].target_x = 10;
+                    References[anz_ref].target_y = 10;
+                    anz_ref++;
+                }
             }
         }
     }
 
-    for (int i = 0; i < anz_ref; ++i) {
+    for (int i = 0; i < anz_ref; ++i) 
+    {
         References[i].search_x = suchex;
         References[i].search_y = suchey;
         References[i].fastalg_SAD_criteria = SAD_criteria;
@@ -150,7 +174,8 @@ bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
     }
 
     // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
-    if (References[0].alignment_algo != 3) {
+    if (References[0].alignment_algo != 3) 
+    {
         return LoadReferenceAlignmentValues();
     }
 
@@ -159,11 +184,10 @@ bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
 
 string ClassFlowAlignment::getHTMLSingleStep(string host)
 {
-    string result;
-
-    result = "<p>Rotated Image: </p> <p><img src=\"" + host + "/img_tmp/rot.jpg\"></p>\n";
+    string result = "<p>Rotated Image: </p> <p><img src=\"" + host + "/img_tmp/rot.jpg\"></p>\n";
     result = result + "<p>Found Alignment: </p> <p><img src=\"" + host + "/img_tmp/rot_roi.jpg\"></p>\n";
     result = result + "<p>Aligned Image: </p> <p><img src=\"" + host + "/img_tmp/alg.jpg\"></p>\n";
+    
     return result;
 }
 
@@ -171,24 +195,29 @@ bool ClassFlowAlignment::doFlow(string time)
 {
 #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
     // AlgROI needs to be allocated before ImageTMP to avoid heap fragmentation
-    if (!AlgROI)  {
+    if (!AlgROI)  
+    {
         AlgROI = (ImageData *)heap_caps_realloc(AlgROI, sizeof(ImageData), MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
 
-        if (!AlgROI) {
+        if (!AlgROI) 
+        {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlgROI");
             LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
         }
     }
 
-    if (AlgROI) {
+    if (AlgROI) 
+    {
         ImageBasis->writeToMemoryAsJPG((ImageData *)AlgROI, 90);
     }
 #endif
 
-    if (!ImageTMP) {
+    if (!ImageTMP) 
+    {
         ImageTMP = new CImageBasis("tmpImage", ImageBasis); // Make sure the name does not get change, it is relevant for the PSRAM allocation!
 
-        if (!ImageTMP) {
+        if (!ImageTMP) 
+        {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate tmpImage -> Exec this round aborted!");
             LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
             return false;
@@ -198,7 +227,8 @@ bool ClassFlowAlignment::doFlow(string time)
     delete AlignAndCutImage;
     AlignAndCutImage = new CAlignAndCutImage("AlignAndCutImage", ImageBasis, ImageTMP);
 
-    if (!AlignAndCutImage) {
+    if (!AlignAndCutImage) 
+    {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Can't allocate AlignAndCutImage -> Exec this round aborted!");
         LogFile.WriteHeapInfo("ClassFlowAlignment-doFlow");
         return false;
@@ -206,7 +236,8 @@ bool ClassFlowAlignment::doFlow(string time)
 
     CRotateImage rt("rawImage", AlignAndCutImage, ImageTMP, initialflip);
 
-    if (initialflip) {
+    if (initialflip) 
+    {
         int _zw = ImageBasis->height;
         ImageBasis->height = ImageBasis->width;
         ImageBasis->width = _zw;
@@ -216,30 +247,38 @@ bool ClassFlowAlignment::doFlow(string time)
         ImageTMP->height = _zw;
     }
 
-    if ((initialrotate != 0) || initialflip) {
-        if (use_antialiasing) {
-            rt.RotateAntiAliasing(initialrotate);
+    if ((initialrotate != 0) || initialflip) 
+    {
+        if (use_antialiasing) 
+        {
+            rt.ImageRotateAntiAliasing(initialrotate);
         }
-        else {
-            rt.Rotate(initialrotate);
+        else 
+        {
+            rt.ImageRotate(initialrotate);
         }
 
-        if (SaveAllFiles) {
+        if (SaveAllFiles) 
+        {
             AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/rot.jpg"));
         }
     }
 
     // no align algo if set to 3 = off //add disable aligment algo |01.2023
-    if (References[0].alignment_algo != 3) {
-        if (!AlignAndCutImage->Align(&References[0], &References[1])) {
+    if (References[0].alignment_algo != 3) 
+    {
+        if (!AlignAndCutImage->Align(&References[0], &References[1]), use_antialiasing) 
+        {
             SaveReferenceAlignmentValues();
         }
     } // no align
 
 #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
-    if (AlgROI) {
+    if (AlgROI) 
+    {
         // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
-        if (References[0].alignment_algo != 3) {
+        if (References[0].alignment_algo != 3) 
+        {
             DrawRef(ImageTMP);
         }
 
@@ -249,7 +288,8 @@ bool ClassFlowAlignment::doFlow(string time)
     }
 #endif
 
-    if (SaveAllFiles) {
+    if (SaveAllFiles) 
+    {
         AlignAndCutImage->SaveToFile(FormatFileName("/sdcard/img_tmp/alg.jpg"));
         ImageTMP->SaveToFile(FormatFileName("/sdcard/img_tmp/alg_roi.jpg"));
     }
@@ -259,7 +299,8 @@ bool ClassFlowAlignment::doFlow(string time)
     ImageTMP = NULL;
 
     // no align algo if set to 3 = off => no draw ref //add disable aligment algo |01.2023
-    if (References[0].alignment_algo != 3) {
+    if (References[0].alignment_algo != 3) 
+    {
         return LoadReferenceAlignmentValues();
     }
 
@@ -268,17 +309,18 @@ bool ClassFlowAlignment::doFlow(string time)
 
 void ClassFlowAlignment::SaveReferenceAlignmentValues()
 {
-    FILE *pFile;
     std::string zwtime, zwvalue;
 
-    pFile = fopen(FileStoreRefAlignment.c_str(), "w");
+    FILE *pFile = fopen(FileStoreRefAlignment.c_str(), "w");
 
-    if (pFile == NULL) {
+    if (pFile == NULL) 
+    {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "SaveReferenceAlignmentValues: Failed to open " + FileStoreRefAlignment);
         return;
     }
 
-    if (strlen(zwtime.c_str()) == 0) {
+    if (strlen(zwtime.c_str()) == 0) 
+    {
         time_t rawtime;
         struct tm *timeinfo;
         char buffer[80];
@@ -310,14 +352,14 @@ void ClassFlowAlignment::SaveReferenceAlignmentValues()
 
 bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 {
-    FILE *pFile;
     char zw[1024];
     string zwvalue;
     std::vector<string> splitted;
 
-    pFile = fopen(FileStoreRefAlignment.c_str(), "r");
+    FILE *pFile = fopen(FileStoreRefAlignment.c_str(), "r");
 
-    if (pFile == NULL) {
+    if (pFile == NULL) 
+    {
         return false;
     }
 
@@ -327,7 +369,8 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
     fgets(zw, 1024, pFile);
     splitted = ZerlegeZeile(std::string(zw), " \t");
 
-    if (splitted.size() < 6) {
+    if (splitted.size() < 6) 
+    {
         fclose(pFile);
         return false;
     }
@@ -342,7 +385,8 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
     fgets(zw, 1024, pFile);
     splitted = ZerlegeZeile(std::string(zw));
 
-    if (splitted.size() < 6) {
+    if (splitted.size() < 6) 
+    {
         fclose(pFile);
         return false;
     }
@@ -356,23 +400,13 @@ bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 
     fclose(pFile);
 
-    /*#ifdef DEBUG_DETAIL_ON
-        std::string _zw = "\tLoadReferences[0]\tx,y:\t" + std::to_string(References[0].fastalg_x) + "\t" + std::to_string(References[0].fastalg_x);
-        _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[0].fastalg_SAD) + "\t" + std::to_string(References[0].fastalg_min);
-        _zw = _zw + "\t" + std::to_string(References[0].fastalg_max) + "\t" + std::to_string(References[0].fastalg_avg);
-        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
-        _zw = "\tLoadReferences[1]\tx,y:\t" + std::to_string(References[1].fastalg_x) + "\t" + std::to_string(References[1].fastalg_x);
-        _zw = _zw + "\tSAD, min, max, avg:\t" + std::to_string(References[1].fastalg_SAD) + "\t" + std::to_string(References[1].fastalg_min);
-        _zw = _zw + "\t" + std::to_string(References[1].fastalg_max) + "\t" + std::to_string(References[1].fastalg_avg);
-        LogFile.WriteToDedicatedFile("/sdcard/alignment.txt", _zw);
-    #endif*/
-
     return true;
 }
 
 void ClassFlowAlignment::DrawRef(CImageBasis *_zw)
 {
-    if (_zw->ImageOkay()) {
+    if (_zw->ImageOkay()) 
+    {
         _zw->drawRect(References[0].target_x, References[0].target_y, References[0].width, References[0].height, 255, 0, 0, 2);
         _zw->drawRect(References[1].target_x, References[1].target_y, References[1].width, References[1].height, 255, 0, 0, 2);
     }
