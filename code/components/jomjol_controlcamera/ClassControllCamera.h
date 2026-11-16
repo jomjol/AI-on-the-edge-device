@@ -68,6 +68,7 @@ typedef struct
 } camera_controll_config_temp_t;
 
 extern camera_controll_config_temp_t CCstatus;
+extern camera_controll_config_temp_t CFstatus;
 
 class CCamera
 {
