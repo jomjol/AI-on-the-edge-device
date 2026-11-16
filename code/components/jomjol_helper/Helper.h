@@ -7,9 +7,44 @@
 #include <fstream>
 #include <vector>
 
+#include <driver/gpio.h>
+
+#ifdef CONFIG_SOC_TEMP_SENSOR_SUPPORTED
+#include <driver/temperature_sensor.h>
+#endif
+
 #include "sdmmc_cmd.h"
 
 using namespace std;
+
+#if (ESP_IDF_VERSION_MAJOR >= 5)
+#include "soc/periph_defs.h"
+#include "esp_private/periph_ctrl.h"
+#include "soc/gpio_sig_map.h"
+#include "soc/gpio_periph.h"
+#include "soc/io_mux_reg.h"
+#include "esp_rom_gpio.h"
+#define gpio_pad_select_gpio esp_rom_gpio_pad_select_gpio
+#define gpio_matrix_in(a, b, c) esp_rom_gpio_connect_in_signal(a, b, c)
+#define gpio_matrix_out(a, b, c, d) esp_rom_gpio_connect_out_signal(a, b, c, d)
+#define ets_delay_us(a) esp_rom_delay_us(a)
+#endif
+
+/* Error bit fields
+   One bit per error
+   Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
+enum SystemStatusFlag_t {          // One bit per error
+    // First Byte
+    SYSTEM_STATUS_PSRAM_BAD         = 1 << 0, //  1, Critical Error
+    SYSTEM_STATUS_HEAP_TOO_SMALL    = 1 << 1, //  2, Critical Error
+    SYSTEM_STATUS_CAM_BAD           = 1 << 2, //  4, Critical Error
+    SYSTEM_STATUS_SDCARD_CHECK_BAD  = 1 << 3, //  8, Critical Error
+    SYSTEM_STATUS_FOLDER_CHECK_BAD  = 1 << 4, //  16, Critical Error
+
+    // Second Byte
+    SYSTEM_STATUS_CAM_FB_BAD        = 1 << (0+8), //  8, Flow still might work
+    SYSTEM_STATUS_NTP_BAD           = 1 << (1+8), //  9, Flow will work but time will be wrong
+};
 
 std::string FormatFileName(std::string input);
 std::size_t file_size(const std::string& file_name);
@@ -26,7 +61,7 @@ bool FolderExists(string foldername);
 string RundeOutput(double _in, int _anzNachkomma);
 
 size_t findDelimiterPos(string input, string delimiter);
-//string trim(string istring);
+
 string trim(string istring, string adddelimiter = "");
 bool ctype_space(const char c, string adddelimiter);
 
@@ -40,6 +75,10 @@ int removeFolder(const char* folderPath, const char* logTag);
 string toLower(string in);
 string toUpper(string in);
 
+static float temp_sens_value = -1;
+#ifdef CONFIG_SOC_TEMP_SENSOR_SUPPORTED
+void init_tempsensor(void);
+#endif
 float temperatureRead();
 
 std::string intToHexString(int _valueInt);
@@ -76,22 +115,6 @@ string getSDCardCapacity();
 string getSDCardSectorSize();
 
 string getMac(void);
-
-/* Error bit fields
-   One bit per error
-   Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
-enum SystemStatusFlag_t {          // One bit per error
-    // First Byte
-    SYSTEM_STATUS_PSRAM_BAD         = 1 << 0, //  1, Critical Error
-    SYSTEM_STATUS_HEAP_TOO_SMALL    = 1 << 1, //  2, Critical Error
-    SYSTEM_STATUS_CAM_BAD           = 1 << 2, //  4, Critical Error
-    SYSTEM_STATUS_SDCARD_CHECK_BAD  = 1 << 3, //  8, Critical Error
-    SYSTEM_STATUS_FOLDER_CHECK_BAD  = 1 << 4, //  16, Critical Error
-
-    // Second Byte
-    SYSTEM_STATUS_CAM_FB_BAD        = 1 << (0+8), //  8, Flow still might work
-    SYSTEM_STATUS_NTP_BAD           = 1 << (1+8), //  9, Flow will work but time will be wrong
-};
 
 void setSystemStatusFlag(SystemStatusFlag_t flag);
 void clearSystemStatusFlag(SystemStatusFlag_t flag);
