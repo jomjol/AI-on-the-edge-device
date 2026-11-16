@@ -86,7 +86,9 @@ ImageData* CImageBasis::writeToMemoryAsJPG(const int quality)
     ImageData* _ImageData = new ImageData;
 
     RGBImageLock();
+    
     stbi_write_jpg_to_func(writejpghelp, _ImageData, width, height, channels, rgb_image, quality);
+    
     RGBImageRelease();
 
     if (jpgFileTooLarge)
@@ -108,7 +110,9 @@ void CImageBasis::writeToMemoryAsJPG(ImageData* _Image_Data, const int quality)
     _Image_Data->size = 0;
 
     RGBImageLock();
+    
     stbi_write_jpg_to_func(writejpghelp, _Image_Data, width, height, channels, rgb_image, quality);
+    
     RGBImageRelease();
 
     if (jpgFileTooLarge)
@@ -144,6 +148,7 @@ esp_err_t CImageBasis::SendJPGtoHTTP(httpd_req_t* _req, const int quality)
     _send.size = 0;
 
     RGBImageLock();
+    
     stbi_write_jpg_to_func(writejpgtohttphelp, &_send, width, height, channels, rgb_image, quality);
 
     if (_send.size > 0)
@@ -154,6 +159,7 @@ esp_err_t CImageBasis::SendJPGtoHTTP(httpd_req_t* _req, const int quality)
             _send.res = ESP_FAIL;
         }
     }
+    
     RGBImageRelease();
 
     return _send.res;
@@ -438,7 +444,7 @@ void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
     {
         ESP_LOGE(TAG, "CreateEmptyImage: Can't allocate enough memory: %d", (int)newMemSize);
         LogFile.WriteHeapInfo("CreateEmptyImage");
-        RGBImageRelease("CreateEmptyImage");
+        RGBImageRelease();
         return;
     }
 
