@@ -53,7 +53,7 @@ void CRotateImage::ImageTransform(float _angle, int _centerx, int _centery, int 
 
     int memsize = width * height * channels;
 
-    uint8_t* odata = ImageTMP ? ImageTMP->RGBImageLock("Transform") : (unsigned char*)malloc_psram_heap("CRotateImage->odata", memsize, MALLOC_CAP_SPIRAM);
+    uint8_t* odata = ImageTMP ? ImageTMP->RGBImageLock() : (unsigned char*)malloc_psram_heap("CRotateImage->odata", memsize, MALLOC_CAP_SPIRAM);
 
     int x_source_1 = 0, y_source_1 = 0, x_source_2 = 0, y_source_2 = 0;
     float x_source = 0.0f, y_source = 0.0f;
@@ -135,7 +135,7 @@ void CRotateImage::ImageTransform(float _angle, int _centerx, int _centery, int 
     }
 
     std::memcpy(rgb_image, odata, memsize);
-    ImageTMP ? ImageTMP->RGBImageRelease("Transform") : free_psram_heap("CRotateImage->odata", odata);
+    ImageTMP ? ImageTMP->RGBImageRelease() : free_psram_heap("CRotateImage->odata", odata);
 
     RGBImageRelease();
 }
