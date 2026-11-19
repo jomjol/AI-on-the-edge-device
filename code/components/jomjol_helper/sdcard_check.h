@@ -1,11 +1,11 @@
 #pragma once
 
-#ifndef COMPONENTS_HELPER_SDCARD_CHECK_H
-#define COMPONENTS_HELPER_SDCARD_CHECK_H
+#ifndef SDCARD_CHECK_H
+#define SDCARD_CHECK_H
 
-#include "../../include/defines.h"
+#include "defines.h"
 
 int SDCardCheckRW(void);
 bool SDCardCheckFolderFilePresence(void);
 
-#endif /* COMPONENTS_HELPER_SDCARD_CHECK_H */
+#endif /* SDCARD_CHECK_H */

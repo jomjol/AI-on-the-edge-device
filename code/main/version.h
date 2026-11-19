@@ -5,10 +5,10 @@
 // into the library by the version.cmake script
 extern "C"
 {
-    extern const char* GIT_TAG;
-    extern const char* GIT_REV;
-    extern const char* GIT_BRANCH;
-    extern const char* BUILD_TIME;
+    extern const char *GIT_TAG;
+    extern const char *GIT_REV;
+    extern const char *GIT_BRANCH;
+    extern const char *BUILD_TIME;
 }
 
 #include <string>
@@ -17,34 +17,35 @@ extern "C"
 #include <fstream>
 #include <algorithm>
 
-
-const char* build_time(void)
+const char *build_time(void)
 {
     return BUILD_TIME;
 }
 
-const char* libfive_git_version(void)
+const char *libfive_git_version(void)
 {
     return GIT_TAG;
 }
 
-const char* libfive_git_revision(void)
+const char *libfive_git_revision(void)
 {
     return GIT_REV;
 }
 
-const char* libfive_git_branch(void)
+const char *libfive_git_branch(void)
 {
     return GIT_BRANCH;
 }
 
-
-std::string getFwVersion(void) {
+std::string getFwVersion(void)
+{
     std::string buf;
-    if (std::string(GIT_TAG) == "") { // Tag not set, show branch
+    if (std::string(GIT_TAG) == "")
+    { // Tag not set, show branch
         buf = "Development-Branch: " + std::string(GIT_BRANCH);
     }
-    else { // Tag is set, ignore branch
+    else
+    { // Tag is set, ignore branch
         buf = "Release: " + std::string(GIT_TAG);
     }
     buf = buf + " (Commit: " + std::string(GIT_REV) + ")";
@@ -52,9 +53,10 @@ std::string getFwVersion(void) {
     return buf;
 }
 
-std::string getHTMLversion(void){
-    char buf[100]="?\0";
-    FILE* pFile;
+std::string getHTMLversion(void)
+{
+    char buf[100] = "?\0";
+    FILE *pFile;
     string fn = FormatFileName("/sdcard/html/version.txt");
     pFile = fopen(fn.c_str(), "r");
 
@@ -70,9 +72,10 @@ std::string getHTMLversion(void){
     return value;
 }
 
-std::string getHTMLcommit(void){
-    char buf[100]="?\0";
-    FILE* pFile;
+std::string getHTMLcommit(void)
+{
+    char buf[100] = "?\0";
+    FILE *pFile;
     string fn = FormatFileName("/sdcard/html/version.txt");
     pFile = fopen(fn.c_str(), "r");
 

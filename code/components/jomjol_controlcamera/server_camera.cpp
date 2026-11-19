@@ -4,7 +4,7 @@
 #include "string.h"
 
 #include "esp_camera.h"
-#include "ClassControllCamera.h"
+#include "ClassControlCamera.h"
 #include "MainFlowControl.h"
 
 #include "ClassLogFile.h"
@@ -12,50 +12,15 @@
 
 #include "basic_auth.h"
 
-#include "../../include/defines.h"
+#include "defines.h"
 
 static const char *TAG = "server_cam";
 
-void PowerResetCamera()
-{
-    // Use reset only if pin is available
-    if (CAM_PIN_PWDN == GPIO_NUM_NC)
-    {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No power down pin availbale to reset camera");
-    }
-    else
-    {
-        ESP_LOGD(TAG, "Resetting camera by power down line");
-        gpio_config_t conf = {
-            .pin_bit_mask = 1ULL << CAM_PIN_PWDN,
-            .mode = GPIO_MODE_OUTPUT,
-            .pull_up_en = GPIO_PULLUP_DISABLE,
-            .pull_down_en = GPIO_PULLDOWN_DISABLE,
-            .intr_type = GPIO_INTR_DISABLE,
-        };
-        gpio_config(&conf);
-
-        // carefull, logic is inverted compared to reset pin
-        ESP_LOGD(TAG, "Camera power down");
-        gpio_set_level(CAM_PIN_PWDN, 1);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        
-        ESP_LOGD(TAG, "Camera power up");
-        gpio_set_level(CAM_PIN_PWDN, 0);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-}
-
 esp_err_t handler_lightOn(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_lightOn - Start");
-    ESP_LOGD(TAG, "handler_lightOn uri: %s", req->uri);
-#endif
-
-    if (Camera.getCameraInitSuccessful())
+    if (Camera.get_camera_init_successful())
     {
-        Camera.LightOnOff(true);
+        Camera.set_flash_light(true);
         const char *resp_str = (const char *)req->user_ctx;
         httpd_resp_send(req, resp_str, strlen(resp_str));
     }
@@ -65,23 +30,14 @@ esp_err_t handler_lightOn(httpd_req_t *req)
         return ESP_ERR_NOT_FOUND;
     }
 
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_lightOn - Done");
-#endif
-
     return ESP_OK;
 }
 
 esp_err_t handler_lightOff(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_lightOff - Start");
-    ESP_LOGD(TAG, "handler_lightOff uri: %s", req->uri);
-#endif
-
-    if (Camera.getCameraInitSuccessful())
+    if (Camera.get_camera_init_successful())
     {
-        Camera.LightOnOff(false);
+        Camera.set_flash_light(false);
         const char *resp_str = (const char *)req->user_ctx;
         httpd_resp_send(req, resp_str, strlen(resp_str));
     }
@@ -91,42 +47,14 @@ esp_err_t handler_lightOff(httpd_req_t *req)
         return ESP_ERR_NOT_FOUND;
     }
 
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_lightOff - Done");
-#endif
-
     return ESP_OK;
 }
 
 esp_err_t handler_capture(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_capture - Start");
-#endif
-
-    if (Camera.getCameraInitSuccessful())
+    if (Camera.get_camera_init_successful())
     {
-        // If the camera settings were changed by creating a new reference image, they must be reset
-        if (CFstatus.changedCameraSettings)
-        {
-            Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
-            Camera.LedIntensity = CCstatus.ImageLedIntensity;
-            CFstatus.changedCameraSettings = false;
-        }
-
-#ifdef DEBUG_DETAIL_ON
-        ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
-#endif        
-
-        esp_err_t result;
-        result = Camera.CaptureToHTTP(req);
-
-#ifdef DEBUG_DETAIL_ON
-        LogFile.WriteHeapInfo("handler_capture - Done");
-#endif
-
-        return result;
+        return Camera.capture_to_http(req, 0);
     }
     else
     {
@@ -137,27 +65,18 @@ esp_err_t handler_capture(httpd_req_t *req)
 
 esp_err_t handler_capture_with_light(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_capture_with_light - Start");
-#endif
-
-    if (Camera.getCameraInitSuccessful())
+    if (Camera.get_camera_init_successful())
     {
         char _query[100];
         char _delay[10];
+
         int delay = 2500;
 
         if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
         {
-            ESP_LOGD(TAG, "Query: %s", _query);
-
             if (httpd_query_key_value(_query, "delay", _delay, 10) == ESP_OK)
             {
-#ifdef DEBUG_DETAIL_ON
-                ESP_LOGD(TAG, "Delay: %s", _delay);
-#endif
                 delay = atoi(_delay);
-
                 if (delay < 0)
                 {
                     delay = 0;
@@ -165,33 +84,7 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
             }
         }
 
-        // If the camera settings were changed by creating a new reference image, they must be reset
-        if (CFstatus.changedCameraSettings)
-        {
-            Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
-            Camera.LedIntensity = CCstatus.ImageLedIntensity;
-            CFstatus.changedCameraSettings = false;
-        }
-
-#ifdef DEBUG_DETAIL_ON
-        ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
-#endif        
-
-        Camera.LightOnOff(true);
-        const TickType_t xDelay = delay / portTICK_PERIOD_MS;
-        vTaskDelay(xDelay);
-
-        esp_err_t result;
-        result = Camera.CaptureToHTTP(req);
-
-        Camera.LightOnOff(false);
-
-#ifdef DEBUG_DETAIL_ON
-        LogFile.WriteHeapInfo("handler_capture_with_light - Done");
-#endif
-
-        return result;
+        return Camera.capture_to_http(req, delay);
     }
     else
     {
@@ -202,28 +95,20 @@ esp_err_t handler_capture_with_light(httpd_req_t *req)
 
 esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_capture_save_to_file - Start");
-#endif
-
-    if (Camera.getCameraInitSuccessful())
+    if (Camera.get_camera_init_successful())
     {
         char _query[100];
         char _delay[10];
-        int delay = 0;
         char filename[100];
+
+        int delay = 0;
         std::string fn = "/sdcard/";
 
         if (httpd_req_get_url_query_str(req, _query, 100) == ESP_OK)
         {
-            ESP_LOGD(TAG, "Query: %s", _query);
-
             if (httpd_query_key_value(_query, "filename", filename, 100) == ESP_OK)
             {
                 fn.append(filename);
-#ifdef DEBUG_DETAIL_ON
-                ESP_LOGD(TAG, "Filename: %s", fn.c_str());
-#endif
             }
             else
             {
@@ -232,11 +117,7 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 
             if (httpd_query_key_value(_query, "delay", _delay, 10) == ESP_OK)
             {
-#ifdef DEBUG_DETAIL_ON
-                ESP_LOGD(TAG, "Delay: %s", _delay);
-#endif
                 delay = atoi(_delay);
-
                 if (delay < 0)
                 {
                     delay = 0;
@@ -248,28 +129,10 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
             fn.append("noname.jpg");
         }
 
-        // If the camera settings were changed by creating a new reference image, they must be reset
-        if (CFstatus.changedCameraSettings)
-        {
-            Camera.setSensorDatenFromCCstatus(); // CCstatus >>> Kamera
-            Camera.SetQualityZoomSize(CCstatus.ImageQuality, CCstatus.ImageFrameSize, CCstatus.ImageZoomEnabled, CCstatus.ImageZoomOffsetX, CCstatus.ImageZoomOffsetY, CCstatus.ImageZoomSize, CCstatus.ImageVflip);
-            Camera.LedIntensity = CCstatus.ImageLedIntensity;
-            CFstatus.changedCameraSettings = false;
-        }
-
-#ifdef DEBUG_DETAIL_ON
-        ESP_LOGD(TAG, "Size: %d, Quality: %d", CCstatus.ImageFrameSize, CCstatus.ImageQuality);
-#endif        
-
-        esp_err_t result;
-        result = Camera.CaptureToFile(fn, delay);
+        esp_err_t result = Camera.capture_to_file(fn, delay);
 
         const char *resp_str = (const char *)fn.c_str();
         httpd_resp_send(req, resp_str, strlen(resp_str));
-
-#ifdef DEBUG_DETAIL_ON
-        LogFile.WriteHeapInfo("handler_capture_save_to_file - Done");
-#endif
 
         return result;
     }
@@ -282,10 +145,6 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 
 void register_server_camera_uri(httpd_handle_t server)
 {
-#ifdef DEBUG_DETAIL_ON
-    ESP_LOGI(TAG, "server_part_camera - Registering URI handlers");
-#endif
-
     httpd_uri_t camuri = {};
     camuri.method = HTTP_GET;
 

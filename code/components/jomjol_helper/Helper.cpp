@@ -17,7 +17,7 @@
 #include <esp_log.h>
 #include <esp_mac.h>
 #include <esp_timer.h>
-#include "../../include/defines.h"
+#include "defines.h"
 
 #include "ClassLogFile.h"
 
@@ -36,8 +36,6 @@ unsigned int systemStatus = 0;
 sdmmc_cid_t SDCardCid;
 sdmmc_csd_t SDCardCsd;
 bool SDCardIsMMC;
-
-// #define DEBUG_DETAIL_ON
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 string getESPHeapInfo()
@@ -485,92 +483,91 @@ size_t findDelimiterPos(string input, string delimiter)
 
 bool RenameFile(string from, string to)
 {
-	FILE *fpSourceFile = fopen(from.c_str(), "rb");
+	FILE *pFile = fopen(from.c_str(), "rb");
 
 	// Sourcefile does not exist otherwise there is a mistake when renaming!
-	if (!fpSourceFile)
+	if (!pFile)
 	{
 		ESP_LOGE(TAG, "RenameFile: File %s does not exist!", from.c_str());
 		return false;
 	}
 
-	fclose(fpSourceFile);
-	
-    if (rename(from.c_str(), to.c_str()) != 0)
-    {
-        ESP_LOGE(TAG, "RenameFile: Failed to rename %s to %s (errno: %d)", from.c_str(), to.c_str(), errno);
-        return false;
-    }
+	fclose(pFile);
 
-    return true;
+	if (rename(from.c_str(), to.c_str()) != 0)
+	{
+		ESP_LOGE(TAG, "RenameFile: Failed to rename %s to %s (errno: %d)", from.c_str(), to.c_str(), errno);
+		return false;
+	}
+
+	return true;
 }
 
 bool RenameFolder(string from, string to)
 {
-    DIR *fpSourceFolder = opendir(from.c_str());
+	DIR *pDir = opendir(from.c_str());
 
 	// Sourcefolder does not exist otherwise there is a mistake when renaming!
-    if (!fpSourceFolder)
-    {
-        ESP_LOGE(TAG, "RenameFolder: Folder %s does not exist!", from.c_str());
-        return false;
-    }
+	if (!pDir)
+	{
+		ESP_LOGE(TAG, "RenameFolder: Folder %s does not exist!", from.c_str());
+		return false;
+	}
 
-    closedir(fpSourceFolder);
+	closedir(pDir);
 
-    if (rename(from.c_str(), to.c_str()) != 0)
-    {
-        ESP_LOGE(TAG, "RenameFolder: Failed to rename %s to %s (errno: %d)", from.c_str(), to.c_str(), errno);
-        return false;
-    }
+	if (rename(from.c_str(), to.c_str()) != 0)
+	{
+		ESP_LOGE(TAG, "RenameFolder: Failed to rename %s to %s (errno: %d)", from.c_str(), to.c_str(), errno);
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 bool FileExists(string filename)
 {
-	FILE *fpSourceFile = fopen(filename.c_str(), "rb");
+	FILE *pFile = fopen(filename.c_str(), "rb");
 
 	// Sourcefile does not exist
-	if (!fpSourceFile)
+	if (!pFile)
 	{
 		return false;
 	}
 
-	fclose(fpSourceFile);
+	fclose(pFile);
 
 	return true;
 }
 
 bool FolderExists(string foldername)
 {
-	DIR *fpSourceFolder = opendir(foldername.c_str());
+	DIR *pDir = opendir(foldername.c_str());
 
 	// Sourcefolder does not exist
-	if (!fpSourceFolder)
+	if (!pDir)
 	{
 		return false;
 	}
 
-	closedir(fpSourceFolder);
+	closedir(pDir);
 
 	return true;
 }
 
 bool DeleteFile(string filename)
 {
-	// ESP_LOGI(logTag, "Deleting file: %s", filename.c_str());
 	/* Delete file */
-	FILE *fpSourceFile = fopen(filename.c_str(), "rb");
+	FILE *pFile = fopen(filename.c_str(), "rb");
 
 	// Sourcefile does not exist otherwise there is a mistake in copying!
-	if (!fpSourceFile)
+	if (!pFile)
 	{
 		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", filename.c_str());
 		return false;
 	}
 
-	fclose(fpSourceFile);
+	fclose(pFile);
 	unlink(filename.c_str());
 
 	return true;
@@ -611,6 +608,7 @@ bool CopyFile(string input, string output)
 	// Close The Files
 	fclose(fpSourceFile);
 	fclose(fpTargetFile);
+
 	ESP_LOGD(TAG, "File copied: %s to %s", input.c_str(), output.c_str());
 
 	return true;
@@ -625,11 +623,7 @@ string getFileFullFileName(string filename)
 		return "";
 	}
 
-	//	ESP_LOGD(TAG, "Last position: %d", lastpos);
-
-	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
-
-	return zw;
+	return filename.substr(lastpos + 1, filename.size() - lastpos);
 }
 
 string getDirectory(string filename)
@@ -646,10 +640,7 @@ string getDirectory(string filename)
 		return "";
 	}
 
-	//	ESP_LOGD(TAG, "Directory: %d", lastpos);
-
-	string zw = filename.substr(0, lastpos - 1);
-	return zw;
+	return filename.substr(0, lastpos - 1);
 }
 
 string getFileType(string filename)
@@ -667,10 +658,7 @@ string getFileType(string filename)
 		return "";
 	}
 
-	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
-	zw = toUpper(zw);
-
-	return zw;
+	return toUpper(filename.substr(lastpos + 1, filename.size() - lastpos));
 }
 
 /* recursive mkdir */
@@ -777,47 +765,47 @@ string toLower(string in)
 // https://github.com/espressif/esp-idf/blob/master/examples/peripherals/temperature_sensor/
 temperature_sensor_handle_t temp_handle = NULL;
 temperature_sensor_config_t temp_sensor = {
-    .range_min = -10,
-    .range_max = 80,
-    .clk_src = TEMPERATURE_SENSOR_CLK_SRC_DEFAULT,
+	.range_min = -10,
+	.range_max = 80,
+	.clk_src = TEMPERATURE_SENSOR_CLK_SRC_DEFAULT,
 };
 
 void init_tempsensor(void)
 {
-    ESP_ERROR_CHECK(temperature_sensor_install(&temp_sensor, &temp_handle));
+	ESP_ERROR_CHECK(temperature_sensor_install(&temp_sensor, &temp_handle));
 
-    xTaskCreate(
-        [](void* pvParameters)
-        {
-            while (1)
-            {
-                // Get converted sensor data
-                float tsens_out;
+	xTaskCreate(
+		[](void *pvParameters)
+		{
+			while (1)
+			{
+				// Get converted sensor data
+				float tsens_out;
 
-                // Enable temperature sensor
-                ESP_ERROR_CHECK(temperature_sensor_enable(temp_handle));
-                ESP_ERROR_CHECK(temperature_sensor_get_celsius(temp_handle, &tsens_out));
-                temp_sens_value = tsens_out;
-                // Disable the temperature sensor if it is not needed and save the power
-                ESP_ERROR_CHECK(temperature_sensor_disable(temp_handle));
+				// Enable temperature sensor
+				ESP_ERROR_CHECK(temperature_sensor_enable(temp_handle));
+				ESP_ERROR_CHECK(temperature_sensor_get_celsius(temp_handle, &tsens_out));
+				temp_sens_value = tsens_out;
+				// Disable the temperature sensor if it is not needed and save the power
+				ESP_ERROR_CHECK(temperature_sensor_disable(temp_handle));
 
-                vTaskDelay(pdMS_TO_TICKS(5000));
-            }
-        },
-        "tempsensor_task", 2048, NULL, 5, NULL);
+				vTaskDelay(pdMS_TO_TICKS(5000));
+			}
+		},
+		"tempsensor_task", 2048, NULL, 5, NULL);
 }
 
 float temperatureRead(void)
 {
-    return temp_sens_value;
+	return temp_sens_value;
 }
 #elif CONFIG_IDF_TARGET_ESP32
 extern "C" uint8_t temprature_sens_read(void);
 float temperatureRead(void)
 {
-    // convert Fahrenheit to Celsius (F-32) * (5/9) = degree Celsius
-    temp_sens_value = (temprature_sens_read() - 32) / 1.8;
-    return temp_sens_value;
+	// convert Fahrenheit to Celsius (F-32) * (5/9) = degree Celsius
+	temp_sens_value = (temprature_sens_read() - 32) / 1.8;
+	return temp_sens_value;
 }
 #endif
 
@@ -832,9 +820,9 @@ int removeFolder(const char *folderPath, const char *logTag)
 {
 	// ESP_LOGD(logTag, "Delete content in path %s", folderPath);
 
-	DIR *dir = opendir(folderPath);
+	DIR *pDir = opendir(folderPath);
 
-	if (!dir)
+	if (!pDir)
 	{
 		ESP_LOGE(logTag, "Failed to stat dir: %s", folderPath);
 		return -1;
@@ -843,7 +831,7 @@ int removeFolder(const char *folderPath, const char *logTag)
 	struct dirent *entry;
 	int deleted = 0;
 
-	while ((entry = readdir(dir)) != NULL)
+	while ((entry = readdir(pDir)) != NULL)
 	{
 		std::string path = string(folderPath) + "/" + entry->d_name;
 
@@ -865,7 +853,7 @@ int removeFolder(const char *folderPath, const char *logTag)
 		}
 	}
 
-	closedir(dir);
+	closedir(pDir);
 
 	if (rmdir(folderPath) != 0)
 	{
@@ -1429,7 +1417,7 @@ bool isInString(std::string &s, std::string const &toFind)
 {
 	std::size_t pos = s.find(toFind);
 
-	if (pos == std::string::npos) 
+	if (pos == std::string::npos)
 	{
 		// Not found
 		return false;
@@ -1439,11 +1427,11 @@ bool isInString(std::string &s, std::string const &toFind)
 }
 
 // from https://stackoverflow.com/a/14678800
-void replaceAll(std::string& s, const std::string& toReplace, const std::string& replaceWith)
+void replaceAll(std::string &s, const std::string &toReplace, const std::string &replaceWith)
 {
 	size_t pos = 0;
-	
-	while ((pos = s.find(toReplace, pos)) != std::string::npos) 
+
+	while ((pos = s.find(toReplace, pos)) != std::string::npos)
 	{
 		s.replace(pos, toReplace.length(), replaceWith);
 		pos += replaceWith.length();
@@ -1456,10 +1444,10 @@ bool isStringNumeric(std::string &input)
 	{
 		return false;
 	}
-    
+
 	// Replace comma with a dot
 	replaceString(input, ",", ".", false);
-	
+
 	int start = 0;
 	int punkt_existiert_schon = 0;
 
@@ -1545,4 +1533,24 @@ bool numericStrToBool(std::string input)
 bool stringToBoolean(std::string input)
 {
 	return (input == "TRUE");
+}
+
+int get_value_or_default_int(int input, int high, int low, int default_value)
+{
+	if ((input < low) || (input > high))
+	{
+		input = default_value;
+	}
+
+	return input;
+}
+
+int get_value_or_default_uint(int input, int high, int default_value)
+{
+	if ((input < 0) || (input > high))
+	{
+		input = default_value;
+	}
+
+	return input;
 }

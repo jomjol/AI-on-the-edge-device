@@ -2,31 +2,48 @@
 #include <cstring>
 #include <math.h>
 #include <algorithm>
+#include <esp_log.h>
 
 #include "CRotateImage.h"
 #include "psram.h"
 #include "Helper.h"
 
-static const char* TAG = "CRotateImage";
+static const char *TAG = "CRotateImage";
 
 static const uint8_t FILL_VALUE = 0; // black
 
-CRotateImage::CRotateImage(std::string _name, CImageBasis* _org, CImageBasis* _temp, bool _flip) : CImageBasis(_name)
+CRotateImage::CRotateImage(std::string _name, CImageBasis *_org, CImageBasis *_temp, bool _flip) : CImageBasis(_name)
 {
+    width = height = channels = bpp = 0;
+    rgb_image = nullptr;
+    bufferOwner = BufferOwner::None;
+    ImageTMP = _temp;
+    ImageOrg = _org;
+
+    if (_org == nullptr || !_org->ImageOkay())
+    {
+        ESP_LOGE(TAG, "CRotateImage: source image is invalid");
+        return;
+    }
+
+    UseImageMutexFrom(_org);
     rgb_image = _org->rgb_image;
     channels = _org->channels;
     width = _org->width;
     height = _org->height;
     bpp = _org->bpp;
-    externalImage = true;
-    ImageTMP = _temp;
-    ImageOrg = _org;
-    islocked = false;
+    bufferOwner = BufferOwner::External;
     doflip = _flip;
 }
 
 void CRotateImage::ImageTransform(float _angle, int _centerx, int _centery, int _dx, int _dy, bool antiAliasing)
 {
+    if (rgb_image == nullptr || width <= 0 || height <= 0 || channels <= 0)
+    {
+        ESP_LOGE(TAG, "ImageTransform: source image is invalid");
+        return;
+    }
+
     if ((_angle == 0.0f) && (_dx == 0) && (_dy == 0))
     {
         return;
@@ -51,18 +68,45 @@ void CRotateImage::ImageTransform(float _angle, int _centerx, int _centery, int 
     m[1][1] = m[0][0];
     m[1][2] = m[0][1] * x_center + (1 - m[0][0]) * y_center;
 
-    int memsize = width * height * channels;
+    size_t memsize = 0;
 
-    uint8_t* odata = ImageTMP ? ImageTMP->RGBImageLock() : (unsigned char*)malloc_psram_heap("CRotateImage->odata", memsize, MALLOC_CAP_SPIRAM);
+    if (!CalculateImageSize(width, height, channels, &memsize))
+    {
+        ESP_LOGE(TAG, "ImageTransform: invalid image dimensions");
+        return;
+    }
+
+    uint8_t *odata = ImageTMP ? ImageTMP->RGBImageLock() : (unsigned char *)malloc_psram_heap("CRotateImage->odata", memsize, MALLOC_CAP_SPIRAM);
+
+    if (odata == nullptr)
+    {
+        if (ImageTMP)
+            ImageTMP->RGBImageRelease();
+        ESP_LOGE(TAG, "ImageTransform: cannot allocate output buffer");
+        return;
+    }
 
     int x_source_1 = 0, y_source_1 = 0, x_source_2 = 0, y_source_2 = 0;
     float x_source = 0.0f, y_source = 0.0f;
     float quad_ul = 0.0f, quad_ur = 0.0f, quad_ol = 0.0f, quad_or = 0.0f;
 
-    uint8_t* p_target;
+    uint8_t *p_target;
     uint8_t *p_source, *p_source_ul, *p_source_ur, *p_source_or, *p_source_ol;
 
-    RGBImageLock();
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+
+        if (ImageTMP)
+        {
+            ImageTMP->RGBImageRelease();
+        }
+        else
+        {
+            free_psram_heap("CRotateImage->odata", odata);
+        }
+        return;
+    }
 
     for (int y = 0; y < height; ++y)
     {

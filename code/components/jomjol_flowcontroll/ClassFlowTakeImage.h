@@ -4,8 +4,8 @@
 #define CLASSFFLOWTAKEIMAGE_H
 
 #include "ClassFlowImage.h"
-#include "ClassControllCamera.h"
-#include "../../include/defines.h"
+#include "ClassControlCamera.h"
+#include "defines.h"
 
 #include <string>
 
@@ -13,28 +13,30 @@ class ClassFlowTakeImage : public ClassFlowImage
 {
 protected:
     time_t TimeImageTaken;
-    string namerawimage;
+    std::string namerawimage;
 
     esp_err_t camera_capture(void);
-    void takePictureWithFlash(int flash_duration);
+    bool take_picture_with_flash(int flash_duration);
 
-    void SetInitialParameter(void);
+    void set_initial_parameter(void);
 
 public:
     CImageBasis *rawImage;
 
     ClassFlowTakeImage(std::vector<ClassFlow *> *lfc);
-
-    bool ReadParameter(FILE *pfile, string &aktparamgraph);
-    bool doFlow(string time);
-    string getHTMLSingleStep(string host);
-    time_t getTimeImageTaken(void);
-    string name() { return "ClassFlowTakeImage"; };
-
-    ImageData *SendRawImage(void);
-    esp_err_t SendRawJPG(httpd_req_t *req);
-
     ~ClassFlowTakeImage(void);
+
+    bool ReadParameter(FILE *pfile, std::string &aktparamgraph);
+
+    bool doFlow(std::string time);
+
+    std::string get_html_single_step(std::string host);
+    time_t get_time_image_taken(void);
+
+    ImageData *send_raw_image(void);
+    esp_err_t send_raw_jpg(httpd_req_t *req);
+
+    std::string name(void) { return "ClassFlowTakeImage"; };
 };
 
 #endif // CLASSFFLOWTAKEIMAGE_H

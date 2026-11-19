@@ -11,19 +11,18 @@
 #include <string>
 #include <mutex>
 
-class ClassFlowPostProcessing :
-    public ClassFlow
+class ClassFlowPostProcessing : public ClassFlow
 {
 protected:
-    std::mutex preValueMutex;   // PreValue is set from HTTP/MQTT tasks while the flow task post-processes
+    std::mutex preValueMutex; // PreValue is set from HTTP/MQTT tasks while the flow task post-processes
 
     bool UpdatePreValueINI;
 
-    int PreValueAgeStartup; 
+    int PreValueAgeStartup;
     bool ErrorMessage;
-	
-    ClassFlowCNNGeneral* flowAnalog;
-    ClassFlowCNNGeneral* flowDigit;    
+
+    ClassFlowCNNGeneral *flowAnalog;
+    ClassFlowCNNGeneral *flowDigit;
 
     string FilePreValue;
 
@@ -36,10 +35,10 @@ protected:
     double checkDigitConsistency(double input, int _decilamshift, bool _isanalog, double _preValue);
 
     void InitNUMBERS();
-	
+
     void handleDecimalSeparator(string _decsep, string _value);
     void handleMaxRateValue(string _decsep, string _value);
-    void handleDecimalExtendedResolution(string _decsep, string _value); 
+    void handleDecimalExtendedResolution(string _decsep, string _value);
     void handleMaxRateType(string _decsep, string _value);
     void handleAnalogToDigitTransitionStart(string _decsep, string _value);
     void handleAllowNegativeRate(string _decsep, string _value);
@@ -52,11 +51,12 @@ protected:
 
 public:
     bool PreValueUse;
-    std::vector<NumberPost*> NUMBERS;
+    std::vector<NumberPost *> NUMBERS;
 
-    ClassFlowPostProcessing(std::vector<ClassFlow*>* lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit);
-    virtual ~ClassFlowPostProcessing(){};
-    bool ReadParameter(FILE* pfile, string& aktparamgraph);
+    ClassFlowPostProcessing(std::vector<ClassFlow *> *lfc, ClassFlowCNNGeneral *_analog, ClassFlowCNNGeneral *_digit);
+    virtual ~ClassFlowPostProcessing() {};
+
+    bool ReadParameter(FILE *pfile, string &aktparamgraph);
     bool doFlow(string time);
     string getReadout(int _number);
     string getReadoutParam(bool _rawValue, bool _noerror, int _number = 0);
@@ -73,9 +73,9 @@ public:
 
     void UpdateNachkommaDecimalShift();
 
-    std::vector<NumberPost*>* GetNumbers(){return &NUMBERS;};
+    std::vector<NumberPost *> *GetNumbers() { return &NUMBERS; };
 
-    string name(){return "ClassFlowPostProcessing";};
+    string name() { return "ClassFlowPostProcessing"; };
 };
 
-#endif //CLASSFFLOWPOSTPROCESSING_H
+#endif // CLASSFFLOWPOSTPROCESSING_H

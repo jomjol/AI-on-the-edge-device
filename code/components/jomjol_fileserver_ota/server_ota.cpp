@@ -31,7 +31,7 @@
 #ifdef ENABLE_MQTT
 #include "interface_mqtt.h"
 #endif // ENABLE_MQTT
-#include "ClassControllCamera.h"
+#include "ClassControlCamera.h"
 #include "connect_wlan.h"
 
 #include "ClassLogFile.h"
@@ -39,7 +39,7 @@
 #include "Helper.h"
 #include "statusled.h"
 #include "basic_auth.h"
-#include "../../include/defines.h"
+#include "defines.h"
 
 /*an ota data write buffer ready to write to the flash*/
 static char ota_write_data[SERVER_OTA_SCRATCH_BUFSIZE + 1] = {0};
@@ -52,9 +52,9 @@ static bool ota_update_task(std::string fn);
 std::string _file_name_update;
 bool initial_setup = false;
 
-static bool isValidHtmlFolder(const std::string& folder)
+static bool isValidHtmlFolder(const std::string &folder)
 {
-    static const char* requiredFiles[] = {
+    static const char *requiredFiles[] = {
         "index.html",
         "overview.html",
         "ota_page.html",
@@ -64,15 +64,14 @@ static bool isValidHtmlFolder(const std::string& folder)
         "firework.js",
         "readconfigcommon.js",
         "readconfigparam.js",
-        "version.txt"
-    };
+        "version.txt"};
 
     if (!FolderExists(folder))
     {
         return false;
     }
 
-    for (const char* file : requiredFiles)
+    for (const char *file : requiredFiles)
     {
         if (!FileExists(folder + "/" + file) && !FileExists(folder + "/" + file + ".gz"))
         {
@@ -87,7 +86,7 @@ static bool isValidHtmlFolder(const std::string& folder)
 void task_do_Update_ZIP(void *pvParameter)
 {
     StatusLED(AP_OR_OTA, 1, true); // Signaling an OTA update
-    
+
     std::string filetype = toUpper(getFileType(_file_name_update));
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File: " + _file_name_update + " Filetype: " + filetype);
 
@@ -114,12 +113,12 @@ void task_do_Update_ZIP(void *pvParameter)
         }
 
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Files unzipped.");
-        
+
         /* Replace HTML folder only if a new HTML folder has actually been extracted. */
         if (FolderExists(outHtmlTmp) && isValidHtmlFolder(outHtmlTmp))
         {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "HTML update detected. Replacing HTML folder.");
-    
+
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Renaming folder " + outHtml + " to " + outHtmlOld + "...");
             if (RenameFolder(outHtml, outHtmlOld))
             {
@@ -149,7 +148,7 @@ void task_do_Update_ZIP(void *pvParameter)
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "No HTML update found. Existing HTML folder remains unchanged.");
             removeFolder(outHtmlTmp.c_str(), TAG);
         }
-        
+
         if (!retfirmware.empty())
         {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Found firmware.bin");
@@ -163,7 +162,7 @@ void task_do_Update_ZIP(void *pvParameter)
     {
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Do firmware update - file: " + _file_name_update);
         ota_update_task(_file_name_update);
-        
+
         LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Trigger reboot due to firmware update");
         doRebootOTA();
     }
@@ -175,18 +174,18 @@ void task_do_Update_ZIP(void *pvParameter)
 
 void CheckUpdate()
 {
-    FILE *pfile = fopen("/sdcard/update.txt", "r");
-    if (pfile == NULL)
+    FILE *pFile = fopen("/sdcard/update.txt", "r");
+    if (pFile == NULL)
     {
         LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No pending update");
         return;
     }
 
     char zw[1024] = "";
-    fgets(zw, 1024, pfile);
+    fgets(zw, 1024, pFile);
     _file_name_update = std::string(zw);
 
-    if (fgets(zw, 1024, pfile))
+    if (fgets(zw, 1024, pFile))
     {
         std::string _szw = std::string(zw);
         if (_szw == "init")
@@ -195,11 +194,12 @@ void CheckUpdate()
         }
     }
 
-    fclose(pfile);
+    fclose(pFile);
     DeleteFile("/sdcard/update.txt"); // Prevent Boot Loop!!!
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start update process (" + _file_name_update + ")");
 
     xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY + 1, NULL);
+
     while (1)
     {
         // wait until reboot within task_do_Update_ZIP
@@ -225,14 +225,14 @@ static bool ota_update_task(std::string fn)
     const esp_partition_t *update_partition = esp_ota_get_next_update_partition(NULL);
     ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x", update_partition->subtype, (unsigned int)update_partition->address);
 
-    FILE *f = fopen(fn.c_str(), "rb"); // previously only "r
-    if (f == NULL)
+    FILE *pFile = fopen(fn.c_str(), "rb"); // previously only "r
+    if (pFile == NULL)
     {
         // File does not exist
         return false;
     }
 
-    int data_read = fread(ota_write_data, 1, SERVER_OTA_SCRATCH_BUFSIZE, f);
+    int data_read = fread(ota_write_data, 1, SERVER_OTA_SCRATCH_BUFSIZE, pFile);
     if (data_read <= 0)
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Error: SSL data read error");
@@ -249,6 +249,7 @@ static bool ota_update_task(std::string fn)
         if (image_header_was_checked == false)
         {
             esp_app_desc_t new_app_info;
+
             if (data_read > sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t) + sizeof(esp_app_desc_t))
             {
                 // check current version with downloading
@@ -306,9 +307,9 @@ static bool ota_update_task(std::string fn)
         binary_file_length += data_read;
         ESP_LOGD(TAG, "Written image length %d", binary_file_length);
 
-        data_read = fread(ota_write_data, 1, SERVER_OTA_SCRATCH_BUFSIZE, f);
+        data_read = fread(ota_write_data, 1, SERVER_OTA_SCRATCH_BUFSIZE, pFile);
     }
-    fclose(f);
+    fclose(pFile);
 
     ESP_LOGI(TAG, "Total Write binary data length: %d", binary_file_length);
 
@@ -406,14 +407,12 @@ void CheckOTAUpdate(void)
 
 esp_err_t handler_ota_update(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_ota_update - Start");
-#endif
-
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_ota_update");
+
     char _query[200];
     char _filename[100];
     char _valuechar[30];
+
     std::string fn = "/sdcard/firmware/";
     bool _file_del = false;
     std::string _task = "";
@@ -483,9 +482,9 @@ esp_err_t handler_ota_update(httpd_req_t *req)
         if ((filetype == "ZIP") || (filetype == "BIN"))
         {
             LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Update for reboot");
-            FILE *pfile = fopen("/sdcard/update.txt", "w");
-            fwrite(fn.c_str(), fn.length(), 1, pfile);
-            fclose(pfile);
+            FILE *pFile = fopen("/sdcard/update.txt", "w");
+            fwrite(fn.c_str(), fn.length(), 1, pFile);
+            fclose(pFile);
 
             std::string zw = "reboot\n";
             httpd_resp_sendstr_chunk(req, zw.c_str());
@@ -546,10 +545,6 @@ esp_err_t handler_ota_update(httpd_req_t *req)
 
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ota without parameter - should not be the case!");
 
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_ota_update - Done");
-#endif
-
     return ESP_OK;
 }
 
@@ -570,10 +565,10 @@ void hard_restart()
 void task_reboot(void *DeleteMainFlow)
 {
     // write a reboot, to identify a reboot by purpouse
-    FILE *pfile = fopen("/sdcard/reboot.txt", "w");
+    FILE *pFile = fopen("/sdcard/reboot.txt", "w");
     std::string _s_zw = "reboot";
-    fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pfile);
-    fclose(pfile);
+    fwrite(_s_zw.c_str(), strlen(_s_zw.c_str()), 1, pFile);
+    fclose(pFile);
 
     vTaskDelay(3000 / portTICK_PERIOD_MS);
 
@@ -582,7 +577,7 @@ void task_reboot(void *DeleteMainFlow)
         DeleteMainFlowTask(); // Kill autoflow task if executed in extra task, if not don't kill parent task
     }
 
-    Camera.LightOnOff(false);
+    Camera.set_flash_light(false);
     StatusLEDOff();
 
 /* Stop service tasks */
@@ -591,6 +586,7 @@ void task_reboot(void *DeleteMainFlow)
 #endif // ENABLE_MQTT
     gpio_handler_destroy();
 
+    Camera.set_camera_deep_sleep(false);
     esp_camera_return_all();
     esp_camera_deinit();
 
@@ -609,13 +605,13 @@ void task_reboot(void *DeleteMainFlow)
         ESP_LOGI(TAG, "Camera power down");
         gpio_set_level(CAM_PIN_PWDN, 1);
     }
-    
+
     WIFIDestroy();
 
-    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     esp_restart(); // Reset type: CPU reset (Reset both CPUs)
 
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     hard_restart(); // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
 
     LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Reboot failed!");
@@ -633,16 +629,17 @@ void doReboot()
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "task_reboot not created -> force reboot without killing flow");
         task_reboot((void *)false);
     }
-    vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
+    vTaskDelay(5000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
 }
 
 void doRebootOTA()
 {
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
-    Camera.LightOnOff(false);
+    Camera.set_flash_light(false);
     StatusLEDOff();
 
+    Camera.set_camera_deep_sleep(false);
     esp_camera_return_all();
     esp_camera_deinit();
 
@@ -662,19 +659,15 @@ void doRebootOTA()
         gpio_set_level(CAM_PIN_PWDN, 1);
     }
 
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     esp_restart(); // Reset type: CPU reset (Reset both CPUs)
 
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     hard_restart(); // Reset type: System reset (Triggered by watchdog), if esp_restart stalls (WDT needs to be activated)
 }
 
 esp_err_t handler_reboot(httpd_req_t *req)
 {
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_reboot - Start");
-#endif
-
     LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_reboot");
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "!!! System will restart within 5 sec!!!");
 
@@ -692,10 +685,6 @@ esp_err_t handler_reboot(httpd_req_t *req)
     httpd_resp_send(req, response.c_str(), strlen(response.c_str()));
 
     doReboot();
-
-#ifdef DEBUG_DETAIL_ON
-    LogFile.WriteHeapInfo("handler_reboot - Done");
-#endif
 
     return ESP_OK;
 }

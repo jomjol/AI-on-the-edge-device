@@ -25,6 +25,7 @@ protected:
     CAlignAndCutImage *AlignAndCutImage;
     std::string FileStoreRefAlignment;
     float SAD_criteria;
+    bool ownsImageBasis;
 
     void SetInitialParameter(void);
     bool LoadReferenceAlignmentValues(void);
@@ -37,6 +38,7 @@ public:
 #endif
 
     ClassFlowAlignment(std::vector<ClassFlow *> *lfc);
+    ~ClassFlowAlignment();
 
     CAlignAndCutImage *GetAlignAndCutImage() { return AlignAndCutImage; };
 

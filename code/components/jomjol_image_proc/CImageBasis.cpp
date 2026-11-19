@@ -5,7 +5,7 @@
 #include "server_ota.h"
 
 #include <esp_log.h>
-#include "../../include/defines.h"
+#include "defines.h"
 
 #include "esp_system.h"
 
@@ -24,56 +24,160 @@ struct SendJPGHTTP
     int size = 0;
 };
 
-bool jpgFileTooLarge = false;   // JPG creation verfication
-
-uint8_t * CImageBasis::RGBImageLock(int _waitmaxsec)
+bool CImageBasis::LockImageMutex(int _waitmaxsec)
 {
-    if (islocked)
+    if (imageMutex == nullptr)
     {
-#ifdef DEBUG_DETAIL_ON   
-        ESP_LOGD(TAG, "Image is locked: sleep for: %ds", _waitmaxsec);
-#endif
-        TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
-        for (int i = 0; i <= _waitmaxsec; ++i)
-        {
-            vTaskDelay( xDelay ); 
-            if (!islocked)
-            {
-                break;
-            }
-        }
+        ESP_LOGE(TAG, "Image mutex unavailable for '%s'", name.c_str());
+        return false;
     }
 
-    if (islocked)
+    const TickType_t waitTicks = (_waitmaxsec < 0) ? portMAX_DELAY : pdMS_TO_TICKS(static_cast<uint32_t>(_waitmaxsec) * 1000U);
+
+    if (xSemaphoreTakeRecursive(imageMutex, waitTicks) != pdTRUE)
     {
-        return NULL;
+        ESP_LOGW(TAG, "Timed out waiting for image mutex '%s'", name.c_str());
+        return false;
+    }
+
+    return true;
+}
+
+uint8_t *CImageBasis::RGBImageLock(int _waitmaxsec)
+{
+    if (!LockImageMutex(_waitmaxsec))
+    {
+        return nullptr;
     }
 
     return rgb_image;
 }
 
-void CImageBasis::RGBImageRelease(void)
+void CImageBasis::UseImageMutexFrom(CImageBasis *owner)
 {
-    islocked = false;
-}
-
-uint8_t * CImageBasis::RGBImageGet(void)
-{
-    return rgb_image;
-}
-
-void writejpghelp(void* context, void* data, int size)
-{
-    ImageData* image = static_cast<ImageData*>(context);
-
-    if (size <= 0)
+    if (owner == nullptr || owner == this || owner->imageMutex == nullptr)
     {
         return;
     }
 
-    if ((size_t)size > MAX_JPG_SIZE - image->size)
+    if (ownsImageMutex && imageMutex != nullptr)
     {
-        jpgFileTooLarge = true;
+        vSemaphoreDelete(imageMutex);
+    }
+
+    imageMutex = owner->imageMutex;
+    ownsImageMutex = false;
+}
+
+void CImageBasis::RGBImageRelease(void)
+{
+    // Several legacy callers release after RGBImageLock() returned nullptr.
+    // Only the task that actually owns this mutex may release it; this avoids
+    // corrupting the FreeRTOS mutex state after a timeout or failed lock.
+    if (imageMutex != nullptr && xSemaphoreGetMutexHolder(imageMutex) == xTaskGetCurrentTaskHandle())
+    {
+        (void)xSemaphoreGiveRecursive(imageMutex);
+    }
+}
+
+bool CImageBasis::CalculateImageSize(int imageWidth, int imageHeight, int imageChannels, size_t *result) const
+{
+    if (result == nullptr || imageWidth <= 0 || imageHeight <= 0 || imageChannels <= 0)
+    {
+        return false;
+    }
+
+    const size_t w = static_cast<size_t>(imageWidth);
+    const size_t h = static_cast<size_t>(imageHeight);
+    const size_t c = static_cast<size_t>(imageChannels);
+
+    if (w > SIZE_MAX / h || w * h > SIZE_MAX / c)
+    {
+        return false;
+    }
+
+    *result = w * h * c;
+
+    return true;
+}
+
+void CImageBasis::ReleaseImageBuffer()
+{
+    if (rgb_image == nullptr)
+    {
+        bufferOwner = BufferOwner::None;
+        memsize = 0;
+        return;
+    }
+
+    switch (bufferOwner)
+    {
+    case BufferOwner::PsramHeap:
+        free_psram_heap("CImageBasis->" + name + "(" + std::to_string(memsize) + ")", rgb_image);
+        break;
+    case BufferOwner::StbImage:
+        stbi_image_free(rgb_image);
+        break;
+    case BufferOwner::SharedRegion:
+        psram_free_shared_temp_image_memory();
+        break;
+    case BufferOwner::External:
+    case BufferOwner::None:
+    default:
+        break;
+    }
+
+    rgb_image = nullptr;
+    memsize = 0;
+    bufferOwner = BufferOwner::None;
+}
+
+void CImageBasis::SetIndepended()
+{
+    if (!LockImageMutex())
+    {
+        return;
+    }
+
+    if (rgb_image == nullptr)
+    {
+        bufferOwner = BufferOwner::None;
+        memsize = 0;
+        RGBImageRelease();
+        return;
+    }
+
+    size_t size = 0;
+
+    if (!CalculateImageSize(width, height, channels, &size))
+    {
+        ESP_LOGE(TAG, "SetIndepended: invalid image dimensions for '%s'", name.c_str());
+        RGBImageRelease();
+        return;
+    }
+
+    bufferOwner = BufferOwner::PsramHeap;
+    memsize = size;
+    RGBImageRelease();
+}
+
+uint8_t *CImageBasis::RGBImageGet(void)
+{
+    return rgb_image;
+}
+
+void writejpghelp(void *context, void *data, int size)
+{
+    ImageData *image = static_cast<ImageData *>(context);
+
+    if (image == nullptr || data == nullptr || size <= 0 || image->tooLarge)
+    {
+        return;
+    }
+
+    if (image->size > MAX_JPG_SIZE || static_cast<size_t>(size) > MAX_JPG_SIZE - image->size)
+    {
+        image->tooLarge = true;
         return;
     }
 
@@ -81,26 +185,38 @@ void writejpghelp(void* context, void* data, int size)
     image->size += size;
 }
 
-ImageData* CImageBasis::writeToMemoryAsJPG(const int quality)
+ImageData *CImageBasis::writeToMemoryAsJPG(const int quality)
 {
-    ImageData* _ImageData = new ImageData;
+    ImageData *_ImageData = new (std::nothrow) ImageData;
 
-    RGBImageLock();
-    
+    if (_ImageData == nullptr)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "writeToMemoryAsJPG: cannot allocate ImageData");
+        return nullptr;
+    }
+
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        delete _ImageData;
+        return nullptr;
+    }
+
     stbi_write_jpg_to_func(writejpghelp, _ImageData, width, height, channels, rgb_image, quality);
-    
+
     RGBImageRelease();
 
-    if (jpgFileTooLarge)
+    if (_ImageData->tooLarge)
     {
-        jpgFileTooLarge = false;
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "writeToMemoryAsJPG: Creation aborted! JPG size > preallocated buffer: " + std::to_string(MAX_JPG_SIZE));
+        delete _ImageData;
+        return nullptr;
     }
 
     return _ImageData;
 }
 
-void CImageBasis::writeToMemoryAsJPG(ImageData* _Image_Data, const int quality)
+void CImageBasis::writeToMemoryAsJPG(ImageData *_Image_Data, const int quality)
 {
     if (_Image_Data == nullptr)
     {
@@ -108,74 +224,110 @@ void CImageBasis::writeToMemoryAsJPG(ImageData* _Image_Data, const int quality)
     }
 
     _Image_Data->size = 0;
+    _Image_Data->tooLarge = false;
 
-    RGBImageLock();
-    
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
+
     stbi_write_jpg_to_func(writejpghelp, _Image_Data, width, height, channels, rgb_image, quality);
-    
+
     RGBImageRelease();
 
-    if (jpgFileTooLarge)
+    if (_Image_Data->tooLarge)
     {
-        jpgFileTooLarge = false;
+        _Image_Data->size = 0;
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "writeToMemoryAsJPG: Creation aborted! JPG size > preallocated buffer: " + std::to_string(MAX_JPG_SIZE));
     }
 }
 
 inline void writejpgtohttphelp(void *context, void *data, int size)
 {
-    SendJPGHTTP* _send = (SendJPGHTTP*) context;
-    
-    if ((_send->size + size) >= HTTP_BUFFER_SENT)
-    {
-        if (httpd_resp_send_chunk(_send->req, _send->buf, _send->size) != ESP_OK) 
-        {
-            ESP_LOGE(TAG, "File sending failed!");
-            _send->res = ESP_FAIL;  
-        }
-        _send->size = 0;      
-    }
-    
-    std::memcpy((void*) (&(_send->buf[0]) + _send->size), data, size);
-    _send->size+= size;
-} 
+    SendJPGHTTP *_send = (SendJPGHTTP *)context;
 
-esp_err_t CImageBasis::SendJPGtoHTTP(httpd_req_t* _req, const int quality)
+    if (_send == nullptr || data == nullptr || size <= 0 || _send->res != ESP_OK)
+    {
+        return;
+    }
+
+    const uint8_t *source = static_cast<const uint8_t *>(data);
+    size_t remaining = static_cast<size_t>(size);
+
+    while (remaining > 0)
+    {
+        const size_t available = HTTP_BUFFER_SENT - static_cast<size_t>(_send->size);
+        const size_t copySize = std::min(available, remaining);
+        std::memcpy(_send->buf + _send->size, source, copySize);
+        _send->size += static_cast<int>(copySize);
+        source += copySize;
+        remaining -= copySize;
+
+        if (_send->size == HTTP_BUFFER_SENT)
+        {
+            if (httpd_resp_send_chunk(_send->req, _send->buf, _send->size) != ESP_OK)
+            {
+                ESP_LOGE(TAG, "File sending failed!");
+                _send->res = ESP_FAIL;
+                return;
+            }
+
+            _send->size = 0;
+        }
+    }
+}
+
+esp_err_t CImageBasis::SendJPGtoHTTP(httpd_req_t *_req, const int quality)
 {
+    if (_req == nullptr || rgb_image == nullptr)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
     SendJPGHTTP _send;
     _send.req = _req;
     _send.res = ESP_OK;
     _send.size = 0;
 
-    RGBImageLock();
-    
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return ESP_FAIL;
+    }
+
     stbi_write_jpg_to_func(writejpgtohttphelp, &_send, width, height, channels, rgb_image, quality);
 
-    if (_send.size > 0)
+    if (_send.res == ESP_OK && _send.size > 0)
     {
-        if (httpd_resp_send_chunk(_req, (char*)_send.buf, _send.size) != ESP_OK)
+        if (httpd_resp_send_chunk(_req, (char *)_send.buf, _send.size) != ESP_OK)
         {
             ESP_LOGE(TAG, "File sending failed!");
             _send.res = ESP_FAIL;
         }
     }
-    
+
     RGBImageRelease();
 
     return _send.res;
 }
 
-bool CImageBasis::CopyFromMemory(uint8_t* _source, int _size)
+bool CImageBasis::CopyFromMemory(uint8_t *_source, int _size)
 {
-    int gr = height * width * channels;
-    
-    if (gr != _size)
+    size_t required = 0;
+
+    if (_source == nullptr || rgb_image == nullptr || _size < 0 || !CalculateImageSize(width, height, channels, &required) || required != static_cast<size_t>(_size))
     {
-        ESP_LOGE(TAG, "Cannot copy image from memory - sizes do not match: should be %d, but is %d", _size, gr);
+        ESP_LOGE(TAG, "Cannot copy image from memory - invalid buffer or size mismatch (provided %d)", _size);
         return false;
     }
 
-    RGBImageLock();
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return false;
+    }
+
     std::memcpy(rgb_image, _source, _size);
     RGBImageRelease();
 
@@ -184,13 +336,27 @@ bool CImageBasis::CopyFromMemory(uint8_t* _source, int _size)
 
 uint8_t CImageBasis::GetPixelColor(int x, int y, int ch)
 {
-    stbi_uc* p_source;
-    p_source = rgb_image + (channels * (y * width + x));
-    
-    return p_source[ch];
+    if (x < 0 || y < 0 || x >= width || y >= height || ch < 0 || ch >= channels)
+    {
+        return 0;
+    }
+
+    uint8_t *image = RGBImageLock();
+
+    if (image == nullptr)
+    {
+        RGBImageRelease();
+        return 0;
+    }
+
+    const uint8_t value = image[(static_cast<size_t>(y) * width + x) * channels + ch];
+
+    RGBImageRelease();
+
+    return value;
 }
 
-void CImageBasis::memCopy(uint8_t* _source, uint8_t* _target, int _size)
+void CImageBasis::memCopy(uint8_t *_source, uint8_t *_target, int _size)
 {
 #ifdef _ESP32_PSRAM
     for (int i = 0; i < _size; ++i)
@@ -208,7 +374,8 @@ bool CImageBasis::isInImage(int x, int y)
     {
         return false;
     }
-    if ((y < 0) || (y > height- 1))
+
+    if ((y < 0) || (y > height - 1))
     {
         return false;
     }
@@ -218,22 +385,38 @@ bool CImageBasis::isInImage(int x, int y)
 
 void CImageBasis::setPixelColor(int x, int y, int r, int g, int b)
 {
-    RGBImageLock();
-    
-    stbi_uc* p_source = rgb_image + (channels * (y * width + x));
+    if (!isInImage(x, y))
+    {
+        return;
+    }
+
+    uint8_t *image = RGBImageLock();
+
+    if (image == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
+
+    stbi_uc *p_source = image + (channels * (y * width + x));
     p_source[0] = r;
 
-    if ( channels > 2)
+    if (channels > 2)
     {
         p_source[1] = g;
         p_source[2] = b;
     }
-    
+
     RGBImageRelease();
 }
 
 void CImageBasis::drawRect(int x, int y, int dx, int dy, int r, int g, int b, int thickness)
 {
+    if (rgb_image == nullptr || imageMutex == nullptr)
+    {
+        return;
+    }
+
     int zwx1, zwx2, zwy1, zwy2;
     int _x, _y, _thick;
 
@@ -242,7 +425,11 @@ void CImageBasis::drawRect(int x, int y, int dx, int dy, int r, int g, int b, in
     zwy1 = y;
     zwy2 = y;
 
-    RGBImageLock();
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
 
     for (_thick = 0; _thick < thickness; _thick++)
     {
@@ -262,7 +449,7 @@ void CImageBasis::drawRect(int x, int y, int dx, int dy, int r, int g, int b, in
     zwx2 = x + dx + thickness - 1;
     zwy1 = y + dy;
     zwy2 = y + dy;
-    
+
     for (_thick = 0; _thick < thickness; _thick++)
     {
         for (_x = zwx1; _x <= zwx2; ++_x)
@@ -281,7 +468,7 @@ void CImageBasis::drawRect(int x, int y, int dx, int dy, int r, int g, int b, in
     zwx2 = x;
     zwy1 = y;
     zwy2 = y + dy;
-    
+
     for (_thick = 0; _thick < thickness; _thick++)
     {
         for (_x = zwx1; _x <= zwx2; ++_x)
@@ -300,7 +487,7 @@ void CImageBasis::drawRect(int x, int y, int dx, int dy, int r, int g, int b, in
     zwx2 = x + dx;
     zwy1 = y;
     zwy2 = y + dy;
-    
+
     for (_thick = 0; _thick < thickness; _thick++)
     {
         for (_x = zwx1; _x <= zwx2; ++_x)
@@ -320,11 +507,20 @@ void CImageBasis::drawRect(int x, int y, int dx, int dy, int r, int g, int b, in
 
 void CImageBasis::drawLine(int x1, int y1, int x2, int y2, int r, int g, int b, int thickness)
 {
+    if (rgb_image == nullptr || imageMutex == nullptr)
+    {
+        return;
+    }
+
     int _x, _y, _thick;
     int _zwy1, _zwy2;
-    thickness = (thickness-1) / 2;
+    thickness = (thickness - 1) / 2;
 
-    RGBImageLock();
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
 
     for (_thick = 0; _thick <= thickness; ++_thick)
     {
@@ -350,12 +546,17 @@ void CImageBasis::drawLine(int x1, int y1, int x2, int y2, int r, int g, int b, 
             }
         }
     }
-    
+
     RGBImageRelease();
 }
 
 void CImageBasis::drawEllipse(int x1, int y1, int radx, int rady, int r, int g, int b, int thickness)
 {
+    if (rgb_image == nullptr || imageMutex == nullptr)
+    {
+        return;
+    }
+
     float deltarad, aktrad;
     int _thick, _x, _y;
     int rad = radx;
@@ -367,7 +568,11 @@ void CImageBasis::drawEllipse(int x1, int y1, int radx, int rady, int r, int g, 
 
     deltarad = 1 / (4 * M_PI * (rad + thickness - 1));
 
-    RGBImageLock();
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
 
     for (aktrad = 0; aktrad <= (2 * M_PI); aktrad += deltarad)
     {
@@ -375,7 +580,7 @@ void CImageBasis::drawEllipse(int x1, int y1, int radx, int rady, int r, int g, 
         {
             _x = sin(aktrad) * (radx + _thick) + x1;
             _y = cos(aktrad) * (rady + _thick) + y1;
-            
+
             if (isInImage(_x, _y))
             {
                 setPixelColor(_x, _y, r, g, b);
@@ -388,12 +593,21 @@ void CImageBasis::drawEllipse(int x1, int y1, int radx, int rady, int r, int g, 
 
 void CImageBasis::drawCircle(int x1, int y1, int rad, int r, int g, int b, int thickness)
 {
+    if (rgb_image == nullptr || imageMutex == nullptr)
+    {
+        return;
+    }
+
     float deltarad, aktrad;
     int _thick, _x, _y;
 
     deltarad = 1 / (4 * M_PI * (rad + thickness - 1));
 
-    RGBImageLock();
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
 
     for (aktrad = 0; aktrad <= (2 * M_PI); aktrad += deltarad)
     {
@@ -401,7 +615,7 @@ void CImageBasis::drawCircle(int x1, int y1, int rad, int r, int g, int b, int t
         {
             _x = sin(aktrad) * (rad + _thick) + x1;
             _y = cos(aktrad) * (rad + _thick) + y1;
-            
+
             if (isInImage(_x, _y))
             {
                 setPixelColor(_x, _y, r, g, b);
@@ -415,98 +629,165 @@ void CImageBasis::drawCircle(int x1, int y1, int rad, int r, int g, int b, int t
 CImageBasis::CImageBasis(string _name)
 {
     name = _name;
-    externalImage = false;
     rgb_image = NULL;
     width = 0;
     height = 0;
-    channels = 0;    
-    islocked = false;
+    channels = 0;
+    bpp = 0;
+
+    imageMutex = xSemaphoreCreateRecursiveMutex();
+
+    if (imageMutex == nullptr)
+    {
+        ESP_LOGE(TAG, "Failed to create image mutex for '%s'", name.c_str());
+    }
 }
 
 void CImageBasis::CreateEmptyImage(int _width, int _height, int _channels)
 {
+    if (imageMutex == nullptr)
+    {
+        return;
+    }
+
+    if (!LockImageMutex())
+    {
+        return;
+    }
+
+    ReleaseImageBuffer();
+
+    size_t newMemSize = 0;
+
+    if (!CalculateImageSize(_width, _height, _channels, &newMemSize))
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CreateEmptyImage: invalid dimensions");
+        width = height = channels = bpp = 0;
+        RGBImageRelease();
+        return;
+    }
+
     bpp = _channels;
     width = _width;
     height = _height;
     channels = _channels;
 
-    RGBImageLock();
+    rgb_image = (unsigned char *)malloc_psram_heap("CImageBasis->" + name, newMemSize, MALLOC_CAP_SPIRAM);
 
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("CreateEmptyImage");
-#endif
-    
-    size_t newMemSize = (size_t)width * (size_t)height * (size_t)channels;
-
-    rgb_image = (unsigned char*)malloc_psram_heap("CImageBasis->" + name, newMemSize, MALLOC_CAP_SPIRAM);
-    
     if (rgb_image == NULL)
     {
         ESP_LOGE(TAG, "CreateEmptyImage: Can't allocate enough memory: %d", (int)newMemSize);
         LogFile.WriteHeapInfo("CreateEmptyImage");
+        width = height = channels = bpp = 0;
         RGBImageRelease();
         return;
     }
 
-    std::memset(rgb_image, 0, width * height * channels);
+    bufferOwner = BufferOwner::PsramHeap;
     memsize = newMemSize;
+    std::memset(rgb_image, 0, newMemSize);
 
     RGBImageRelease();
 }
 
 void CImageBasis::EmptyImage(void)
 {
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("EmptyImage");
-#endif
-
-    if (rgb_image == nullptr || memsize == 0)
+    if (rgb_image == nullptr)
     {
         return;
     }
-    
-    RGBImageLock();
+
+    size_t size = 0;
+
+    if (!CalculateImageSize(width, height, channels, &size) || RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
 
     // One contiguous memset instead of a per-pixel, column-by-column loop through PSRAM
-    std::memset(rgb_image, 0, width * height * channels);
+    std::memset(rgb_image, 0, size);
 
     RGBImageRelease();
 }
 
 void CImageBasis::LoadFromMemory(stbi_uc *_buffer, int len)
 {
-    RGBImageLock();
-
-    if (rgb_image != NULL) 
+    if (imageMutex == nullptr)
     {
-        stbi_image_free(rgb_image);
-        //free_psram_heap(std::string(TAG) + "->rgb_image (LoadFromMemory)", rgb_image);
+        return;
     }
 
-    rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &channels, STBI_rgb);
-    bpp = channels;
-    ESP_LOGD(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
-    
-    if ((width * height * channels) == 0)
+    if (!LockImageMutex())
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image with size 0 loaded --> reboot to be done! "
-                "Check that your camera module is working and connected properly.");
+        return;
+    }
+
+    ReleaseImageBuffer();
+
+    width = height = channels = bpp = 0;
+
+    if (_buffer == nullptr || len <= 0)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadFromMemory: empty input buffer");
+        RGBImageRelease();
+        return;
+    }
+
+    int sourceChannels = 0;
+    rgb_image = stbi_load_from_memory(_buffer, len, &width, &height, &sourceChannels, STBI_rgb);
+
+    if (rgb_image == nullptr)
+    {
+        width = height = channels = bpp = 0;
+        memsize = 0;
+        bufferOwner = BufferOwner::None;
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadFromMemory: STBI failed to decode image");
         LogFile.WriteHeapInfo("LoadFromMemory");
-
-        doReboot();
+        RGBImageRelease();
+        return;
     }
-    
+
+    // req_comp=STBI_rgb means the returned pixel buffer is always RGB888.
+    // sourceChannels is only the original file's component count and must not
+    // be used for addressing or calculating the allocated output buffer size.
+    channels = STBI_rgb;
+    bpp = sourceChannels;
+    bufferOwner = BufferOwner::StbImage;
+
+    if (!CalculateImageSize(width, height, channels, &memsize))
+    {
+        ReleaseImageBuffer();
+        width = height = channels = bpp = 0;
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "LoadFromMemory: decoder returned invalid image dimensions");
+        RGBImageRelease();
+        return;
+    }
+
+    ESP_LOGD(TAG, "Image loaded from memory: %d, %d, %d", width, height, channels);
+
     RGBImageRelease();
 }
 
 void CImageBasis::crop_image(unsigned short cropLeft, unsigned short cropRight, unsigned short cropTop, unsigned short cropBottom)
 {
-    int newWidth = width - cropLeft - cropRight;
-    int newHeight = height - cropTop - cropBottom;
+    if (rgb_image == nullptr || static_cast<size_t>(cropLeft) + cropRight >= static_cast<size_t>(width) || static_cast<size_t>(cropTop) + cropBottom >= static_cast<size_t>(height))
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "crop_image: invalid crop rectangle");
+        return;
+    }
 
-    RGBImageLock();
+    const int newWidth = width - cropLeft - cropRight;
+    const int newHeight = height - cropTop - cropBottom;
 
-    uint8_t* pSrc = rgb_image + (cropTop * width + cropLeft) * channels;
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
+
+    uint8_t *pSrc = rgb_image + (cropTop * width + cropLeft) * channels;
+
     for (int y = 0; y < newHeight; ++y)
     {
         std::memmove(rgb_image + y * newWidth * channels, pSrc + y * width * channels, newWidth * channels);
@@ -514,35 +795,57 @@ void CImageBasis::crop_image(unsigned short cropLeft, unsigned short cropRight, 
 
     width = newWidth;
     height = newHeight;
+    (void)CalculateImageSize(width, height, channels, &memsize);
 
     RGBImageRelease();
 }
 
-CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom) 
+CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom, bool useSharedRegion)
 {
     name = _name;
-    islocked = false;
-    externalImage = false;
+    width = height = channels = bpp = 0;
+    imageMutex = xSemaphoreCreateRecursiveMutex();
+
+    if (_copyfrom == nullptr || !_copyfrom->ImageOkay() || imageMutex == nullptr)
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CImageBasis-Copyfrom: source image is invalid");
+        return;
+    }
+
     channels = _copyfrom->channels;
     width = _copyfrom->width;
     height = _copyfrom->height;
     bpp = _copyfrom->bpp;
 
-    RGBImageLock();
-
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("CImageBasis_copyfrom - Start");
-#endif
-
-    memsize = width * height * channels;
-
-    if (name == "tmpImage") 
+    if (!LockImageMutex())
     {
-        rgb_image = (unsigned char*)psram_reserve_shared_tmp_image_memory();
+        return;
     }
-    else 
+
+    if (!CalculateImageSize(width, height, channels, &memsize))
     {
-        rgb_image = (unsigned char*)malloc_psram_heap("CImageBasis->" + name, memsize, MALLOC_CAP_SPIRAM);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CImageBasis-Copyfrom: invalid source dimensions");
+        RGBImageRelease();
+        return;
+    }
+
+    if (useSharedRegion)
+    {
+        rgb_image = (unsigned char *)psram_reserve_shared_tmp_image_memory(memsize);
+
+        if (rgb_image != nullptr)
+        {
+            bufferOwner = BufferOwner::SharedRegion;
+        }
+    }
+    else
+    {
+        rgb_image = (unsigned char *)malloc_psram_heap("CImageBasis->" + name, memsize, MALLOC_CAP_SPIRAM);
+
+        if (rgb_image != nullptr)
+        {
+            bufferOwner = BufferOwner::PsramHeap;
+        }
     }
 
     if (rgb_image == NULL)
@@ -553,33 +856,51 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom)
         return;
     }
 
-    std::memcpy(rgb_image, _copyfrom->rgb_image, memsize);
-    RGBImageRelease();
+    uint8_t *sourceImage = _copyfrom->RGBImageLock();
 
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("CImageBasis_copyfrom - done");
-#endif
+    if (sourceImage == nullptr)
+    {
+        _copyfrom->RGBImageRelease();
+        ReleaseImageBuffer();
+        RGBImageRelease();
+        return;
+    }
+
+    std::memcpy(rgb_image, sourceImage, memsize);
+    _copyfrom->RGBImageRelease();
+
+    RGBImageRelease();
 }
 
 CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
 {
     name = _name;
-    islocked = false;
-    externalImage = false;
+    imageMutex = xSemaphoreCreateRecursiveMutex();
+
+    if (imageMutex == nullptr)
+    {
+        return;
+    }
+
     channels = _channels;
     width = _width;
     height = _height;
     bpp = _channels;
 
-    RGBImageLock();
+    if (!LockImageMutex())
+    {
+        return;
+    }
 
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("CImageBasis_width,height,ch - Start");
-#endif
+    if (!CalculateImageSize(width, height, channels, &memsize))
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CImageBasis-width,height,ch: invalid image dimensions");
+        width = height = channels = bpp = 0;
+        RGBImageRelease();
+        return;
+    }
 
-    memsize = width * height * channels;
-
-    rgb_image = (unsigned char*)malloc_psram_heap("CImageBasis->" + name, memsize, MALLOC_CAP_SPIRAM);
+    rgb_image = (unsigned char *)malloc_psram_heap("CImageBasis->" + name, memsize, MALLOC_CAP_SPIRAM);
 
     if (rgb_image == NULL)
     {
@@ -589,22 +910,26 @@ CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
         return;
     }
 
-    RGBImageRelease();
+    bufferOwner = BufferOwner::PsramHeap;
 
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("CImageBasis_width,height,ch - done");
-#endif
+    RGBImageRelease();
 }
 
 CImageBasis::CImageBasis(string _name, std::string _image)
 {
     name = _name;
-    islocked = false;
     channels = 3;
-    externalImage = false;
+    width = height = bpp = 0;
+    imageMutex = xSemaphoreCreateRecursiveMutex();
+
+    if (imageMutex == nullptr)
+    {
+        return;
+    }
+
     filename = _image;
 
-    if (file_size(_image.c_str()) == 0) 
+    if (file_size(_image.c_str()) == 0)
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, _image + " is empty!");
         return;
@@ -612,29 +937,28 @@ CImageBasis::CImageBasis(string _name, std::string _image)
 
     RGBImageLock();
 
-#ifdef DEBUG_DETAIL_ON 
-    LogFile.WriteHeapInfo("CImageBasis_image - Start");
-#endif
-
     rgb_image = stbi_load(_image.c_str(), &width, &height, &bpp, channels);
 
-    if (rgb_image == NULL) 
+    if (rgb_image == NULL)
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CImageBasis-image: Failed to load " + _image + "! Is it corrupted?");
         LogFile.WriteHeapInfo("CImageBasis-image");
         RGBImageRelease();
         return;
     }
-    
+
+    bufferOwner = BufferOwner::StbImage;
+
+    if (!CalculateImageSize(width, height, channels, &memsize))
+    {
+        ReleaseImageBuffer();
+        width = height = channels = bpp = 0;
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "CImageBasis-image: decoder returned invalid dimensions");
+        RGBImageRelease();
+        return;
+    }
+
     RGBImageRelease();
-
-#ifdef DEBUG_DETAIL_ON 
-    std::string zw = "CImageBasis after load " + _image;
-    ESP_LOGD(TAG, "%s", zw.c_str());
-    ESP_LOGD(TAG, "w %d, h %d, b %d, c %d", width, height, bpp, channels);
-
-    LogFile.WriteHeapInfo("CImageBasis_image - done");
-#endif
 }
 
 bool CImageBasis::ImageOkay(void)
@@ -642,52 +966,93 @@ bool CImageBasis::ImageOkay(void)
     return rgb_image != NULL;
 }
 
-CImageBasis::CImageBasis(string _name, uint8_t* _rgb_image, int _channels, int _width, int _height, int _bpp)
+CImageBasis::CImageBasis(string _name, uint8_t *_rgb_image, int _channels, int _width, int _height, int _bpp)
 {
     name = _name;
-    islocked = false;
+    imageMutex = xSemaphoreCreateRecursiveMutex();
+
+    if (imageMutex == nullptr)
+    {
+        return;
+    }
+
     rgb_image = _rgb_image;
     channels = _channels;
     width = _width;
     height = _height;
     bpp = _bpp;
-    externalImage = true;
+    bufferOwner = BufferOwner::External;
+
+    if (rgb_image == nullptr || !CalculateImageSize(width, height, channels, &memsize))
+    {
+        rgb_image = nullptr;
+        memsize = 0;
+        bufferOwner = BufferOwner::None;
+        width = height = channels = bpp = 0;
+    }
 }
 
 void CImageBasis::Negative(void)
 {
-    RGBImageLock();
-
-    for (int i = 0; i < width * height * channels; i += channels) 
+    if (rgb_image == nullptr || imageMutex == nullptr)
     {
-        for (int c = 0; c < channels; c++) 
-        {
-            rgb_image[i+c] = 255 - rgb_image[i+c];
-        }
+        return;
+    }
+
+    uint8_t *image = RGBImageLock();
+
+    if (image == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
+
+    size_t imageSize = 0;
+
+    if (!CalculateImageSize(width, height, channels, &imageSize))
+    {
+        RGBImageRelease();
+        return;
+    }
+
+    for (size_t i = 0; i < imageSize; ++i)
+    {
+        image[i] = static_cast<uint8_t>(255 - image[i]);
     }
 
     RGBImageRelease();
 }
 
-//input range [-100..100]
+// input range [-100..100]
 void CImageBasis::Contrast(float _contrast)
 {
-    stbi_uc* p_source;
-    
-    float contrast = (_contrast/100) + 1;  //convert to decimal & shift range: [0..2]
+    if (rgb_image == nullptr || imageMutex == nullptr)
+    {
+        return;
+    }
+
+    stbi_uc *p_source;
+
+    float contrast = (_contrast / 100) + 1; // convert to decimal & shift range: [0..2]
     float intercept = 128 * (1 - contrast);
 
-    RGBImageLock();
+    uint8_t *image = RGBImageLock();
+
+    if (image == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
 
     for (int x = 0; x < width; ++x)
     {
         for (int y = 0; y < height; ++y)
         {
-            p_source = rgb_image + (channels * (y * width + x));
-            
+            p_source = image + (channels * (y * width + x));
+
             for (int _channels = 0; _channels < channels; ++_channels)
             {
-                p_source[_channels] = (uint8_t) std::min(255, std::max(0, (int) (p_source[_channels] * contrast + intercept)));
+                p_source[_channels] = (uint8_t)std::min(255, std::max(0, (int)(p_source[_channels] * contrast + intercept)));
             }
         }
     }
@@ -697,44 +1062,40 @@ void CImageBasis::Contrast(float _contrast)
 
 CImageBasis::~CImageBasis()
 {
-    RGBImageLock();
-
-    if (!externalImage) 
+    if (LockImageMutex(-1))
     {
-        if (name == "tmpImage") 
-        { 
-            // This image should be placed in the shared part of PSRAM
-            psram_free_shared_temp_image_memory();
-        }
-        else 
-        { 
-            // All other images are much smaller and can go into the normal PSRAM region
-            //stbi_image_free(rgb_image);
-            if (memsize == 0) 
-            {
-                LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Not freeing (CImageBasis->" + name + " as there was never PSRAM allocated for it)");
-            }
-            else 
-            {
-                free_psram_heap("CImageBasis->" + name + "(" + std::to_string(memsize) + ")", rgb_image);
-            }
-        }
+        ReleaseImageBuffer();
+        RGBImageRelease();
     }
 
-    RGBImageRelease();
+    if (imageMutex != nullptr && ownsImageMutex)
+    {
+        vSemaphoreDelete(imageMutex);
+    }
+
+    imageMutex = nullptr;
 }
 
 void CImageBasis::SaveToFile(std::string _imageout)
 {
+    if (_imageout.empty() || rgb_image == nullptr)
+    {
+        return;
+    }
+
     string typ = getFileType(_imageout);
 
-    RGBImageLock();
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
 
     if ((typ == "jpg") || (typ == "JPG"))
     {
         stbi_write_jpg(_imageout.c_str(), width, height, channels, rgb_image, 0);
     }
- 
+
 #ifndef STBI_ONLY_JPEG
     if ((typ == "bmp") || (typ == "BMP"))
     {
@@ -746,43 +1107,48 @@ void CImageBasis::SaveToFile(std::string _imageout)
 
 void CImageBasis::Resize(int _new_dx, int _new_dy)
 {
-    // tmpImage lives in the shared PSRAM region and its destructor relies on that; never resize it in place
-    if ((rgb_image == NULL) || (name == "tmpImage")) 
+    if (rgb_image == nullptr)
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Resize: not possible for image " + name);
         return;
     }
 
-    int new_memsize = _new_dx * _new_dy * channels;
-    uint8_t* newImage = (unsigned char*)malloc_psram_heap("CImageBasis->" + name, new_memsize, MALLOC_CAP_SPIRAM);
+    size_t new_memsize = 0;
 
-    if (newImage == NULL) 
+    if (!CalculateImageSize(_new_dx, _new_dy, channels, &new_memsize))
+    {
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Resize: invalid target dimensions for image " + name);
+        return;
+    }
+
+    uint8_t *newImage = (unsigned char *)malloc_psram_heap("CImageBasis->" + name, new_memsize, MALLOC_CAP_SPIRAM);
+
+    if (newImage == NULL)
     {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Resize: Can't allocate enough memory: " + std::to_string(new_memsize));
         return;
     }
 
-    RGBImageLock();
-
-    stbir_resize_uint8(rgb_image, width, height, 0, newImage, _new_dx, _new_dy, 0, channels);
-
-    // Release the old buffer with the allocator it came from (same rule as the destructor)
-    if (!externalImage) 
+    if (RGBImageLock() == nullptr)
     {
-        if (memsize == 0) 
-        { 
-            // Loaded via STBI (STBI_MALLOC)
-            stbi_image_free(rgb_image);
-        }
-        else 
-        {
-            free_psram_heap("CImageBasis->" + name, rgb_image);
-        }
+        RGBImageRelease();
+        free_psram_heap("CImageBasis->" + name + " (failed resize)", newImage);
+        return;
     }
+
+    if (!stbir_resize_uint8(rgb_image, width, height, 0, newImage, _new_dx, _new_dy, 0, channels))
+    {
+        RGBImageRelease();
+        free_psram_heap("CImageBasis->" + name + " (resize failed)", newImage);
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Resize: stb resize failed for image " + name);
+        return;
+    }
+
+    ReleaseImageBuffer();
 
     rgb_image = newImage;
     memsize = new_memsize;
-    externalImage = false; // The image now owns a normal PSRAM buffer
+    bufferOwner = BufferOwner::PsramHeap;
     width = _new_dx;
     height = _new_dy;
 
@@ -791,15 +1157,38 @@ void CImageBasis::Resize(int _new_dx, int _new_dy)
 
 void CImageBasis::Resize(int _new_dx, int _new_dy, CImageBasis *_target)
 {
+    if (_target == nullptr || rgb_image == nullptr || !_target->ImageOkay())
+    {
+        ESP_LOGE(TAG, "Resize - source or target image is invalid");
+        return;
+    }
+
     if ((_target->height != _new_dy) || (_target->width != _new_dx) || (_target->channels != channels))
     {
         ESP_LOGE(TAG, "Resize - Target image size does not fit!");
         return;
     }
 
-    RGBImageLock();
+    if (RGBImageLock() == nullptr)
+    {
+        RGBImageRelease();
+        return;
+    }
 
-    stbir_resize_uint8(rgb_image, width, height, 0, _target->rgb_image, _new_dx, _new_dy, 0, channels);
+    uint8_t *targetData = _target->RGBImageLock();
 
+    if (targetData == nullptr)
+    {
+        _target->RGBImageRelease();
+        RGBImageRelease();
+        return;
+    }
+
+    if (!stbir_resize_uint8(rgb_image, width, height, 0, targetData, _new_dx, _new_dy, 0, channels))
+    {
+        ESP_LOGE(TAG, "Resize - stb resize failed");
+    }
+
+    _target->RGBImageRelease();
     RGBImageRelease();
 }

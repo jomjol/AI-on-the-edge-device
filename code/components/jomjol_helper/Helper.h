@@ -33,22 +33,23 @@ using namespace std;
 /* Error bit fields
    One bit per error
    Make sure it matches https://jomjol.github.io/AI-on-the-edge-device-docs/Error-Codes */
-enum SystemStatusFlag_t {          // One bit per error
+enum SystemStatusFlag_t
+{ // One bit per error
     // First Byte
-    SYSTEM_STATUS_PSRAM_BAD         = 1 << 0, //  1, Critical Error
-    SYSTEM_STATUS_HEAP_TOO_SMALL    = 1 << 1, //  2, Critical Error
-    SYSTEM_STATUS_CAM_BAD           = 1 << 2, //  4, Critical Error
-    SYSTEM_STATUS_SDCARD_CHECK_BAD  = 1 << 3, //  8, Critical Error
-    SYSTEM_STATUS_FOLDER_CHECK_BAD  = 1 << 4, //  16, Critical Error
+    SYSTEM_STATUS_PSRAM_BAD = 1 << 0,        //  1, Critical Error
+    SYSTEM_STATUS_HEAP_TOO_SMALL = 1 << 1,   //  2, Critical Error
+    SYSTEM_STATUS_CAM_BAD = 1 << 2,          //  4, Critical Error
+    SYSTEM_STATUS_SDCARD_CHECK_BAD = 1 << 3, //  8, Critical Error
+    SYSTEM_STATUS_FOLDER_CHECK_BAD = 1 << 4, //  16, Critical Error
 
     // Second Byte
-    SYSTEM_STATUS_CAM_FB_BAD        = 1 << (0+8), //  8, Flow still might work
-    SYSTEM_STATUS_NTP_BAD           = 1 << (1+8), //  9, Flow will work but time will be wrong
+    SYSTEM_STATUS_CAM_FB_BAD = 1 << (0 + 8), //  8, Flow still might work
+    SYSTEM_STATUS_NTP_BAD = 1 << (1 + 8),    //  9, Flow will work but time will be wrong
 };
 
 std::string FormatFileName(std::string input);
-std::size_t file_size(const std::string& file_name);
-void FindReplace(std::string& line, std::string& oldString, std::string& newString);
+std::size_t file_size(const std::string &file_name);
+void FindReplace(std::string &line, std::string &oldString, std::string &newString);
 
 bool CopyFile(string input, string output);
 bool DeleteFile(string filename);
@@ -70,7 +71,7 @@ string getFileFullFileName(string filename);
 string getDirectory(string filename);
 
 int mkdir_r(const char *dir, const mode_t mode);
-int removeFolder(const char* folderPath, const char* logTag);
+int removeFolder(const char *folderPath, const char *logTag);
 
 string toLower(string in);
 string toUpper(string in);
@@ -92,7 +93,7 @@ float fast_atan2(float y, float x);
 double pow10_double(int pot); // faster than pow(10, pot)
 uint32_t pow10_int(int pot);  // faster than pow(10, pot)
 
-void memCopyGen(uint8_t* _source, uint8_t* _target, int _size);
+void memCopyGen(uint8_t *_source, uint8_t *_target, int _size);
 
 std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter);
 std::vector<std::string> ZerlegeZeile(std::string input, std::string delimiter = " =, \t");
@@ -107,7 +108,7 @@ string getSDCardPartitionSize();
 string getSDCardFreePartitionSpace();
 string getSDCardPartitionAllocationSize();
 
-void SaveSDCardInfo(sdmmc_card_t* card);
+void SaveSDCardInfo(sdmmc_card_t *card);
 string SDCardParseManufacturerIDs(int);
 string getSDCardManufacturer();
 string getSDCardName();
@@ -125,14 +126,14 @@ time_t getUpTime(void);
 string getResetReason(void);
 std::string getFormatedUptime(bool compact);
 
-const char* get404(void);
+const char *get404(void);
 
-std::string UrlDecode(const std::string& value);
+std::string UrlDecode(const std::string &value);
 
-void replaceAll(std::string& s, const std::string& toReplace, const std::string& replaceWith);
-bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith);
-bool replaceString(std::string& s, std::string const& toReplace, std::string const& replaceWith, bool logIt);
-bool isInString(std::string& s, std::string const& toFind);
+void replaceAll(std::string &s, const std::string &toReplace, const std::string &replaceWith);
+bool replaceString(std::string &s, std::string const &toReplace, std::string const &replaceWith);
+bool replaceString(std::string &s, std::string const &toReplace, std::string const &replaceWith, bool logIt);
+bool isInString(std::string &s, std::string const &toFind);
 
 bool isStringNumeric(std::string &input);
 bool isStringAlphabetic(std::string &input);
@@ -143,4 +144,7 @@ int clipInt(int input, int high, int low);
 bool numericStrToBool(std::string input);
 bool stringToBoolean(std::string input);
 
-#endif //HELPER_H
+int get_value_or_default_int(int input, int high, int low, int default_value);
+int get_value_or_default_uint(int input, int high, int default_value);
+
+#endif // HELPER_H

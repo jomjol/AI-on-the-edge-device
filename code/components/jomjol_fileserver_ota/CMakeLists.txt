@@ -1,7 +1,30 @@
 FILE(GLOB_RECURSE app_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.*)
 
 idf_component_register(SRCS ${app_sources}
-                    INCLUDE_DIRS "." "../../include" "miniz"
-                    REQUIRES vfs esp_http_server app_update esp_http_client nvs_flash jomjol_tfliteclass jomjol_flowcontroll spiffs jomjol_helper jomjol_controlGPIO)
+                    INCLUDE_DIRS 
+                        "." 
+                        "../../include"
 
+                    REQUIRES 
+                        vfs 
+                        spiffs 
+                        nvs_flash 
+                        app_update 
+                        esp_http_server 
+                        esp_http_client 
 
+                        jomjol_configfile 
+                        jomjol_controlcamera 
+                        jomjol_controlGPIO 
+                        jomjol_flowcontroll 
+                        jomjol_helper 
+                        jomjol_image_proc 
+                        jomjol_influxdb 
+                        jomjol_logfile 
+                        jomjol_mqtt 
+                        jomjol_tfliteclass 
+                        jomjol_time_sntp 
+                        jomjol_webhook 
+                        jomjol_network 
+                        openmetrics
+                    )

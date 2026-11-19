@@ -8,14 +8,10 @@
 
 #include <esp_http_server.h>
 #include "CImageBasis.h"
-#include "ClassFlowControll.h"
+#include "ClassFlowControl.h"
 #include "openmetrics.h"
 
-extern ClassFlowControll flowctrl;
-
-esp_err_t setCCstatusToCFstatus(void); // CCstatus >>> CFstatus
-esp_err_t setCFstatusToCCstatus(void); // CFstatus >>> CCstatus
-esp_err_t setCFstatusToCam(void);      // CFstatus >>> Kamera
+extern ClassFlowControl flowctrl;
 
 void register_server_main_flow_task_uri(httpd_handle_t server);
 

@@ -6,19 +6,19 @@
 #include "configFile.h"
 #include <esp_log.h>
 
-#include "../../include/defines.h"
+#include "defines.h"
 
 static const char *TAG = "CONFIG";
 
 ConfigFile::ConfigFile(std::string filePath)
 {
-    std::string config = FormatFileName(filePath);
-    pFile = fopen(config.c_str(), "r");
+	std::string config = FormatFileName(filePath);
+	pFile = fopen(config.c_str(), "r");
 }
 
 ConfigFile::~ConfigFile()
 {
-    fclose(pFile);
+	fclose(pFile);
 }
 
 bool ConfigFile::isNewParagraph(std::string input)
@@ -27,22 +27,28 @@ bool ConfigFile::isNewParagraph(std::string input)
 	{
 		return true;
 	}
+
 	return false;
 }
 
-bool ConfigFile::GetNextParagraph(std::string& aktparamgraph, bool &disabled, bool &eof)
+bool ConfigFile::GetNextParagraph(std::string &aktparamgraph, bool &disabled, bool &eof)
 {
-	while (getNextLine(&aktparamgraph, disabled, eof) && !isNewParagraph(aktparamgraph));
+	while (getNextLine(&aktparamgraph, disabled, eof) && !isNewParagraph(aktparamgraph))
+		;
 
 	if (isNewParagraph(aktparamgraph))
+	{
 		return true;
+	}
+
 	return false;
 }
 
 bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 {
-    eof = false;
+	eof = false;
 	char zw[1024] = "";
+
 	if (pFile == NULL)
 	{
 		*rt = "";
@@ -65,22 +71,27 @@ bool ConfigFile::getNextLine(std::string *rt, bool &disabled, bool &eof)
 		eof = true;
 		return false;
 	}
+
 	*rt = zw;
 	*rt = trim(*rt);
+
 	while ((zw[0] == ';' || zw[0] == '#' || (rt->size() == 0)) && !(zw[1] == '['))
 	{
 		fgets(zw, 1024, pFile);
 		ESP_LOGD(TAG, "%s", zw);
+
 		if (feof(pFile))
 		{
 			*rt = "";
-            eof = true;
+			eof = true;
 			return false;
 		}
+
 		*rt = zw;
 		*rt = trim(*rt);
 	}
 
-    disabled = ((*rt)[0] == ';');
+	disabled = ((*rt)[0] == ';');
+
 	return true;
 }

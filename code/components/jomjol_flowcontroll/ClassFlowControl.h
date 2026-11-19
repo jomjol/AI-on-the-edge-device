@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef CLASSFLOWCONTROLL_H
-#define CLASSFLOWCONTROLL_H
+#ifndef CLASSFLOWCONTROL_H
+#define CLASSFLOWCONTROL_H
 
 #include <string>
 #include <mutex>
@@ -12,36 +12,35 @@
 #include "ClassFlowCNNGeneral.h"
 #include "ClassFlowPostProcessing.h"
 #ifdef ENABLE_MQTT
-	#include "ClassFlowMQTT.h"
-#endif //ENABLE_MQTT
+#include "ClassFlowMQTT.h"
+#endif // ENABLE_MQTT
 #ifdef ENABLE_INFLUXDB
-	#include "ClassFlowInfluxDB.h"
-	#include "ClassFlowInfluxDBv2.h"
-#endif //ENABLE_INFLUXDB
+#include "ClassFlowInfluxDB.h"
+#include "ClassFlowInfluxDBv2.h"
+#endif // ENABLE_INFLUXDB
 #ifdef ENABLE_WEBHOOK
-	#include "ClassFlowWebhook.h"
-#endif //ENABLE_WEBHOOK
+#include "ClassFlowWebhook.h"
+#endif // ENABLE_WEBHOOK
 #include "ClassFlowCNNGeneral.h"
 
-class ClassFlowControll :
-    public ClassFlow
+class ClassFlowControl : public ClassFlow
 {
 protected:
-	std::vector<ClassFlow*> FlowControll;
-	ClassFlowPostProcessing* flowpostprocessing;
-	ClassFlowAlignment* flowalignment;	
-	ClassFlowCNNGeneral* flowanalog;
-	ClassFlowCNNGeneral* flowdigit;
-//	ClassFlowDigit* flowdigit;
-	ClassFlowTakeImage* flowtakeimage;
-	ClassFlow* CreateClassFlow(std::string _type);
+	std::vector<ClassFlow *> FlowControl;
+	ClassFlowPostProcessing *flowpostprocessing;
+	ClassFlowAlignment *flowalignment;
+	ClassFlowCNNGeneral *flowanalog;
+	ClassFlowCNNGeneral *flowdigit;
+	//	ClassFlowDigit* flowdigit;
+	ClassFlowTakeImage *flowtakeimage;
+	ClassFlow *CreateClassFlow(std::string _type);
 
 	bool AutoStart;
 	float AutoInterval;
-	void SetInitialParameter(void);	
+	void SetInitialParameter(void);
 	std::string aktstatusWithTime;
 	std::string aktstatus;
-	std::mutex statusMutex;	// status is written by the flow task and read by HTTP handlers
+	std::mutex statusMutex; // status is written by the flow task and read by HTTP handlers
 	void setStatus(const std::string &_status, const std::string &_statusWithTime);
 	int aktRunNr;
 
@@ -51,22 +50,22 @@ public:
 	void InitFlow(std::string config);
 	bool doFlow(string time);
 	void doFlowTakeImageOnly(string time);
-	bool getStatusSetupModus(){return SetupModeActive;};
+	bool getStatusSetupModus() { return SetupModeActive; };
 	string getReadout(bool _rawvalue, bool _noerror, int _number);
-	string getReadoutAll(int _type);	
+	string getReadoutAll(int _type);
 	bool UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
-	string GetPrevalue(std::string _number = "");	
-	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
+	string GetPrevalue(std::string _number = "");
+	bool ReadParameter(FILE *pfile, string &aktparamgraph);
 	string getJSON();
-	const std::vector<NumberPost*> &getNumbers();
+	const std::vector<NumberPost *> &getNumbers();
 	string getNumbersName();
 
 	string TranslateAktstatus(std::string _input);
 
-	#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
+#ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
 	void DigitDrawROI(CImageBasis *_zw);
 	void AnalogDrawROI(CImageBasis *_zw);
-	#endif
+#endif
 
 	esp_err_t GetJPGStream(std::string _fn, httpd_req_t *req);
 	esp_err_t SendRawJPG(httpd_req_t *req);
@@ -80,22 +79,19 @@ public:
 	std::string getActStatus();
 	void setActStatus(std::string _aktstatus);
 
-	std::vector<HTMLInfo*> GetAllDigit();
-	std::vector<HTMLInfo*> GetAllAnalog();	
+	std::vector<HTMLInfo *> GetAllDigit();
+	std::vector<HTMLInfo *> GetAllAnalog();
 
 	t_CNNType GetTypeDigit();
 	t_CNNType GetTypeAnalog();
-	
-	#ifdef ENABLE_MQTT
+
+#ifdef ENABLE_MQTT
 	bool StartMQTTService();
-	#endif //ENABLE_MQTT
+#endif // ENABLE_MQTT
 
 	int CleanTempFolder();
 
-	string name(){return "ClassFlowControll";};
+	string name() { return "ClassFlowControl"; };
 };
 
 #endif
-
-
-
