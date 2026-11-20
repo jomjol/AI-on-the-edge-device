@@ -25,18 +25,18 @@ protected:
     float roundInterval; // Minutes
     std::string maintopic, domoticzintopic;
     void SetInitialParameter(void);
-    void handleIdx(string _decsep, string _value);
+    void handleIdx(std::string _decsep, std::string _value);
 
 public:
-    ClassFlowMQTT();
+    ClassFlowMQTT(void);
     ClassFlowMQTT(std::vector<ClassFlow *> *lfc);
     ClassFlowMQTT(std::vector<ClassFlow *> *lfc, ClassFlow *_prev);
 
     bool Start(float AutoInterval);
 
-    bool ReadParameter(FILE *pfile, string &aktparamgraph);
-    bool doFlow(string time);
-    string name() { return "ClassFlowMQTT"; };
+    bool ReadParameter(FILE *pfile, std::string &aktparamgraph);
+    bool doFlow(std::string time);
+    std::string name(void) { return "ClassFlowMQTT"; };
 };
 #endif // CLASSFFLOWMQTT_H
 #endif // ENABLE_MQTT

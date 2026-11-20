@@ -10,7 +10,6 @@
 #include "freertos/event_groups.h"
 
 #include "esp_camera.h"
-#include <string>
 #include <esp_http_server.h>
 #include "CImageBasis.h"
 #include "defines.h"
@@ -50,7 +49,7 @@ typedef struct
     int ImageDcw = 1;                // downsize enable (0 = disable , 1 = enable)
     int ImageColorbar = 0;           // Colorbar enable (0 = disable , 1 = enable)
 
-    int ImageLedIntensity = 2048;
+    int ImageLedIntensity = 25;
 
     bool ImageZoomEnabled = false;
     int ImageZoomOffsetX = 0;
@@ -97,7 +96,7 @@ public:
     bool CamDeepSleepEnable = false;
     bool CamTempImage = false;
 
-    int LedIntensity = 2048;
+    int LedIntensity = 512;
 
     bool CaptureToBasisImageLed = false;
     bool CaptureToFileLed = false;

@@ -626,7 +626,7 @@ void CImageBasis::drawCircle(int x1, int y1, int rad, int r, int g, int b, int t
     RGBImageRelease();
 }
 
-CImageBasis::CImageBasis(string _name)
+CImageBasis::CImageBasis(std::string _name)
 {
     name = _name;
     rgb_image = NULL;
@@ -800,7 +800,7 @@ void CImageBasis::crop_image(unsigned short cropLeft, unsigned short cropRight, 
     RGBImageRelease();
 }
 
-CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom, bool useSharedRegion)
+CImageBasis::CImageBasis(std::string _name, CImageBasis *_copyfrom, bool useSharedRegion)
 {
     name = _name;
     width = height = channels = bpp = 0;
@@ -872,7 +872,7 @@ CImageBasis::CImageBasis(string _name, CImageBasis *_copyfrom, bool useSharedReg
     RGBImageRelease();
 }
 
-CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
+CImageBasis::CImageBasis(std::string _name, int _width, int _height, int _channels)
 {
     name = _name;
     imageMutex = xSemaphoreCreateRecursiveMutex();
@@ -915,7 +915,7 @@ CImageBasis::CImageBasis(string _name, int _width, int _height, int _channels)
     RGBImageRelease();
 }
 
-CImageBasis::CImageBasis(string _name, std::string _image)
+CImageBasis::CImageBasis(std::string _name, std::string _image)
 {
     name = _name;
     channels = 3;
@@ -966,7 +966,7 @@ bool CImageBasis::ImageOkay(void)
     return rgb_image != NULL;
 }
 
-CImageBasis::CImageBasis(string _name, uint8_t *_rgb_image, int _channels, int _width, int _height, int _bpp)
+CImageBasis::CImageBasis(std::string _name, uint8_t *_rgb_image, int _channels, int _width, int _height, int _bpp)
 {
     name = _name;
     imageMutex = xSemaphoreCreateRecursiveMutex();
@@ -1083,7 +1083,7 @@ void CImageBasis::SaveToFile(std::string _imageout)
         return;
     }
 
-    string typ = getFileType(_imageout);
+    std::string typ = getFileType(_imageout);
 
     if (RGBImageLock() == nullptr)
     {

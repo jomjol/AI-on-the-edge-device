@@ -90,7 +90,7 @@ ClassFlowMQTT::ClassFlowMQTT(std::vector<ClassFlow *> *lfc, ClassFlow *_prev)
     }
 }
 
-bool ClassFlowMQTT::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlowMQTT::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
     aktparamgraph = trim(aktparamgraph);
 
@@ -108,7 +108,7 @@ bool ClassFlowMQTT::ReadParameter(FILE *pfile, string &aktparamgraph)
         return false;
     }
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
@@ -274,7 +274,7 @@ bool ClassFlowMQTT::Start(float AutoInterval)
     return (MQTT_Init() == 1);
 }
 
-bool ClassFlowMQTT::doFlow(string zwtime)
+bool ClassFlowMQTT::doFlow(std::string zwtime)
 {
     bool success;
     std::string result;
@@ -285,9 +285,9 @@ bool ClassFlowMQTT::doFlow(string zwtime)
     std::string resultRatePerTimeUnit = ""; // According to selection
     std::string resulttimestamp = "";
     std::string resultchangabs = "";
-    string namenumber = "";
-    string domoticzpayload = "";
-    string DomoticzIdx = "";
+    std::string namenumber = "";
+    std::string domoticzpayload = "";
+    std::string DomoticzIdx = "";
     int qos = 1;
 
     /* Send the the Homeassistant Discovery and the Static Topics in case they where scheduled */

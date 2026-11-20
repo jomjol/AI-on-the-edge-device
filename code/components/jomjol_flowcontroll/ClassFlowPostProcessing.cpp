@@ -53,7 +53,7 @@ std::string ClassFlowPostProcessing::GetJSON(std::string _lineend)
     return json;
 }
 
-string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend)
+std::string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend)
 {
     std::string json = "";
 
@@ -87,7 +87,7 @@ string ClassFlowPostProcessing::getJsonFromNumber(int i, std::string _lineend)
     return json;
 }
 
-string ClassFlowPostProcessing::GetPreValue(std::string _number)
+std::string ClassFlowPostProcessing::GetPreValue(std::string _number)
 {
     int index = -1;
 
@@ -112,7 +112,7 @@ string ClassFlowPostProcessing::GetPreValue(std::string _number)
     return RundeOutput(NUMBERS[index]->PreValue, NUMBERS[index]->Nachkomma);
 }
 
-bool ClassFlowPostProcessing::SetPreValue(double _newvalue, string _numbers, bool _extern)
+bool ClassFlowPostProcessing::SetPreValue(double _newvalue, std::string _numbers, bool _extern)
 {
     std::lock_guard<std::mutex> lock(preValueMutex);
 
@@ -187,7 +187,7 @@ bool ClassFlowPostProcessing::LoadPreValue(void)
 
     UpdatePreValueINI = false; // Conversion to the new format
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
     splitted = HelperZerlegeZeile(zwtime, "\t");
 
     //  Conversion to the new format

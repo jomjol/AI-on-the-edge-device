@@ -24,17 +24,18 @@ protected:
 
     void SetInitialParameter(void);
 
-    void handleFieldname(string _decsep, string _value);
-    void handleMeasurement(string _decsep, string _value);
+    void handleFieldname(std::string _decsep, std::string _value);
+    void handleMeasurement(std::string _decsep, std::string _value);
 
 public:
-    ClassFlowWebhook();
+    ClassFlowWebhook(void);
     ClassFlowWebhook(std::vector<ClassFlow *> *lfc);
     ClassFlowWebhook(std::vector<ClassFlow *> *lfc, ClassFlow *_prev);
 
-    bool ReadParameter(FILE *pfile, string &aktparamgraph);
-    bool doFlow(string time);
-    string name() { return "ClassFlowWebhook"; };
+    bool ReadParameter(FILE *pfile, std::string &aktparamgraph);
+    bool doFlow(std::string time);
+	
+    std::string name(void) { return "ClassFlowWebhook"; };
 };
 
 #endif // CLASSFWEBHOOK_H

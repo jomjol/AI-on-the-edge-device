@@ -14,7 +14,7 @@ void setMqtt_Server_Retain(bool SetRetainFlag);
 void mqttServer_setMainTopic(std::string maintopic);
 void mqttServer_setDmoticzInTopic(std::string domoticzintopic);
 
-std::string mqttServer_getMainTopic();
+std::string mqttServer_getMainTopic(void);
 
 void register_server_mqtt_uri(httpd_handle_t server);
 

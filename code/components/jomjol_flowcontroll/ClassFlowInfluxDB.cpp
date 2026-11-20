@@ -68,7 +68,7 @@ ClassFlowInfluxDB::ClassFlowInfluxDB(std::vector<ClassFlow *> *lfc, ClassFlow *_
     }
 }
 
-bool ClassFlowInfluxDB::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlowInfluxDB::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
     aktparamgraph = trim(aktparamgraph);
 
@@ -86,7 +86,7 @@ bool ClassFlowInfluxDB::ReadParameter(FILE *pfile, string &aktparamgraph)
         return false;
     }
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
@@ -137,7 +137,7 @@ bool ClassFlowInfluxDB::ReadParameter(FILE *pfile, string &aktparamgraph)
     return true;
 }
 
-bool ClassFlowInfluxDB::doFlow(string zwtime)
+bool ClassFlowInfluxDB::doFlow(std::string zwtime)
 {
     if (!InfluxDBenable)
     {
@@ -151,7 +151,7 @@ bool ClassFlowInfluxDB::doFlow(string zwtime)
     std::string resultrate = "";
     std::string resulttimestamp = "";
     long int timeutc;
-    string namenumber = "";
+    std::string namenumber = "";
 
     if (flowpostprocessing)
     {

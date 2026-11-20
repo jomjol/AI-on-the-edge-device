@@ -98,13 +98,6 @@ void ClassLogFile::setLogLevel(esp_log_level_t _logLevel)
 
     // set new log level
     loglevel = _logLevel;
-
-    /*
-    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Test");
-    LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Test");
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Test");
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Test");
-    */
 }
 
 void ClassLogFile::SetLogFileRetention(unsigned short _LogFileRetentionInDays)
@@ -206,13 +199,16 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::stri
 
 #ifdef KEEP_LOGFILE_OPEN_FOR_APPENDING
     if (fileNameDateNew != fileNameDate)
-    { // Filename changed
+    { 
+        // Filename changed
         // Make sure each day gets its own logfile
         // Also we need to re-open it in case it needed to get closed for reading
         std::string logpath = logroot + "/" + fileNameDateNew;
 
         ESP_LOGI(TAG, "Opening logfile %s for appending", logpath.c_str());
+		
         logFileAppendHandle = fopen(logpath.c_str(), "a+");
+		
         if (logFileAppendHandle == NULL)
         {
             ESP_LOGE(TAG, "Can't open log file %s", logpath.c_str());
@@ -229,6 +225,7 @@ void ClassLogFile::WriteToFile(esp_log_level_t level, std::string tag, std::stri
     // Local handle: WriteToFile is called from several tasks, a shared member handle
     // could be overwritten/closed by another task (FILE leak, fputs on NULL)
     std::string logpath = logroot + "/" + fileNameDateNew;
+	
     FILE *pFile = fopen(logpath.c_str(), "a+");
     if (pFile == NULL)
     {

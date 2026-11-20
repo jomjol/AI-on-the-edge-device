@@ -77,17 +77,20 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     configTopic = field;
 
     if (group != "" && (*NUMBERS).size() > 1)
-    { // There is more than one meter, prepend the group so we can differentiate them
+    {
+        // There is more than one meter, prepend the group so we can differentiate them
         configTopic = group + "_" + field;
         name = group + " " + name;
     }
 
     if (field == "problem")
-    { // Special case: Binary sensor which is based on error topic
+    {
+        // Special case: Binary sensor which is based on error topic
         component = "binary_sensor";
     }
     else if (field == "flowstart")
-    { // Special case: Button
+    {
+        // Special case: Button
         component = "button";
     }
     else
@@ -105,7 +108,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
     topicFull = "homeassistant/" + component + "/" + node_id + "/" + configTopic + "/config";
 
     /* See https://www.home-assistant.io/docs/mqtt/discovery/ */
-    payload = string("{") +
+    payload = std::string("{") +
               "\"~\": \"" + maintopic + "\"," +
               "\"unique_id\": \"" + maintopic + "-" + configTopic + "\"," +
               "\"object_id\": \"" + maintopic + "_" + configTopic + "\"," +                           // Default entity ID; required for HA <= 2025.10
@@ -167,7 +170,7 @@ bool sendHomeAssistantDiscoveryTopic(std::string group, std::string field,
         "\"payload_available\": \"" + LWT_CONNECTED + "\"," +
         "\"payload_not_available\": \"" + LWT_DISCONNECTED + "\",";
 
-    payload += string("\"device\": {") +
+    payload += std::string("\"device\": {") +
                "\"identifiers\": [\"" + maintopic + "\"]," +
                "\"name\": \"" + maintopic + "\"," +
                "\"model\": \"Meter Digitizer\"," +
@@ -374,13 +377,17 @@ void GotConnected(std::string maintopic, bool retainFlag)
 
 void register_server_mqtt_uri(httpd_handle_t server)
 {
-    httpd_uri_t uri = {};
-    uri.method = HTTP_GET;
+    ESP_LOGI(TAG, "Registering MQTT URI handlers");
 
-    uri.uri = "/mqtt_publish_discovery";
-    uri.handler = APPLY_BASIC_AUTH_FILTER(scheduleSendingDiscovery_and_static_Topics);
-    uri.user_ctx = (void *)"";
-    httpd_register_uri_handler(server, &uri);
+    httpd_uri_t mqtt_uri = {};
+
+    mqtt_uri.uri = "/mqtt_publish_discovery";
+    mqtt_uri.method = HTTP_GET;
+    mqtt_uri.handler = APPLY_BASIC_AUTH_FILTER(scheduleSendingDiscovery_and_static_Topics);
+    mqtt_uri.user_ctx = NULL;
+    httpd_register_uri_handler(server, &mqtt_uri);
+
+    /** 1x when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
 }
 
 std::string getTimeUnit(void)

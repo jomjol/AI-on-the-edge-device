@@ -145,6 +145,7 @@ static char *get_btm_neighbor_list(uint8_t *report, size_t report_len)
 
 		lci[0] = '\0';
 		civic[0] = '\0';
+		
 		while (end - pos > 2)
 		{
 			uint8_t s_id, s_len;
@@ -339,8 +340,7 @@ void wifiRoamingQuery(void)
 #ifdef WLAN_USE_ROAMING_BY_SCANNING
 std::string getAuthModeName(const wifi_auth_mode_t auth_mode)
 {
-	std::string AuthModeNames[] = {"OPEN", "WEP", "WPA PSK", "WPA2 PSK", "WPA WPA2 PSK", "WPA2 ENTERPRISE",
-								   "WPA3 PSK", "WPA2 WPA3 PSK", "WAPI_PSK", "MAX"};
+	std::string AuthModeNames[] = {"OPEN", "WEP", "WPA PSK", "WPA2 PSK", "WPA WPA2 PSK", "WPA2 ENTERPRISE", "WPA3 PSK", "WPA2 WPA3 PSK", "WAPI_PSK", "MAX"};
 	return AuthModeNames[auth_mode];
 }
 
@@ -691,14 +691,6 @@ int get_WIFI_RSSI()
 	else
 		return -127; // Return -127 if no info available e.g. not connected
 }
-
-/*std::string getIp() {
-	esp_netif_ip_info_t ip_info;
-	ESP_ERROR_CHECK(esp_netif_get_ip_info(my_sta, ip_info));
-	char ipFormated[4*3+3+1];
-	sprintf(ipFormated, IPSTR, IP2STR(&ip_info.ip));
-	return std::string(ipFormated);
-}*/
 
 std::string *getHostname()
 {

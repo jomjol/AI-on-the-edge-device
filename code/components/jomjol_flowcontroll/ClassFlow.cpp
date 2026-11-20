@@ -15,7 +15,7 @@ void ClassFlow::SetInitialParameter(void)
 	disabled = false;
 }
 
-bool ClassFlow::isNewParagraph(string input)
+bool ClassFlow::isNewParagraph(std::string input)
 {
 	if ((input[0] == '[') || ((input[0] == ';') && (input[1] == '[')))
 	{
@@ -24,7 +24,7 @@ bool ClassFlow::isNewParagraph(string input)
 	return false;
 }
 
-bool ClassFlow::GetNextParagraph(FILE *pfile, string &aktparamgraph)
+bool ClassFlow::GetNextParagraph(FILE *pfile, std::string &aktparamgraph)
 {
 	while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
 		;
@@ -52,24 +52,24 @@ ClassFlow::ClassFlow(std::vector<ClassFlow *> *lfc, ClassFlow *_prev)
 	previousElement = _prev;
 }
 
-bool ClassFlow::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlow::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
 	return false;
 }
 
-bool ClassFlow::doFlow(string time)
+bool ClassFlow::doFlow(std::string time)
 {
 	return false;
 }
 
-string ClassFlow::getHTMLSingleStep(string host)
+std::string ClassFlow::getHTMLSingleStep(std::string host)
 {
 	return "";
 }
 
 std::string ClassFlow::GetParameterName(std::string _input)
 {
-	string _param;
+	std::string _param;
 	int _pospunkt = _input.find_first_of(".");
 	if (_pospunkt > -1)
 	{
@@ -83,7 +83,7 @@ std::string ClassFlow::GetParameterName(std::string _input)
 	return _param;
 }
 
-bool ClassFlow::getNextLine(FILE *pfile, string *rt)
+bool ClassFlow::getNextLine(FILE *pfile, std::string *rt)
 {
 	char zw[1024];
 	if (pfile == NULL)

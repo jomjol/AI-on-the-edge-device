@@ -2,7 +2,6 @@
 #include <functional>
 #include "string.h"
 
-#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -102,20 +101,25 @@ void GpioPin::gpioInterrupt(int value)
 void GpioPin::init()
 {
     gpio_config_t io_conf;
+
     // set interrupt
     io_conf.intr_type = _interruptType;
+
     // set as output mode
     io_conf.mode = (_mode == GPIO_PIN_MODE_OUTPUT) || (_mode == GPIO_PIN_MODE_BUILT_IN_FLASH_LED) ? gpio_mode_t::GPIO_MODE_OUTPUT : gpio_mode_t::GPIO_MODE_INPUT;
+
     // bit mask of the pins that you want to set,e.g.GPIO18/19
     io_conf.pin_bit_mask = (1ULL << _gpio);
+
     // set pull-down mode
     io_conf.pull_down_en = _mode == GPIO_PIN_MODE_INPUT_PULLDOWN ? gpio_pulldown_t::GPIO_PULLDOWN_ENABLE : gpio_pulldown_t::GPIO_PULLDOWN_DISABLE;
+
     // set pull-up mode
     io_conf.pull_up_en = _mode == GPIO_PIN_MODE_INPUT_PULLDOWN ? gpio_pullup_t::GPIO_PULLUP_ENABLE : gpio_pullup_t::GPIO_PULLUP_DISABLE;
+
     // configure GPIO with the given settings
     gpio_config(&io_conf);
 
-    //    if (_interruptType != GPIO_INTR_DISABLE) {                // ohne GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X, wenn das genutzt wird, dann soll auch der Handler hier nicht initialisiert werden, da das dann über SmartLED erfolgt.
     if ((_interruptType != GPIO_INTR_DISABLE) && (_mode != GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X))
     {
         // hook isr handler for specific gpio pin
@@ -171,7 +175,9 @@ void GpioPin::publishState()
         ESP_LOGD(TAG, "publish state of GPIO %d new state %d", _gpio, newState);
 #ifdef ENABLE_MQTT
         if (_mqttTopic.compare("") != 0)
+        {
             MQTTPublish(_mqttTopic, newState ? "true" : "false", 1);
+        }
 #endif // ENABLE_MQTT
         currentState = newState;
     }
@@ -185,6 +191,7 @@ bool GpioPin::handleMQTT(std::string, char *data, int data_len)
     std::string dataStr(data, data_len);
     dataStr = toLower(dataStr);
     std::string errorText = "";
+
     if ((dataStr == "true") || (dataStr == "1"))
     {
         setValue(true, GPIO_SET_SOURCE_MQTT, &errorText);
@@ -243,10 +250,6 @@ GpioHandler::~GpioHandler()
 
 void GpioHandler::init()
 {
-    // TickType_t xDelay = 60000 / portTICK_PERIOD_MS;
-    // ESP_LOGD(TAG, "wait before start %ldms", (long) xDelay);
-    // vTaskDelay( xDelay );
-
     ESP_LOGD(TAG, "*************** Start GPIOHandler_Init *****************");
 
     if (gpioMap == NULL)
@@ -302,7 +305,9 @@ void GpioHandler::taskHandler()
         for (std::map<gpio_num_t, GpioPin *>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it)
         {
             if ((it->second->getInterruptType() == GPIO_INTR_DISABLE))
+            {
                 it->second->publishState();
+            }
         }
     }
 }
@@ -315,7 +320,9 @@ void GpioHandler::handleMQTTconnect()
         for (std::map<gpio_num_t, GpioPin *>::iterator it = gpioMap->begin(); it != gpioMap->end(); ++it)
         {
             if ((it->second->getMode() == GPIO_PIN_MODE_INPUT) || (it->second->getMode() == GPIO_PIN_MODE_INPUT_PULLDOWN) || (it->second->getMode() == GPIO_PIN_MODE_INPUT_PULLUP))
+            {
                 it->second->publishState();
+            }
         }
     }
 }
@@ -326,7 +333,9 @@ void GpioHandler::deinit()
 #ifdef ENABLE_MQTT
     MQTTunregisterConnectFunction("gpio-handler");
 #endif // ENABLE_MQTT
+
     clear();
+
     if (xHandleTaskGpio != NULL)
     {
         vTaskDelete(xHandleTaskGpio);
@@ -345,7 +354,9 @@ void GpioHandler::gpioInterrupt(GpioResult *gpioResult)
 bool GpioHandler::readConfig()
 {
     if (!gpioMap->empty())
+    {
         clear();
+    }
 
     ConfigFile configFile = ConfigFile(_configFile);
 
@@ -355,46 +366,44 @@ bool GpioHandler::readConfig()
     bool eof = false;
     gpio_num_t gpioExtLED = (gpio_num_t)0;
 
-    //    ESP_LOGD(TAG, "readConfig - Start 1");
-
     while ((!configFile.GetNextParagraph(line, disabledLine, eof) || (line.compare("[GPIO]") != 0)) && !eof)
     {
     }
-    if (eof)
-        return false;
 
-    //    ESP_LOGD(TAG, "readConfig - Start 2 line: %s, disabbledLine: %d", line.c_str(), (int) disabledLine);
+    if (eof)
+    {
+        return false;
+    }
 
     _isEnabled = !disabledLine;
 
     if (!_isEnabled)
+    {
         return false;
-
-    //    ESP_LOGD(TAG, "readConfig - Start 3");
+    }
 
 #ifdef ENABLE_MQTT
-    //    std::string mainTopicMQTT = "";
     std::string mainTopicMQTT = mqttServer_getMainTopic();
+
     if (mainTopicMQTT.length() > 0)
     {
         mainTopicMQTT = mainTopicMQTT + "/GPIO";
         ESP_LOGD(TAG, "MAINTOPICMQTT found");
     }
 #endif // ENABLE_MQTT
+
     bool registerISR = false;
+
     while (configFile.getNextLine(&line, disabledLine, eof) && !configFile.isNewParagraph(line))
     {
         splitted = ZerlegeZeile(line);
-        // const std::regex pieces_regex("IO([0-9]{1,2})");
-        // std::smatch pieces_match;
-        // if (std::regex_match(splitted[0], pieces_match, pieces_regex) && (pieces_match.size() == 2))
-        // {
-        //     std::string gpioStr = pieces_match[1];
+
         ESP_LOGD(TAG, "conf param %s", toUpper(splitted[0]).c_str());
+
         if (toUpper(splitted[0]) == "MAINTOPICMQTT")
         {
-            //            ESP_LOGD(TAG, "MAINTOPICMQTT found");
-            //            mainTopicMQTT = splitted[1];
+            // ESP_LOGD(TAG, "MAINTOPICMQTT found");
+            // mainTopicMQTT = splitted[1];
         }
         else if ((splitted[0].rfind("IO", 0) == 0) && (splitted.size() >= 6))
         {
@@ -404,11 +413,15 @@ bool GpioHandler::readConfig()
             gpio_pin_mode_t pinMode = resolvePinMode(toLower(splitted[1]));
             gpio_int_type_t intType = resolveIntType(toLower(splitted[2]));
             uint16_t dutyResolution = (uint8_t)atoi(splitted[3].c_str());
+
 #ifdef ENABLE_MQTT
             bool mqttEnabled = (toLower(splitted[4]) == "true");
 #endif // ENABLE_MQTT
+
             bool httpEnabled = (toLower(splitted[5]) == "true");
+
             char gpioName[100];
+
             if (splitted.size() >= 7)
             {
                 strcpy(gpioName, trim(splitted[6]).c_str());
@@ -417,11 +430,13 @@ bool GpioHandler::readConfig()
             {
                 sprintf(gpioName, "GPIO%d", gpioNr);
             }
+
 #ifdef ENABLE_MQTT
             std::string mqttTopic = mqttEnabled ? (mainTopicMQTT + "/" + gpioName) : "";
 #else  // ENABLE_MQTT
             std::string mqttTopic = "";
 #endif // ENABLE_MQTT
+
             GpioPin *gpioPin = new GpioPin(gpioNr, gpioName, pinMode, intType, dutyResolution, mqttTopic, httpEnabled);
             (*gpioMap)[gpioNr] = gpioPin;
 
@@ -436,10 +451,12 @@ bool GpioHandler::readConfig()
                 registerISR = true;
             }
         }
+
         if (toUpper(splitted[0]) == "LEDNUMBERS")
         {
             LEDNumbers = stoi(splitted[1]);
         }
+
         if (toUpper(splitted[0]) == "LEDCOLOR")
         {
             uint8_t _r, _g, _b;
@@ -449,16 +466,25 @@ bool GpioHandler::readConfig()
 
             LEDColor = Rgb{_r, _g, _b};
         }
+
         if (toUpper(splitted[0]) == "LEDTYPE")
         {
             if (splitted[1] == "WS2812")
+            {
                 LEDType = LED_WS2812;
+            }
             if (splitted[1] == "WS2812B")
+            {
                 LEDType = LED_WS2812B;
+            }
             if (splitted[1] == "SK6812")
+            {
                 LEDType = LED_SK6812;
+            }
             if (splitted[1] == "WS2813")
+            {
                 LEDType = LED_WS2813;
+            }
         }
     }
 
@@ -466,22 +492,6 @@ bool GpioHandler::readConfig()
     {
         // install gpio isr service
         gpio_install_isr_service(ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_IRAM);
-    }
-
-    if (gpioExtLED > 0)
-    {
-        //     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Startsequence 06");      // Nremove
-        //        vTaskDelay( xDelay );
-        //        xDelay = 5000 / portTICK_PERIOD_MS;
-        //        ESP_LOGD(TAG, "main: sleep for: %ldms", (long) xDelay);
-
-        //        SmartLed leds( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
-
-        //        leds[ 0 ] = Rgb{ 255, 0, 0 };
-        //        leds[ 1 ] = Rgb{ 255, 255, 255 };
-        //        leds.show();
-        //        SmartLed leds = new SmartLed(LEDType, LEDNumbers, gpioExtLED, 0, DoubleBuffer);
-        //        _SmartLED = new SmartLed( LED_WS2812, 2, GPIO_NUM_12, 0, DoubleBuffer );
     }
 
     return true;
@@ -499,20 +509,21 @@ void GpioHandler::clear()
         }
         gpioMap->clear();
     }
-
-    // gpio_uninstall_isr_service(); can't uninstall, isr service is used by camera
 }
 
 void GpioHandler::registerGpioUri()
 {
-    ESP_LOGI(TAG, "server_GPIO - Registering URI handlers");
+    ESP_LOGI(TAG, "Registering GPIO URI handlers");
 
-    httpd_uri_t camuri = {};
-    camuri.method = HTTP_GET;
-    camuri.uri = "/GPIO";
-    camuri.handler = APPLY_BASIC_AUTH_FILTER(callHandleHttpRequest);
-    camuri.user_ctx = (void *)this;
-    httpd_register_uri_handler(_httpServer, &camuri);
+    httpd_uri_t gpio_uri = {};
+
+    gpio_uri.method = HTTP_GET;
+    gpio_uri.uri = "/GPIO";
+    gpio_uri.handler = APPLY_BASIC_AUTH_FILTER(callHandleHttpRequest);
+    gpio_uri.user_ctx = (void *)this;
+    httpd_register_uri_handler(_httpServer, &gpio_uri);
+
+    /** 1x when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
 }
 
 esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
@@ -549,6 +560,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
             httpd_resp_send(req, resp_str.c_str(), resp_str.length());
             return ESP_OK;
         }
+
         if (httpd_query_key_value(_query, "Status", _valueStatus, 30) == ESP_OK)
         {
             ESP_LOGD(TAG, "Status is found %s", _valueStatus);
@@ -563,6 +575,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
     }
 
     status = toUpper(status);
+
     if ((status != "HIGH") && (status != "LOW") && (status != "TRUE") && (status != "FALSE") && (status != "0") && (status != "1") && (status != ""))
     {
         std::string zw = "Status not valid: " + status;
@@ -575,6 +588,7 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
 
     // frei: 16; 12-15; 2; 4  // nur 12 und 13 funktionieren 2: reboot, 4: BlitzLED, 15: PSRAM, 14/15: DMA für SDKarte ???
     gpio_num_t gpio_num = resolvePinNr(gpionum);
+
     if (gpio_num == GPIO_NUM_NC)
     {
         std::string zw = "GPIO" + std::to_string(gpionum) + " unsupported - only 12 & 13 free";
@@ -595,10 +609,12 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
     {
         std::string resp_str = "";
         status = (*gpioMap)[gpio_num]->getValue(&resp_str) ? "HIGH" : "LOW";
+
         if (resp_str == "")
         {
             resp_str = status;
         }
+
         httpd_resp_sendstr_chunk(req, resp_str.c_str());
         httpd_resp_sendstr_chunk(req, NULL);
     }
@@ -606,10 +622,12 @@ esp_err_t GpioHandler::handleHttpRequest(httpd_req_t *req)
     {
         std::string resp_str = "";
         (*gpioMap)[gpio_num]->setValue((status == "HIGH") || (status == "TRUE") || (status == "1"), GPIO_SET_SOURCE_HTTP, &resp_str);
+
         if (resp_str == "")
         {
             resp_str = "GPIO" + std::to_string(gpionum) + " switched to " + status;
         }
+
         httpd_resp_sendstr_chunk(req, resp_str.c_str());
         httpd_resp_sendstr_chunk(req, NULL);
     }
@@ -711,23 +729,41 @@ gpio_num_t GpioHandler::resolvePinNr(uint8_t pinNr)
 gpio_pin_mode_t GpioHandler::resolvePinMode(std::string input)
 {
     if (input == "disabled")
+    {
         return GPIO_PIN_MODE_DISABLED;
+    }
     if (input == "input")
+    {
         return GPIO_PIN_MODE_INPUT;
+    }
     if (input == "input-pullup")
+    {
         return GPIO_PIN_MODE_INPUT_PULLUP;
+    }
     if (input == "input-pulldown")
+    {
         return GPIO_PIN_MODE_INPUT_PULLDOWN;
+    }
     if (input == "output")
+    {
         return GPIO_PIN_MODE_OUTPUT;
+    }
     if (input == "built-in-led")
+    {
         return GPIO_PIN_MODE_BUILT_IN_FLASH_LED;
+    }
     if (input == "output-pwm")
+    {
         return GPIO_PIN_MODE_OUTPUT_PWM;
+    }
     if (input == "external-flash-pwm")
+    {
         return GPIO_PIN_MODE_EXTERNAL_FLASH_PWM;
+    }
     if (input == "external-flash-ws281x")
+    {
         return GPIO_PIN_MODE_EXTERNAL_FLASH_WS281X;
+    }
 
     return GPIO_PIN_MODE_DISABLED;
 }
@@ -735,17 +771,29 @@ gpio_pin_mode_t GpioHandler::resolvePinMode(std::string input)
 gpio_int_type_t GpioHandler::resolveIntType(std::string input)
 {
     if (input == "disabled")
+    {
         return GPIO_INTR_DISABLE;
+    }
     if (input == "rising-edge")
+    {
         return GPIO_INTR_POSEDGE;
+    }
     if (input == "falling-edge")
+    {
         return GPIO_INTR_NEGEDGE;
+    }
     if (input == "rising-and-falling")
+    {
         return GPIO_INTR_ANYEDGE;
+    }
     if (input == "low-level-trigger")
+    {
         return GPIO_INTR_LOW_LEVEL;
+    }
     if (input == "high-level-trigger")
+    {
         return GPIO_INTR_HIGH_LEVEL;
+    }
 
     return GPIO_INTR_DISABLE;
 }
@@ -755,7 +803,9 @@ static GpioHandler *gpioHandler = NULL;
 void gpio_handler_create(httpd_handle_t server)
 {
     if (gpioHandler == NULL)
+    {
         gpioHandler = new GpioHandler(CONFIG_FILE, server);
+    }
 }
 
 void gpio_handler_init()

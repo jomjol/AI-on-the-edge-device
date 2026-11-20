@@ -16,7 +16,7 @@ static const char *TAG = "CNN";
 
 ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNType _cnntype) : ClassFlowImage(NULL, TAG)
 {
-    string cnnmodelfile = "";
+    std::string cnnmodelfile = "";
     modelxsize = 1;
     modelysize = 1;
     CNNGoodThreshold = 0.0;
@@ -31,9 +31,9 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     imagesRetention = 5;
 }
 
-string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart, bool ContinuousLastDigit)
+std::string ClassFlowCNNGeneral::getReadout(int _analog = 0, bool _extendedResolution, int prev, float _before_narrow_Analog, float AnalogToDigitTransitionStart, bool ContinuousLastDigit)
 {
-    string result = "";
+    std::string result = "";
 
     if (GENERAL[_analog]->ROI.size() == 0)
     {
@@ -353,7 +353,7 @@ int ClassFlowCNNGeneral::PointerEvalAnalogNew(float number, int numeral_preceder
     return result;
 }
 
-bool ClassFlowCNNGeneral::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlowCNNGeneral::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
     aktparamgraph = trim(aktparamgraph);
 
@@ -383,7 +383,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE *pfile, string &aktparamgraph)
         return true;
     }
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
@@ -486,7 +486,7 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE *pfile, string &aktparamgraph)
     return true;
 }
 
-general *ClassFlowCNNGeneral::FindGENERAL(string _name_number)
+general *ClassFlowCNNGeneral::FindGENERAL(std::string _name_number)
 {
     for (int i = 0; i < GENERAL.size(); ++i)
     {
@@ -499,9 +499,9 @@ general *ClassFlowCNNGeneral::FindGENERAL(string _name_number)
     return NULL;
 }
 
-general *ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
+general *ClassFlowCNNGeneral::GetGENERAL(std::string _name, bool _create = true)
 {
-    string _analog, _roi;
+    std::string _analog, _roi;
     int _pospunkt = _name.find_first_of(".");
 
     if (_pospunkt > -1)
@@ -548,7 +548,7 @@ general *ClassFlowCNNGeneral::GetGENERAL(string _name, bool _create = true)
     return _ret;
 }
 
-string ClassFlowCNNGeneral::getHTMLSingleStep(string host)
+std::string ClassFlowCNNGeneral::getHTMLSingleStep(std::string host)
 {
     std::vector<HTMLInfo *> htmlinfo;
 
@@ -574,7 +574,7 @@ string ClassFlowCNNGeneral::getHTMLSingleStep(string host)
     return result;
 }
 
-bool ClassFlowCNNGeneral::doFlow(string time)
+bool ClassFlowCNNGeneral::doFlow(std::string time)
 {
     if (disabled)
     {
@@ -598,7 +598,7 @@ bool ClassFlowCNNGeneral::doFlow(string time)
     return true;
 }
 
-bool ClassFlowCNNGeneral::doAlignAndCut(string time)
+bool ClassFlowCNNGeneral::doAlignAndCut(std::string time)
 {
     if (disabled)
     {
@@ -715,7 +715,7 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
         return false;
     }
 
-    string zwcnn = "/sdcard" + cnnmodelfile;
+    std::string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
 
@@ -796,14 +796,14 @@ bool ClassFlowCNNGeneral::getNetworkParameter()
     return true;
 }
 
-bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
+bool ClassFlowCNNGeneral::doNeuralNetwork(std::string time)
 {
     if (disabled)
     {
         return true;
     }
 
-    string logPath = CreateLogFolder(time);
+    std::string logPath = CreateLogFolder(time);
 
     CTfLiteClass *tflite = new (std::nothrow) CTfLiteClass;
 
@@ -813,7 +813,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
         return false;
     }
 
-    string zwcnn = "/sdcard" + cnnmodelfile;
+    std::string zwcnn = "/sdcard" + cnnmodelfile;
     zwcnn = FormatFileName(zwcnn);
     ESP_LOGD(TAG, "%s", zwcnn.c_str());
 
@@ -890,7 +890,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                     if (isLogImage)
                     {
-                        string _imagename = GENERAL[n]->name + "_" + GENERAL[n]->ROI[roi]->name;
+                        std::string _imagename = GENERAL[n]->name + "_" + GENERAL[n]->ROI[roi]->name;
 
                         if (isLogImageSelect)
                         {
@@ -953,7 +953,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     result = result + 10;
                 }
 
-                string zw = "_num (p, m): " + to_string(_num) + " " + to_string(_numplus) + " " + to_string(_numminus);
+                std::string zw = "_num (p, m): " + to_string(_num) + " " + to_string(_numplus) + " " + to_string(_numminus);
                 zw = zw + " _val (p, m): " + to_string(_val) + " " + to_string(_valplus) + " " + to_string(_valminus);
                 zw = zw + " result: " + to_string(result) + " _fit: " + to_string(_fit);
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, zw);
@@ -965,7 +965,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                     GENERAL[n]->ROI[roi]->isReject = true;
                     result = -1;
                     _result_save_file += 100; // In case fit is not sufficient, the result should still be saved with "-10x.y".
-                    string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + ", Threshold: " + to_string(CNNGoodThreshold) + ")";
+                    std::string zw = "Value Rejected due to Threshold (Fit: " + to_string(_fit) + ", Threshold: " + to_string(CNNGoodThreshold) + ")";
                     LogFile.WriteToFile(ESP_LOG_WARN, TAG, zw);
                 }
                 else
@@ -978,7 +978,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                 if (isLogImage)
                 {
-                    string _imagename = GENERAL[n]->name + "_" + GENERAL[n]->ROI[roi]->name;
+                    std::string _imagename = GENERAL[n]->name + "_" + GENERAL[n]->ROI[roi]->name;
 
                     if (isLogImageSelect)
                     {
@@ -1025,7 +1025,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
 
                 if (isLogImage)
                 {
-                    string _imagename = GENERAL[n]->name + "_" + GENERAL[n]->ROI[roi]->name;
+                    std::string _imagename = GENERAL[n]->name + "_" + GENERAL[n]->ROI[roi]->name;
 
                     if (isLogImageSelect)
                     {
@@ -1122,7 +1122,7 @@ int ClassFlowCNNGeneral::getNumberGENERAL()
     return GENERAL.size();
 }
 
-string ClassFlowCNNGeneral::getNameGENERAL(int _analog)
+std::string ClassFlowCNNGeneral::getNameGENERAL(int _analog)
 {
     if (_analog < GENERAL.size())
     {
@@ -1164,9 +1164,9 @@ void ClassFlowCNNGeneral::UpdateNameNumbers(std::vector<std::string> *_name_numb
     }
 }
 
-string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
+std::string ClassFlowCNNGeneral::getReadoutRawString(int _analog)
 {
-    string rt = "";
+    std::string rt = "";
 
     if (_analog >= GENERAL.size() || GENERAL[_analog] == NULL || GENERAL[_analog]->ROI.size() == 0)
     {

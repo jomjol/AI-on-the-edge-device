@@ -40,7 +40,7 @@ void ClassFlowTakeImage::set_initial_parameter(void)
     namerawimage = "/sdcard/img_tmp/raw.jpg";
 }
 
-bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlowTakeImage::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
     aktparamgraph = trim(aktparamgraph);
 
@@ -60,7 +60,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
 
     Camera.get_sensor_control_config(&CCstatus); // Kamera >>> CCstatus
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
@@ -470,10 +470,7 @@ bool ClassFlowTakeImage::ReadParameter(FILE *pfile, string &aktparamgraph)
         }
     }
 
-    Camera.set_sensor_control_config(&CCstatus); // CCstatus >>> Kamera
-    Camera.set_quality_zoom_size(&CCstatus);
-
-    Camera.changedCameraSettings = false;
+    Camera.changedCameraSettings = true;
     Camera.CamTempImage = false;
 
     rawImage = new (std::nothrow) CImageBasis("rawImage");
@@ -549,7 +546,7 @@ bool ClassFlowTakeImage::take_picture_with_flash(int flash_duration)
     return true;
 }
 
-string ClassFlowTakeImage::get_html_single_step(string host)
+std::string ClassFlowTakeImage::get_html_single_step(std::string host)
 {
     return ("Raw Image: <br>\n<img src=\"" + host + "/img_tmp/raw.jpg\">\n");
 }

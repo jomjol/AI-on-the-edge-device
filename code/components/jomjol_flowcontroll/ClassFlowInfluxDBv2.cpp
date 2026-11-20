@@ -69,7 +69,7 @@ ClassFlowInfluxDBv2::ClassFlowInfluxDBv2(std::vector<ClassFlow *> *lfc, ClassFlo
     }
 }
 
-bool ClassFlowInfluxDBv2::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlowInfluxDBv2::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
     aktparamgraph = trim(aktparamgraph);
 
@@ -87,7 +87,7 @@ bool ClassFlowInfluxDBv2::ReadParameter(FILE *pfile, string &aktparamgraph)
         return false;
     }
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
@@ -178,7 +178,7 @@ void ClassFlowInfluxDBv2::handleMeasurement(std::string _decsep, std::string _va
     }
 }
 
-bool ClassFlowInfluxDBv2::doFlow(string zwtime)
+bool ClassFlowInfluxDBv2::doFlow(std::string zwtime)
 {
     if (!InfluxDBenable)
     {
@@ -192,7 +192,7 @@ bool ClassFlowInfluxDBv2::doFlow(string zwtime)
     std::string resultrate = "";
     std::string resulttimestamp = "";
     long int resulttimeutc = 0;
-    string namenumber = "";
+    std::string namenumber = "";
 
     if (flowpostprocessing)
     {

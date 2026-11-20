@@ -74,7 +74,7 @@ ClassFlowWebhook::ClassFlowWebhook(std::vector<ClassFlow *> *lfc, ClassFlow *_pr
     }
 }
 
-bool ClassFlowWebhook::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlowWebhook::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
     aktparamgraph = trim(aktparamgraph);
 
@@ -92,7 +92,7 @@ bool ClassFlowWebhook::ReadParameter(FILE *pfile, string &aktparamgraph)
         return false;
     }
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
@@ -160,7 +160,7 @@ void ClassFlowWebhook::handleMeasurement(std::string _decsep, std::string _value
     }
 }
 
-bool ClassFlowWebhook::doFlow(string zwtime)
+bool ClassFlowWebhook::doFlow(std::string zwtime)
 {
     if (!WebhookEnable)
     {

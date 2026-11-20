@@ -9,7 +9,6 @@
 #include <map>
 #include <functional>
 
-#include <string>
 #include "esp_http_client.h"
 #include "esp_log.h"
 

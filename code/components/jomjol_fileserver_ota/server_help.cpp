@@ -18,7 +18,7 @@
 
 static const char *TAG = "SERVER HELP";
 
-string SUFFIX_ZW = "_tmp";
+std::string SUFFIX_ZW = "_tmp";
 
 char scratch[SERVER_HELPER_SCRATCH_BUFSIZE];
 

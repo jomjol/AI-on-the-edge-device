@@ -384,14 +384,18 @@ void MQTTdestroy_client(bool _disable = false)
             esp_mqtt_client_disconnect(client);
             mqtt_connected = false;
         }
+		
         esp_mqtt_client_stop(client);
         esp_mqtt_client_destroy(client);
         client = NULL;
         mqtt_initialized = false;
     }
 
-    if (_disable) // Disable MQTT service, avoid restart with MQTTPublish
+    if (_disable)
+	{
+		// Disable MQTT service, avoid restart with MQTTPublish
         mqtt_configOK = false;
+	}
 }
 
 bool getMQTTisEnabled()
@@ -418,15 +422,18 @@ bool mqtt_handler_set_prevalue(std::string _topic, char *_data, int _data_len)
     // example: {"numbersname": "main", "value": 12345.1234567}
 
     if (_data_len > 0)
-    { // Check if data length > 0
+    { 
+        // Check if data length > 0
         cJSON *jsonData = cJSON_Parse(_data);
         cJSON *numbersname = cJSON_GetObjectItemCaseSensitive(jsonData, "numbersname");
         cJSON *value = cJSON_GetObjectItemCaseSensitive(jsonData, "value");
 
         if (cJSON_IsString(numbersname) && (numbersname->valuestring != NULL))
-        { // Check if numbersname is valid
+        { 
+	        // Check if numbersname is valid
             if (cJSON_IsNumber(value))
-            { // Check if value is a number
+            { 
+		        // Check if value is a number
                 LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "handler_set_prevalue called: numbersname: " + std::string(numbersname->valuestring) + ", value: " + std::to_string(value->valuedouble));
                 if (flowctrl.UpdatePrevalue(std::to_string(value->valuedouble), std::string(numbersname->valuestring), true))
                 {
@@ -488,7 +495,8 @@ void MQTTconnected()
 
         /* Send Static Topics and Homeassistant Discovery */
         if (callbackOnConnected)
-        { // Call onConnected callback routine --> mqtt_server
+        { 
+	        // Call onConnected callback routine --> mqtt_server
             callbackOnConnected(maintopic, SetRetainFlag);
         }
     }

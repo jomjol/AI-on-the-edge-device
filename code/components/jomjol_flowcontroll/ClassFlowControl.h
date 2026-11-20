@@ -48,19 +48,19 @@ public:
 	bool SetupModeActive;
 
 	void InitFlow(std::string config);
-	bool doFlow(string time);
-	void doFlowTakeImageOnly(string time);
-	bool getStatusSetupModus() { return SetupModeActive; };
-	string getReadout(bool _rawvalue, bool _noerror, int _number);
-	string getReadoutAll(int _type);
+	bool doFlow(std::string time);
+	void doFlowTakeImageOnly(std::string time);
+	bool getStatusSetupModus(void) { return SetupModeActive; };
+	std::string getReadout(bool _rawvalue, bool _noerror, int _number);
+	std::string getReadoutAll(int _type);
 	bool UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
-	string GetPrevalue(std::string _number = "");
-	bool ReadParameter(FILE *pfile, string &aktparamgraph);
-	string getJSON();
+	std::string GetPrevalue(std::string _number = "");
+	bool ReadParameter(FILE *pfile, std::string &aktparamgraph);
+	std::string getJSON(void);
 	const std::vector<NumberPost *> &getNumbers();
-	string getNumbersName();
+	std::string getNumbersName(void);
 
-	string TranslateAktstatus(std::string _input);
+	std::string TranslateAktstatus(std::string _input);
 
 #ifdef ALGROI_LOAD_FROM_MEM_AS_JPG
 	void DigitDrawROI(CImageBasis *_zw);
@@ -72,26 +72,26 @@ public:
 
 	std::string doSingleStep(std::string _stepname, std::string _host);
 
-	bool getIsAutoStart();
+	bool getIsAutoStart(void);
 	void setAutoStartInterval(long &_interval);
 
-	std::string getActStatusWithTime();
-	std::string getActStatus();
+	std::string getActStatusWithTime(void);
+	std::string getActStatus(void);
 	void setActStatus(std::string _aktstatus);
 
-	std::vector<HTMLInfo *> GetAllDigit();
-	std::vector<HTMLInfo *> GetAllAnalog();
+	std::vector<HTMLInfo *> GetAllDigit(void);
+	std::vector<HTMLInfo *> GetAllAnalog(void);
 
-	t_CNNType GetTypeDigit();
-	t_CNNType GetTypeAnalog();
+	t_CNNType GetTypeDigit(void);
+	t_CNNType GetTypeAnalog(void);
 
 #ifdef ENABLE_MQTT
-	bool StartMQTTService();
+	bool StartMQTTService(void);
 #endif // ENABLE_MQTT
 
-	int CleanTempFolder();
+	int CleanTempFolder(void);
 
-	string name() { return "ClassFlowControl"; };
+	std::string name(void) { return "ClassFlowControl"; };
 };
 
 #endif

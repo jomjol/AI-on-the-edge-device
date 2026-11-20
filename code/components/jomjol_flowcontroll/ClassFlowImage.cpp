@@ -35,14 +35,14 @@ ClassFlowImage::ClassFlowImage(std::vector<ClassFlow *> *lfc, ClassFlow *_prev, 
     imagesRetention = 5;
 }
 
-string ClassFlowImage::CreateLogFolder(string time)
+std::string ClassFlowImage::CreateLogFolder(std::string time)
 {
     if (!isLogImage)
     {
         return "";
     }
 
-    string logPath = imagesLocation + "/" + time.LOGFILE_TIME_FORMAT_DATE_EXTR + "/" + time.LOGFILE_TIME_FORMAT_HOUR_EXTR;
+    std::string logPath = imagesLocation + "/" + time.LOGFILE_TIME_FORMAT_DATE_EXTR + "/" + time.LOGFILE_TIME_FORMAT_HOUR_EXTR;
     isLogImage = mkdir_r(logPath.c_str(), S_IRWXU) == 0;
 
     if (!isLogImage)
@@ -53,7 +53,7 @@ string ClassFlowImage::CreateLogFolder(string time)
     return logPath;
 }
 
-void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, int *resultInt, string time, CImageBasis *_img)
+void ClassFlowImage::LogImage(std::string logPath, std::string name, float *resultFloat, int *resultInt, std::string time, CImageBasis *_img)
 {
     if (!isLogImage)
     {
@@ -87,10 +87,10 @@ void ClassFlowImage::LogImage(string logPath, string name, float *resultFloat, i
         buf[0] = '\0';
     }
 
-    string nm = logPath + "/" + buf + name + "_" + time + ".jpg";
+    std::string nm = logPath + "/" + buf + name + "_" + time + ".jpg";
     nm = FormatFileName(nm);
 
-    string output = "/sdcard/img_tmp/" + name + ".jpg";
+    std::string output = "/sdcard/img_tmp/" + name + ".jpg";
     output = FormatFileName(output);
 
     ESP_LOGD(logTag, "save to file: %s", nm.c_str());
@@ -121,7 +121,7 @@ void ClassFlowImage::RemoveOldLogs()
     timeinfo = localtime(&rawtime);
 
     strftime(cmpfilename, 30, LOGFILE_TIME_FORMAT, timeinfo);
-    string folderName = string(cmpfilename).LOGFILE_TIME_FORMAT_DATE_EXTR;
+    std::string folderName = std::string(cmpfilename).LOGFILE_TIME_FORMAT_DATE_EXTR;
 
     DIR *pDir = opendir(imagesLocation.c_str());
     if (!pDir)
@@ -136,7 +136,7 @@ void ClassFlowImage::RemoveOldLogs()
 
     while ((entry = readdir(pDir)) != NULL)
     {
-        string folderPath = imagesLocation + "/" + entry->d_name;
+        std::string folderPath = imagesLocation + "/" + entry->d_name;
 
         if (entry->d_type == DT_DIR)
         {

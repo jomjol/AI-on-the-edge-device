@@ -38,7 +38,7 @@ bool WebhookPublish(std::vector<NumberPost *> *numbers)
 
     for (int i = 0; i < (*numbers).size(); ++i)
     {
-        string timezw = "";
+        std::string timezw = "";
         char buffer[80];
         time_t &lastPreValue = (*numbers)[i]->timeStampLastPreValue;
         struct tm *timeinfo = localtime(&lastPreValue);

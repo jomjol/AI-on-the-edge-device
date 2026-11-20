@@ -358,7 +358,7 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
     char freeheapmem[11];
     sprintf(freeheapmem, "%lu", (long)getESPHeapSize());
 
-    zw = string("[{") +
+    zw = std::string("[{") +
          "\"firmware\": \"" + gitversion + "\"," +
          "\"buildtime\": \"" + buildtime + "\"," +
          "\"gitbranch\": \"" + gitbranch + "\"," +
@@ -379,45 +379,41 @@ esp_err_t sysinfo_handler(httpd_req_t *req)
 
 void register_server_main_uri(httpd_handle_t server, const char *base_path)
 {
-    httpd_uri_t info_get_handle = {
-        .uri = "/info", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(info_get_handler),
-        .user_ctx = (void *)base_path // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &info_get_handle);
+    ESP_LOGI(TAG, "Registering main URI handlers");
 
-    httpd_uri_t sysinfo_handle = {
-        .uri = "/sysinfo", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(sysinfo_handler),
-        .user_ctx = (void *)base_path // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &sysinfo_handle);
+    httpd_uri_t main_uri = {};
 
-    httpd_uri_t starttime_tmp_handle = {
-        .uri = "/starttime", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(starttime_get_handler),
-        .user_ctx = NULL // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &starttime_tmp_handle);
+    main_uri.uri = "/info";
+    main_uri.method = HTTP_GET;
+    main_uri.handler = APPLY_BASIC_AUTH_FILTER(info_get_handler);
+    main_uri.user_ctx = (void *)base_path;
+    httpd_register_uri_handler(server, &main_uri);
 
-    httpd_uri_t img_tmp_handle = {
-        .uri = "/img_tmp/*", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(img_tmp_virtual_handler),
-        .user_ctx = (void *)base_path // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &img_tmp_handle);
+    main_uri.uri = "/sysinfo";
+    main_uri.method = HTTP_GET;
+    main_uri.handler = APPLY_BASIC_AUTH_FILTER(sysinfo_handler);
+    main_uri.user_ctx = (void *)base_path;
+    httpd_register_uri_handler(server, &main_uri);
 
-    httpd_uri_t main_rest_handle = {
-        .uri = "/*", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(hello_main_handler),
-        .user_ctx = (void *)base_path // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &main_rest_handle);
+    main_uri.uri = "/starttime";
+    main_uri.method = HTTP_GET;
+    main_uri.handler = APPLY_BASIC_AUTH_FILTER(starttime_get_handler);
+    main_uri.user_ctx = (void *)base_path;
+    httpd_register_uri_handler(server, &main_uri);
+
+    main_uri.uri = "/img_tmp/*";
+    main_uri.method = HTTP_GET;
+    main_uri.handler = APPLY_BASIC_AUTH_FILTER(img_tmp_virtual_handler);
+    main_uri.user_ctx = (void *)base_path;
+    httpd_register_uri_handler(server, &main_uri);
+
+    main_uri.uri = "/*";
+    main_uri.method = HTTP_GET;
+    main_uri.handler = APPLY_BASIC_AUTH_FILTER(hello_main_handler);
+    main_uri.user_ctx = (void *)base_path;
+    httpd_register_uri_handler(server, &main_uri);
+
+    /** 5x when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
 }
 
 httpd_handle_t start_webserver(void)
@@ -431,7 +427,7 @@ httpd_handle_t start_webserver(void)
     config.server_port = 80;
     config.ctrl_port = 32768;
     config.max_open_sockets = 5;  // 20210921 --> previously 7
-    config.max_uri_handlers = 41; // Make sure this fits all URI handlers. Memory usage in bytes: 6*max_uri_handlers
+    config.max_uri_handlers = 36; // Make sure this fits all URI handlers. Memory usage in bytes: 6*max_uri_handlers
     config.max_resp_headers = 8;
     config.backlog_conn = 5;
     config.lru_purge_enable = true; // this cuts old connections if new ones are needed.
@@ -443,7 +439,7 @@ httpd_handle_t start_webserver(void)
     config.global_transport_ctx_free_fn = NULL;
     config.open_fn = NULL;
     config.close_fn = NULL;
-    //    config.uri_match_fn = NULL;
+    // config.uri_match_fn = NULL;
     config.uri_match_fn = httpd_uri_match_wildcard;
 
     starttime = getCurrentTimeString("%Y%m%d-%H%M%S");

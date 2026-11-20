@@ -18,9 +18,9 @@ static const char *TAG = "WLANINI";
 
 struct wlan_config wlan_config = {};
 
-std::vector<string> ZerlegeZeileWLAN(std::string input, std::string _delimiter = "")
+std::vector<std::string> ZerlegeZeileWLAN(std::string input, std::string _delimiter = "")
 {
-    std::vector<string> Output;
+    std::vector<std::string> Output;
     std::string delimiter = " =,";
 
     if (_delimiter.length() > 0)
@@ -76,7 +76,7 @@ int LoadWlanFromFile(std::string fn)
 
     std::string tmp = "";
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while ((line.size() > 0) || !(feof(pFile)))
     {
@@ -266,8 +266,8 @@ bool ChangeHostName(std::string fn, std::string _newhostname)
         line = std::string(temp_char);
     }
 
-    std::vector<string> splitted;
-    std::vector<string> neuesfile;
+    std::vector<std::string> splitted;
+    std::vector<std::string> neuesfile;
     bool found = false;
 
     while ((line.size() > 0) || !(feof(pFile)))
@@ -357,8 +357,8 @@ bool ChangeRSSIThreshold(std::string fn, int _newrssithreshold)
         line = std::string(temp_char);
     }
 
-    std::vector<string> splitted;
-    std::vector<string> neuesfile;
+    std::vector<std::string> splitted;
+    std::vector<std::string> neuesfile;
     bool found = false;
 
     while ((line.size() > 0) || !(feof(pFile)))

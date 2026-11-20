@@ -82,7 +82,7 @@ ClassFlowAlignment::~ClassFlowAlignment()
 #endif
 }
 
-bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlowAlignment::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
     aktparamgraph = trim(aktparamgraph);
 
@@ -104,7 +104,7 @@ bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
     int suchey = 40;
     int alg_algo = 0; // default=0; 1 =HIGHACCURACY; 2= FAST; 3= OFF //add disable aligment algo |01.2023
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
@@ -202,16 +202,16 @@ bool ClassFlowAlignment::ReadParameter(FILE *pfile, string &aktparamgraph)
     return true;
 }
 
-string ClassFlowAlignment::getHTMLSingleStep(string host)
+std::string ClassFlowAlignment::getHTMLSingleStep(std::string host)
 {
-    string result = "<p>Rotated Image: </p> <p><img src=\"" + host + "/img_tmp/rot.jpg\"></p>\n";
+    std::string result = "<p>Rotated Image: </p> <p><img src=\"" + host + "/img_tmp/rot.jpg\"></p>\n";
     result = result + "<p>Found Alignment: </p> <p><img src=\"" + host + "/img_tmp/rot_roi.jpg\"></p>\n";
     result = result + "<p>Aligned Image: </p> <p><img src=\"" + host + "/img_tmp/alg.jpg\"></p>\n";
 
     return result;
 }
 
-bool ClassFlowAlignment::doFlow(string time)
+bool ClassFlowAlignment::doFlow(std::string time)
 {
     if (ImageBasis == nullptr || !ImageBasis->ImageOkay())
     {
@@ -405,8 +405,8 @@ void ClassFlowAlignment::SaveReferenceAlignmentValues()
 bool ClassFlowAlignment::LoadReferenceAlignmentValues(void)
 {
     char zw[1024];
-    string zwvalue;
-    std::vector<string> splitted;
+    std::string zwvalue;
+    std::vector<std::string> splitted;
 
     FILE *pFile = fopen(FileStoreRefAlignment.c_str(), "r");
     if (pFile == NULL)

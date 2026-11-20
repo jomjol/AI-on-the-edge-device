@@ -172,39 +172,41 @@ void task_do_Update_ZIP(void *pvParameter)
     }
 }
 
-void CheckUpdate()
+bool CheckUpdate(void)
 {
     FILE *pFile = fopen("/sdcard/update.txt", "r");
-    if (pFile == NULL)
+    if (pFile == nullptr)
     {
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "No pending update");
-        return;
+        ESP_LOGD(TAG, "No pending update");
+        return false;
     }
 
-    char zw[1024] = "";
-    fgets(zw, 1024, pFile);
-    _file_name_update = std::string(zw);
+    char temp_char[FILE_PATH_MAX] = "";
+    fgets(temp_char, FILE_PATH_MAX, pFile);
 
-    if (fgets(zw, 1024, pFile))
+    _file_name_update = std::string(temp_char);
+
+    if (fgets(temp_char, FILE_PATH_MAX, pFile))
     {
-        std::string _szw = std::string(zw);
-        if (_szw == "init")
+        if (temp_char == std::string("init"))
         {
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Inital Setup triggered");
+            ESP_LOGI(TAG, "Inital Setup triggered");
         }
     }
 
     fclose(pFile);
+
     DeleteFile("/sdcard/update.txt"); // Prevent Boot Loop!!!
-    LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Start update process (" + _file_name_update + ")");
+    ESP_LOGI(TAG, "Start update process (%s)", _file_name_update.c_str());
 
     xTaskCreate(&task_do_Update_ZIP, "task_do_Update_ZIP", configMINIMAL_STACK_SIZE * 35, NULL, tskIDLE_PRIORITY + 1, NULL);
-
     while (1)
     {
         // wait until reboot within task_do_Update_ZIP
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
+
+    return true;
 }
 
 static bool ota_update_task(std::string fn)
@@ -275,7 +277,7 @@ static bool ota_update_task(std::string fn)
                     if (memcmp(invalid_app_info.version, new_app_info.version, sizeof(new_app_info.version)) == 0)
                     {
                         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "New version is the same as invalid version");
-                        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Previously, there was an attempt to launch the firmware with " + string(invalid_app_info.version) + " version, but it failed");
+                        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Previously, there was an attempt to launch the firmware with " + std::string(invalid_app_info.version) + " version, but it failed");
                         LogFile.WriteToFile(ESP_LOG_WARN, TAG, "The firmware has been rolled back to the previous version");
                         return false;
                     }
@@ -286,7 +288,7 @@ static bool ota_update_task(std::string fn)
                 err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &update_handle);
                 if (err != ESP_OK)
                 {
-                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_begin failed (" + string(esp_err_to_name(err)) + ")");
+                    LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_begin failed (" + std::string(esp_err_to_name(err)) + ")");
                     return false;
                 }
                 ESP_LOGI(TAG, "esp_ota_begin succeeded");
@@ -320,14 +322,14 @@ static bool ota_update_task(std::string fn)
         {
             LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Image validation failed, image is corrupted");
         }
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_end failed (" + string(esp_err_to_name(err)) + ")!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_end failed (" + std::string(esp_err_to_name(err)) + ")!");
         return false;
     }
 
     err = esp_ota_set_boot_partition(update_partition);
     if (err != ESP_OK)
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_set_boot_partition failed (" + string(esp_err_to_name(err)) + ")!");
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "esp_ota_set_boot_partition failed (" + std::string(esp_err_to_name(err)) + ")!");
     }
 
     return true;
@@ -618,7 +620,7 @@ void task_reboot(void *DeleteMainFlow)
     vTaskDelete(NULL); // Delete this task if it comes to this point
 }
 
-void doReboot()
+void doReboot(void)
 {
     LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Reboot triggered by Software (5s)");
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
@@ -629,10 +631,10 @@ void doReboot()
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "task_reboot not created -> force reboot without killing flow");
         task_reboot((void *)false);
     }
-    vTaskDelay(5000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
+    vTaskDelay(10000 / portTICK_PERIOD_MS); // Prevent serving web client fetch response until system is shuting down
 }
 
-void doRebootOTA()
+void doRebootOTA(void)
 {
     LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Reboot in 5sec");
 
@@ -691,18 +693,20 @@ esp_err_t handler_reboot(httpd_req_t *req)
 
 void register_server_ota_sdcard_uri(httpd_handle_t server)
 {
-    ESP_LOGI(TAG, "Registering URI handlers");
+    ESP_LOGI(TAG, "Registering OTA URI handlers");
 
-    httpd_uri_t camuri = {};
-    camuri.method = HTTP_GET;
-    camuri.uri = "/ota";
-    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_ota_update);
-    camuri.user_ctx = (void *)"Do OTA";
-    httpd_register_uri_handler(server, &camuri);
+    httpd_uri_t ota_uri = {};
+    ota_uri.method = HTTP_GET;
+    ota_uri.uri = "/ota";
+    ota_uri.handler = APPLY_BASIC_AUTH_FILTER(handler_ota_update);
+    ota_uri.user_ctx = NULL;
+    httpd_register_uri_handler(server, &ota_uri);
 
-    camuri.method = HTTP_GET;
-    camuri.uri = "/reboot";
-    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_reboot);
-    camuri.user_ctx = (void *)"Reboot";
-    httpd_register_uri_handler(server, &camuri);
+    ota_uri.method = HTTP_GET;
+    ota_uri.uri = "/reboot";
+    ota_uri.handler = APPLY_BASIC_AUTH_FILTER(handler_reboot);
+    ota_uri.user_ctx = NULL;
+    httpd_register_uri_handler(server, &ota_uri);
+
+    /** 2x when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
 }

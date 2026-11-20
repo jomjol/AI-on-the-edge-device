@@ -51,30 +51,30 @@ std::string FormatFileName(std::string input);
 std::size_t file_size(const std::string &file_name);
 void FindReplace(std::string &line, std::string &oldString, std::string &newString);
 
-bool CopyFile(string input, string output);
-bool DeleteFile(string filename);
-bool RenameFile(string from, string to);
-bool RenameFolder(string from, string to);
+bool CopyFile(std::string input, std::string output);
+bool DeleteFile(std::string filename);
+bool RenameFile(std::string from, std::string to);
+bool RenameFolder(std::string from, std::string to);
 bool MakeDir(std::string _what);
-bool FileExists(string filename);
-bool FolderExists(string foldername);
+bool FileExists(std::string filename);
+bool FolderExists(std::string foldername);
 
-string RundeOutput(double _in, int _anzNachkomma);
+std::string RundeOutput(double _in, int _anzNachkomma);
 
-size_t findDelimiterPos(string input, string delimiter);
+size_t findDelimiterPos(std::string input, std::string delimiter);
 
-string trim(string istring, string adddelimiter = "");
-bool ctype_space(const char c, string adddelimiter);
+std::string trim(std::string istring, std::string adddelimiter = "");
+bool ctype_space(const char c, std::string adddelimiter);
 
-string getFileType(string filename);
-string getFileFullFileName(string filename);
-string getDirectory(string filename);
+std::string getFileType(std::string filename);
+std::string getFileFullFileName(std::string filename);
+std::string getDirectory(std::string filename);
 
 int mkdir_r(const char *dir, const mode_t mode);
 int removeFolder(const char *folderPath, const char *logTag);
 
-string toLower(string in);
-string toUpper(string in);
+std::string toLower(std::string in);
+std::string toUpper(std::string in);
 
 static float temp_sens_value = -1;
 #ifdef CONFIG_SOC_TEMP_SENSOR_SUPPORTED
@@ -95,27 +95,27 @@ uint32_t pow10_int(int pot);  // faster than pow(10, pot)
 
 void memCopyGen(uint8_t *_source, uint8_t *_target, int _size);
 
-std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter);
+std::vector<std::string> HelperZerlegeZeile(std::string input, std::string _delimiter);
 std::vector<std::string> ZerlegeZeile(std::string input, std::string delimiter = " =, \t");
 
 ///////////////////////////
-size_t getInternalESPHeapSize();
-size_t getESPHeapSize();
-string getESPHeapInfo();
+size_t getInternalESPHeapSize(void);
+size_t getESPHeapSize(void);
+std::string getESPHeapInfo(void);
 
 /////////////////////////////
-string getSDCardPartitionSize();
-string getSDCardFreePartitionSpace();
-string getSDCardPartitionAllocationSize();
+std::string getSDCardPartitionSize(void);
+std::string getSDCardFreePartitionSpace(void);
+std::string getSDCardPartitionAllocationSize(void);
 
 void SaveSDCardInfo(sdmmc_card_t *card);
-string SDCardParseManufacturerIDs(int);
-string getSDCardManufacturer();
-string getSDCardName();
-string getSDCardCapacity();
-string getSDCardSectorSize();
+std::string SDCardParseManufacturerIDs(int);
+std::string getSDCardManufacturer(void);
+std::string getSDCardName(void);
+std::string getSDCardCapacity(void);
+std::string getSDCardSectorSize(void);
 
-string getMac(void);
+std::string getMac(void);
 
 void setSystemStatusFlag(SystemStatusFlag_t flag);
 void clearSystemStatusFlag(SystemStatusFlag_t flag);
@@ -123,7 +123,7 @@ int getSystemStatus(void);
 bool isSetSystemStatusFlag(SystemStatusFlag_t flag);
 
 time_t getUpTime(void);
-string getResetReason(void);
+std::string getResetReason(void);
 std::string getFormatedUptime(bool compact);
 
 const char *get404(void);

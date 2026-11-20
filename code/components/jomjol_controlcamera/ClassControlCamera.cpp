@@ -1043,7 +1043,7 @@ esp_err_t CCamera::capture_to_file(std::string filename, int flash_duration)
     bool converted = false;
 
     filename = FormatFileName(filename);
-    const string ftype = toUpper(getFileType(filename));
+    const std::string ftype = toUpper(getFileType(filename));
 
     if (ftype == "BMP")
     {

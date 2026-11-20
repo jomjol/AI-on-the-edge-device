@@ -408,7 +408,7 @@ void ClassFlowControl::setActStatus(std::string _aktstatus)
     setStatus(_aktstatus, _aktstatus);
 }
 
-void ClassFlowControl::doFlowTakeImageOnly(string time)
+void ClassFlowControl::doFlowTakeImageOnly(std::string time)
 {
     std::string zw_time;
 
@@ -428,7 +428,7 @@ void ClassFlowControl::doFlowTakeImageOnly(string time)
     }
 }
 
-bool ClassFlowControl::doFlow(string time)
+bool ClassFlowControl::doFlow(std::string time)
 {
     bool result = true;
     std::string zw_time;
@@ -479,7 +479,7 @@ bool ClassFlowControl::doFlow(string time)
     return result;
 }
 
-string ClassFlowControl::getReadoutAll(int _type)
+std::string ClassFlowControl::getReadoutAll(int _type)
 {
     std::string out = "";
 
@@ -531,7 +531,7 @@ string ClassFlowControl::getReadoutAll(int _type)
     return out;
 }
 
-string ClassFlowControl::getReadout(bool _rawvalue = false, bool _noerror = false, int _number = 0)
+std::string ClassFlowControl::getReadout(bool _rawvalue = false, bool _noerror = false, int _number = 0)
 {
     if (flowpostprocessing)
     {
@@ -541,7 +541,7 @@ string ClassFlowControl::getReadout(bool _rawvalue = false, bool _noerror = fals
     return std::string("");
 }
 
-string ClassFlowControl::GetPrevalue(std::string _number)
+std::string ClassFlowControl::GetPrevalue(std::string _number)
 {
     if (flowpostprocessing)
     {
@@ -588,7 +588,7 @@ bool ClassFlowControl::UpdatePrevalue(std::string _newvalue, std::string _number
     }
 }
 
-bool ClassFlowControl::ReadParameter(FILE *pfile, string &aktparamgraph)
+bool ClassFlowControl::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
     aktparamgraph = trim(aktparamgraph);
 
@@ -607,7 +607,7 @@ bool ClassFlowControl::ReadParameter(FILE *pfile, string &aktparamgraph)
         return false;
     }
 
-    std::vector<string> splitted;
+    std::vector<std::string> splitted;
 
     while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
     {
@@ -722,7 +722,7 @@ int ClassFlowControl::CleanTempFolder()
 
     while ((entry = readdir(pDir)) != NULL)
     {
-        std::string path = string(folderPath) + "/" + entry->d_name;
+        std::string path = std::string(folderPath) + "/" + entry->d_name;
 
         if (entry->d_type == DT_REG)
         {
@@ -796,15 +796,18 @@ esp_err_t ClassFlowControl::GetJPGStream(std::string _fn, httpd_req_t *req)
             }
             else
             {
-                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ClassFlowControl::GetJPGStream: alg_roi.jpg cannot be served -> alg.jpg is going to be served!");
+                LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ClassFlowControl::GetJPGStream->Take Image: alg_roi.jpg cannot be served -> alg.jpg is going to be served!");
+
                 if (flowalignment && flowalignment->ImageBasis && flowalignment->ImageBasis->ImageOkay())
                 {
                     _send = flowalignment->ImageBasis;
                 }
                 else
                 {
-                    httpd_resp_send(req, NULL, 0);
-                    return ESP_OK;
+                    std::string filename = "/sdcard/html/Flowstate_take_image.jpg";
+                    result = send_file(req, filename);
+                    // httpd_resp_send(req, NULL, 0);
+                    // return ESP_OK;
                 }
             }
         }
@@ -818,14 +821,17 @@ esp_err_t ClassFlowControl::GetJPGStream(std::string _fn, httpd_req_t *req)
             else
             {
                 LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "ClassFlowControl::GetJPGStream: alg_roi.jpg cannot be served -> alg.jpg is going to be served!");
+
                 if (flowalignment && flowalignment->ImageBasis && flowalignment->ImageBasis->ImageOkay())
                 {
                     _send = flowalignment->ImageBasis;
                 }
                 else
                 {
-                    httpd_resp_send(req, NULL, 0);
-                    return ESP_OK;
+                    std::string filename = "/sdcard/html/Flowstate_initialization.jpg";
+                    result = send_file(req, filename);
+                    // httpd_resp_send(req, NULL, 0);
+                    // return ESP_OK;
                 }
             }
         }
@@ -950,7 +956,7 @@ esp_err_t ClassFlowControl::GetJPGStream(std::string _fn, httpd_req_t *req)
 
 // flowpostprocessing is NULL until InitFlow() has parsed the config, and InitFlow() resets it to NULL
 // whenever the flow is rebuilt; REST handlers can call these at any time.
-string ClassFlowControl::getNumbersName()
+std::string ClassFlowControl::getNumbersName()
 {
     if (flowpostprocessing)
     {
@@ -960,7 +966,7 @@ string ClassFlowControl::getNumbersName()
     return "";
 }
 
-string ClassFlowControl::getJSON()
+std::string ClassFlowControl::getJSON()
 {
     if (flowpostprocessing)
     {

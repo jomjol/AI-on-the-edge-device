@@ -145,31 +145,39 @@ esp_err_t handler_capture_save_to_file(httpd_req_t *req)
 
 void register_server_camera_uri(httpd_handle_t server)
 {
-    httpd_uri_t camuri = {};
-    camuri.method = HTTP_GET;
+    ESP_LOGI(TAG, "Registering Camera URI handlers");
 
-    camuri.uri = "/lighton";
-    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_lightOn);
-    camuri.user_ctx = (void *)"Light On";
-    httpd_register_uri_handler(server, &camuri);
+    httpd_uri_t camera_uri = {};
 
-    camuri.uri = "/lightoff";
-    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_lightOff);
-    camuri.user_ctx = (void *)"Light Off";
-    httpd_register_uri_handler(server, &camuri);
+    camera_uri.uri = "/lighton";
+    camera_uri.method = HTTP_GET;
+    camera_uri.handler = APPLY_BASIC_AUTH_FILTER(handler_lightOn);
+    camera_uri.user_ctx = (void *)"Light On";
+    httpd_register_uri_handler(server, &camera_uri);
 
-    camuri.uri = "/capture";
-    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture);
-    camuri.user_ctx = NULL;
-    httpd_register_uri_handler(server, &camuri);
+    camera_uri.uri = "/lightoff";
+    camera_uri.method = HTTP_GET;
+    camera_uri.handler = APPLY_BASIC_AUTH_FILTER(handler_lightOff);
+    camera_uri.user_ctx = (void *)"Light Off";
+    httpd_register_uri_handler(server, &camera_uri);
 
-    camuri.uri = "/capture_with_flashlight";
-    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture_with_light);
-    camuri.user_ctx = NULL;
-    httpd_register_uri_handler(server, &camuri);
+    camera_uri.uri = "/capture";
+    camera_uri.method = HTTP_GET;
+    camera_uri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture);
+    camera_uri.user_ctx = NULL;
+    httpd_register_uri_handler(server, &camera_uri);
 
-    camuri.uri = "/save";
-    camuri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture_save_to_file);
-    camuri.user_ctx = NULL;
-    httpd_register_uri_handler(server, &camuri);
+    camera_uri.uri = "/capture_with_flashlight";
+    camera_uri.method = HTTP_GET;
+    camera_uri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture_with_light);
+    camera_uri.user_ctx = NULL;
+    httpd_register_uri_handler(server, &camera_uri);
+
+    camera_uri.uri = "/save";
+    camera_uri.method = HTTP_GET;
+    camera_uri.handler = APPLY_BASIC_AUTH_FILTER(handler_capture_save_to_file);
+    camera_uri.user_ctx = NULL;
+    httpd_register_uri_handler(server, &camera_uri);
+
+    /** 5x when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
 }

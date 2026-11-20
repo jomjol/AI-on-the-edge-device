@@ -51,8 +51,6 @@ esp_err_t get_numbers_file_handler(httpd_req_t *req)
 {
     std::string ret = flowctrl.getNumbersName();
 
-    //    ESP_LOGI(TAG, "Result get_numbers_file_handler: %s", ret.c_str());
-
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_type(req, "text/plain");
 
@@ -686,7 +684,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     /* Filename cannot have a trailing '/' */
     if (filename[strlen(filename) - 1] == '/')
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Invalid filename: " + string(filename));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Invalid filename: " + std::string(filename));
 
         /* Respond with 400 Bad Request */
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid filename");
@@ -695,7 +693,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 
     if (stat(filepath, &file_stat) == 0)
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File already exists: " + string(filepath));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "File already exists: " + std::string(filepath));
 
         /* Respond with 400 Bad Request */
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "File already exists");
@@ -716,7 +714,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     FILE *pFile = fopen(filepath, "w");
     if (!pFile)
     {
-        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create file: " + string(filepath));
+        LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to create file: " + std::string(filepath));
 
         /* Respond with 500 Internal Server Error */
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to create file");
@@ -783,10 +781,10 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     /* Close file upon upload completion */
     fclose(pFile);
 
-    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File saved: " + string(filename));
+    LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File saved: " + std::string(filename));
     ESP_LOGI(TAG, "File reception completed");
 
-    string s = req->uri;
+    std::string s = req->uri;
 
     if (isInString(s, "?md5"))
     {
@@ -795,7 +793,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         pFile = fopen(filepath, "r");
         if (!pFile)
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to open file for reading: " + string(filepath));
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to open file for reading: " + std::string(filepath));
 
             /* Respond with 500 Internal Server Error */
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to open file for reading");
@@ -803,8 +801,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         }
 
         uint8_t result[16];
-        string md5hex = "";
-        string response = "{\"md5\":";
+        std::string md5hex = "";
+        std::string response = "{\"md5\":";
         char hex[3];
 
         md5File(pFile, result);
@@ -816,7 +814,7 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
             md5hex.append(hex);
         }
 
-        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MD5 of " + string(filepath) + ": " + md5hex);
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "MD5 of " + std::string(filepath) + ": " + md5hex);
         response.append("\"" + md5hex + "\"");
         response.append("}");
 
@@ -940,7 +938,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         /* Filename cannot have a trailing '/' */
         if (filename[strlen(filename) - 1] == '/')
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Invalid filename: " + string(filename));
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Invalid filename: " + std::string(filename));
 
             /* Respond with 400 Bad Request */
             httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid filename");
@@ -949,7 +947,7 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
 
         if (strcmp(filename, "wlan.ini") == 0)
         {
-            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to delete protected file : " + string(filename));
+            LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "Failed to delete protected file : " + std::string(filename));
 
             httpd_resp_send_err(req, HTTPD_403_FORBIDDEN, "Not allowed to delete wlan.ini");
             return ESP_FAIL;
@@ -959,13 +957,13 @@ static esp_err_t delete_post_handler(httpd_req_t *req)
         {
             // File does not exist
             /* This is ok, we would delete it anyway */
-            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File does not exist: " + string(filename));
+            LogFile.WriteToFile(ESP_LOG_INFO, TAG, "File does not exist: " + std::string(filename));
         }
 
         /* Delete file */
         unlink(filepath);
 
-        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File deleted: " + string(filename));
+        LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "File deleted: " + std::string(filename));
         ESP_LOGI(TAG, "File deletion completed");
 
         directory = std::string(filepath);
@@ -1052,6 +1050,8 @@ void delete_all_in_directory(std::string _directory)
 
 void register_server_file_uri(httpd_handle_t server, const char *base_path)
 {
+    ESP_LOGI(TAG, "Registering File URI handlers");
+
     static struct file_server_data *server_data = NULL;
 
     /* Validate file storage base path */
@@ -1073,61 +1073,49 @@ void register_server_file_uri(httpd_handle_t server, const char *base_path)
     }
     strlcpy(server_data->base_path, base_path, sizeof(server_data->base_path));
 
-    httpd_uri_t file_download = {
-        .uri = "/fileserver*", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(download_get_handler),
-        .user_ctx = server_data // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &file_download);
+    httpd_uri_t file_uri = {};
 
-    httpd_uri_t file_datafileact = {
-        .uri = "/datafileact", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(datafileact_get_full_handler),
-        .user_ctx = server_data // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &file_datafileact);
+    file_uri.uri = "/fileserver*";
+    file_uri.method = HTTP_GET;
+    file_uri.handler = APPLY_BASIC_AUTH_FILTER(download_get_handler);
+    file_uri.user_ctx = server_data;
+    httpd_register_uri_handler(server, &file_uri);
 
-    httpd_uri_t file_datafile_last_part_handle = {
-        .uri = "/data", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(datafileact_get_last_part_handler),
-        .user_ctx = server_data // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &file_datafile_last_part_handle);
+    file_uri.uri = "/datafileact";
+    file_uri.method = HTTP_GET;
+    file_uri.handler = APPLY_BASIC_AUTH_FILTER(datafileact_get_full_handler);
+    file_uri.user_ctx = server_data;
+    httpd_register_uri_handler(server, &file_uri);
 
-    httpd_uri_t file_logfileact = {
-        .uri = "/logfileact", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(logfileact_get_full_handler),
-        .user_ctx = server_data // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &file_logfileact);
+    file_uri.uri = "/data";
+    file_uri.method = HTTP_GET;
+    file_uri.handler = APPLY_BASIC_AUTH_FILTER(datafileact_get_last_part_handler);
+    file_uri.user_ctx = server_data;
+    httpd_register_uri_handler(server, &file_uri);
 
-    httpd_uri_t file_logfile_last_part_handle = {
-        .uri = "/log", // Match all URIs of type /path/to/file
-        .method = HTTP_GET,
-        .handler = APPLY_BASIC_AUTH_FILTER(logfileact_get_last_part_handler),
-        .user_ctx = server_data // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &file_logfile_last_part_handle);
+    file_uri.uri = "/logfileact";
+    file_uri.method = HTTP_GET;
+    file_uri.handler = APPLY_BASIC_AUTH_FILTER(logfileact_get_full_handler);
+    file_uri.user_ctx = server_data;
+    httpd_register_uri_handler(server, &file_uri);
 
-    /* URI handler for uploading files to server */
-    httpd_uri_t file_upload = {
-        .uri = "/upload/*", // Match all URIs of type /upload/path/to/file
-        .method = HTTP_POST,
-        .handler = APPLY_BASIC_AUTH_FILTER(upload_post_handler),
-        .user_ctx = server_data // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &file_upload);
+    file_uri.uri = "/log";
+    file_uri.method = HTTP_GET;
+    file_uri.handler = APPLY_BASIC_AUTH_FILTER(logfileact_get_last_part_handler);
+    file_uri.user_ctx = server_data;
+    httpd_register_uri_handler(server, &file_uri);
 
-    /* URI handler for deleting files from server */
-    httpd_uri_t file_delete = {
-        .uri = "/delete/*", // Match all URIs of type /delete/path/to/file
-        .method = HTTP_POST,
-        .handler = APPLY_BASIC_AUTH_FILTER(delete_post_handler),
-        .user_ctx = server_data // Pass server data as context
-    };
-    httpd_register_uri_handler(server, &file_delete);
+    file_uri.uri = "/upload/*";
+    file_uri.method = HTTP_POST;
+    file_uri.handler = APPLY_BASIC_AUTH_FILTER(upload_post_handler);
+    file_uri.user_ctx = server_data;
+    httpd_register_uri_handler(server, &file_uri);
+
+    file_uri.uri = "/delete/*";
+    file_uri.method = HTTP_POST;
+    file_uri.handler = APPLY_BASIC_AUTH_FILTER(delete_post_handler);
+    file_uri.user_ctx = server_data;
+    httpd_register_uri_handler(server, &file_uri);
+
+    /** 7x when adding a new handler, make sure to increment the value for config.max_uri_handlers in `main/server_main.cpp` */
 }

@@ -41,13 +41,16 @@ std::string getFwVersion(void)
 {
     std::string buf;
     if (std::string(GIT_TAG) == "")
-    { // Tag not set, show branch
+    {
+        // Tag not set, show branch
         buf = "Development-Branch: " + std::string(GIT_BRANCH);
     }
     else
-    { // Tag is set, ignore branch
+    {
+        // Tag is set, ignore branch
         buf = "Release: " + std::string(GIT_TAG);
     }
+
     buf = buf + " (Commit: " + std::string(GIT_REV) + ")";
 
     return buf;
@@ -56,12 +59,14 @@ std::string getFwVersion(void)
 std::string getHTMLversion(void)
 {
     char buf[100] = "?\0";
-    FILE *pFile;
+
     string fn = FormatFileName("/sdcard/html/version.txt");
-    pFile = fopen(fn.c_str(), "r");
+    FILE *pFile = fopen(fn.c_str(), "r");
 
     if (pFile == NULL)
+    {
         return std::string(buf);
+    }
 
     fgets(buf, sizeof(buf), pFile); // Line 1: Version
     fclose(pFile);
@@ -75,12 +80,14 @@ std::string getHTMLversion(void)
 std::string getHTMLcommit(void)
 {
     char buf[100] = "?\0";
-    FILE *pFile;
+
     string fn = FormatFileName("/sdcard/html/version.txt");
-    pFile = fopen(fn.c_str(), "r");
+    FILE *pFile = fopen(fn.c_str(), "r");
 
     if (pFile == NULL)
+    {
         return std::string(buf);
+    }
 
     fgets(buf, sizeof(buf), pFile); // Line 1: Version -> ignored
     fgets(buf, sizeof(buf), pFile); // Line 2: Commit

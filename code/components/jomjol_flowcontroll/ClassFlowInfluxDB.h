@@ -25,19 +25,19 @@ protected:
 
     void SetInitialParameter(void);
 
-    void handleFieldname(string _decsep, string _value);
-    void handleMeasurement(string _decsep, string _value);
+    void handleFieldname(std::string _decsep, std::string _value);
+    void handleMeasurement(std::string _decsep, std::string _value);
 
 public:
-    ClassFlowInfluxDB();
+    ClassFlowInfluxDB(void);
     ClassFlowInfluxDB(std::vector<ClassFlow *> *lfc);
     ClassFlowInfluxDB(std::vector<ClassFlow *> *lfc, ClassFlow *_prev);
 
-    //    string GetInfluxDBMeasurement();
+    // std::string GetInfluxDBMeasurement(void);
 
-    bool ReadParameter(FILE *pfile, string &aktparamgraph);
-    bool doFlow(string time);
-    string name() { return "ClassFlowInfluxDB"; };
+    bool ReadParameter(FILE *pfile, std::string &aktparamgraph);
+    bool doFlow(std::string time);
+    std::string name(void) { return "ClassFlowInfluxDB"; };
 };
 
 #endif // CLASSFINFLUXDB_H

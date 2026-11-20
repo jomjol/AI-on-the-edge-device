@@ -14,6 +14,6 @@ void CheckOTAUpdate(void);
 void doReboot(void);
 void doRebootOTA(void);
 void hard_restart(void);
-void CheckUpdate(void);
+bool CheckUpdate(void);
 
 #endif // SERVEROTA_H

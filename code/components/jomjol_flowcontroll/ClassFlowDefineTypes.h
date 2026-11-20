@@ -15,7 +15,7 @@ struct roi
     float result_float;
     int result_klasse;
     bool isReject, CCW;
-    string name;
+    std::string name;
     CImageBasis *image, *image_org;
 };
 
@@ -24,7 +24,7 @@ struct roi
  */
 struct general
 {
-    string name;
+    std::string name;
     std::vector<roi *> ROI;
 };
 
@@ -53,16 +53,16 @@ struct NumberPost
     time_t timeStampLastValue;          // Timestamp for the last read value; is used for the log
     time_t timeStampLastPreValue;       // Timestamp for the last PreValue set; is used for useMaxRateValue
     time_t timeStampTimeUTC;            // FIXME: not used; can be removed.
-    string timeStamp;                   // localTimeStr; timestamp of last valid reading formatted as local time
+    std::string timeStamp;                   // localTimeStr; timestamp of last valid reading formatted as local time
     double FlowRateAct;                 // currentRate; ΔValue/min; since usage is not limited to water meters, the physical unit is not known.
     double PreValue;                    // lastValidValue; most recent value that could be read w/o any errors
     double Value;                       // value; most recent readout; may include corrections
-    string ReturnRateValue;             // currentRateStr; current normalized rate; ΔValue/min
-    string ReturnChangeAbsolute;        // currentChangeStr; absolute difference between current and previous measurement
-    string ReturnRawValue;              // rawValueStr; Raw value (with N & leading 0)
-    string ReturnValue;                 // valueStr; corrected return value, if necessary with error message
-    string ReturnPreValue;              // lastValidValueStr; corrected return value without error message
-    string ErrorMessageText;            // errorMessage; Error message for consistency checks
+    std::string ReturnRateValue;             // currentRateStr; current normalized rate; ΔValue/min
+    std::string ReturnChangeAbsolute;        // currentChangeStr; absolute difference between current and previous measurement
+    std::string ReturnRawValue;              // rawValueStr; Raw value (with N & leading 0)
+    std::string ReturnValue;                 // valueStr; corrected return value, if necessary with error message
+    std::string ReturnPreValue;              // lastValidValueStr; corrected return value without error message
+    std::string ErrorMessageText;            // errorMessage; Error message for consistency checks
     int AnzahlAnalog;                   // numAnalogRoi; number of analog ROIs used in this sequence
     int AnzahlDigit;                    // numDigitRoi; number of digit ROIs used in this sequence
     int DecimalShift;                   // decimalShift; each increment shifts the decimal separator by one digit; value=value*10^decimalShift; pos. value shifts to the right
@@ -71,20 +71,20 @@ struct NumberPost
     bool ContinuousLastDigit;           // continuousLastDigit; last digit drum rolls continuously with the first analog pointer (drum = digit + pointer/10)
     int Nachkomma;                      // decimalPlaces; usually defined by the number of analog ROIs; affected by DecimalShift
 
-    string DomoticzIdx; // Domoticz counter Idx
+    std::string DomoticzIdx; // Domoticz counter Idx
 
-    string FieldV1;       // influxdbFieldName_v1; Name of the Field in InfluxDBv1
-    string MeasurementV1; // influxdbMeasurementName_v1; Name of the Measurement in InfluxDBv1
+    std::string FieldV1;       // influxdbFieldName_v1; Name of the Field in InfluxDBv1
+    std::string MeasurementV1; // influxdbMeasurementName_v1; Name of the Measurement in InfluxDBv1
 
-    string FieldV2;       // influxdbFieldName_v2; Name of the Field in InfluxDBv2
-    string MeasurementV2; // influxdbMeasurementName_v2; Name of the Measurement in InfluxDBv2
+    std::string FieldV2;       // influxdbFieldName_v2; Name of the Field in InfluxDBv2
+    std::string MeasurementV2; // influxdbMeasurementName_v2; Name of the Measurement in InfluxDBv2
 
     bool isExtendedResolution; // extendResolution; Adds the decimal place of the least significant analog ROI to the value
 
     general *digit_roi;  // digitRoi; set of digit ROIs for the sequence
     general *analog_roi; // analogRoi; set of analog ROIs for the sequence
 
-    string name; // name; Designation for the sequence
+    std::string name; // name; Designation for the sequence
 };
 
 #endif
