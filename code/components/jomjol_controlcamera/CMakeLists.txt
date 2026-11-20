@@ -1,9 +1,28 @@
 FILE(GLOB_RECURSE app_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.*)
 
-list(APPEND EXTRA_COMPONENT_DIRS $ENV{IDF_PATH}/examples/common_components/protocol_examples_common)
-
 idf_component_register(SRCS ${app_sources}
-                    INCLUDE_DIRS "."
-                    REQUIRES esp_timer esp32-camera esp_http_server jomjol_logfile jomjol_image_proc nvs_flash jomjol_fileserver_ota jomjol_controlGPIO)
+                    INCLUDE_DIRS 
+                        "." 
+                        "../../include"
 
+                    REQUIRES 
+                        esp_timer 
+                        nvs_flash 
+                        esp32-camera 
+                        esp_http_server 
 
+                        jomjol_configfile 
+                        jomjol_controlGPIO 
+                        jomjol_fileserver_ota 
+                        jomjol_flowcontroll 
+                        jomjol_helper 
+                        jomjol_image_proc 
+                        jomjol_influxdb 
+                        jomjol_logfile 
+                        jomjol_mqtt 
+                        jomjol_tfliteclass 
+                        jomjol_time_sntp 
+                        jomjol_webhook 
+                        jomjol_network 
+                        openmetrics
+                    )

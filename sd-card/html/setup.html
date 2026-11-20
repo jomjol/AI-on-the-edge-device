@@ -1,342 +1,665 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en"> 
+<html lang="en" xml:lang="en">
 <head>
-<title>AI on the edge</title>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>AI on the edge</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-.h_iframe_explain iframe {
-    width:995px;
-    height:155px;
-    padding:5px;
-    padding-top:0px;
-    padding-bottom:0px;
-}
+    <style>
+        h1 { font-size: 2em; margin-block-end: 0.3em; }
+        h2 { font-size: 1.5em; margin-block-start: 0.3em; }
+        h3 { font-size: 1.2em; }
+        p { font-size: 1em; }
 
-.h_iframe iframe {
-    width:995px;
-    height:800px;
-    padding:5px;
-}
+        .button {
+            padding: 5px 10px;
+            width: 125px;
+            font-size: 16px;
+        }
 
-h1 {font-size: 2em; margin-block-end: 0.3em;}
-h2 {font-size: 1.5em;margin-block-start: 0.3em;}
-h3 {font-size: 1.2em;}
-p {font-size: 1em;}
+        table {
+            width: 995px;
+            padding: 0;
+        }
 
-.button {
-	padding: 5px 10px;
-    width: 125px;
-	font-size: 16px;
-}
+        html, body {
+            width: 100%;
+            min-height: 800px;
+            margin: 0 0 0 2px;
+            padding: 0;
+            font-family: Arial, sans-serif;
+			overflow-x: hidden;
+        }
 
-table {
-    width: 1015px;
-	padding: 0px;
-}
+        #h_iframe {
+            width: 995px;
+            height: 800px;
+            padding: 5px;
+            margin-top: 5px;
+            border: 2px solid #999;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            background-color: white;
+        }
 
-.main {
-    display: flex; 
-    width: 100%; 
-    height: 100%; 
-    flex-direction: column; 
-    overflow: hidden;
-}
-
-body, html {
-    width: 100%; 
-    height: 100%; 
-    min-height: 800px;
-    margin: 0px 0px 0px 2px; 
-    padding: 0; 
-    font-family: arial;
-    width: -moz-fit-content;
-    width: fit-content;
-}
-
-</style>
-<script type="text/javascript">
-    function resizeIframe(obj) {
-        obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 20 + 'px';
-    }
-</script>
+        #maincontent {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 
-<body style="font-family: arial">
+<body>
 
-    <table style="border: none">
-        <tr>
-            <td style="padding-right: 10px;"><img src="favicon.ico?v=$COMMIT_HASH"></td>
-            <td>
-                <h1> Digitizer - AI on the edge - Initial setup</h1>
-                <h2>An ESP32 all inclusive neural network recognition system for meter Digitization</h2>
-            </td>
-        </tr>
-    </table>
+<table style="border:none">
+    <tr>
+        <td style="padding-right:10px">
+            <img src="favicon.ico?v=$COMMIT_HASH">
+        </td>
+        <td>
+            <h1>Digitizer - AI on the edge - Initial setup</h1>
+            <h2>An ESP32 all inclusive neural network recognition system for meter Digitization</h2>
+        </td>
+    </tr>
+</table>
 
-    <table>
-        <colgroup>
-            <col span="1" style="width: 45.0%;">
-            <col span="1" style="width: 15.0%;">
-            <col span="1" style="width: 25.0%;">
-        </colgroup>
-        <tr>
-            <td>
-                <button class="button" id="restart" name="restart" onclick="clickStart()">Restart Setup</button>
-                <button class="button" id="previous" name="previous" onclick="clickPrevious()">Previous Step</button>
-                <button class="button" id="next" name="next" onclick="clickNext()">Next Step</button>
-                <button class="button" id="skip" name="skip" onclick="clickAbort()">Abort Setup</button>
-            </td>
-            <td style="padding-left:10px;">Setup Progress:<br><progress id="progressBar" value="0" max="7" style="width:120px;"></progress></td>
-            <td style="padding-left:10px; padding-top: 10px; padding-right: 5px; float:right;">
-                <output id="rssi" name="rssi"></output>
-            </td>
-        </tr>
-    </table>
+<table>
+    <colgroup>
+        <col style="width:45%">
+        <col style="width:15%">
+        <col style="width:25%">
+    </colgroup>
+    <tr>
+        <td>
+            <button class="button" id="restart" onclick="clickStart()">Restart Setup</button>
+            <button class="button" id="previous" onclick="clickPrevious()">Previous Step</button>
+            <button class="button" id="next" onclick="clickNext()">Next Step</button>
+            <button class="button" id="skip" onclick="clickAbort()">Abort Setup</button>
+        </td>
+        <td style="padding-left:10px">
+            Setup Progress:<br>
+            <progress id="progressBar" value="0" max="7" style="width:120px"></progress>
+        </td>
+        <td style="padding-left:10px;padding-top:10px;padding-right:5px;float:right">
+            <output id="rssi" name="rssi"></output>
+        </td>
+    </tr>
+</table>
 
+<div id="h_iframe">
+    <iframe
+        name="maincontent"
+        id="maincontent"
+        src="about:blank"
+        allowfullscreen>
+    </iframe>
+</div>
 
-    <div class="h_iframe_explain" id="h_iframe_explain">
-        <iframe name="explaincontent" id ="explaincontent" src="" allowfullscreen></iframe>
-    </div>
+<template id="page_welcome">
+    <h2>Welcome to the setup of the AI-on-the-edge-device</h2>
 
-    <div class="h_iframe" id="h_iframe">
-        <iframe name="maincontent" id ="maincontent" src="" onload="resizeIframe(this)" allowfullscreen></iframe>
-        <iframe name="stream" id ="stream" src="" display="none" allowfullscreen></iframe>
-    </div>
+    <p>
+        <img src="flow_overview.jpg" alt="">
+        <img src="cnn_images.jpg" alt="">
+    </p>
 
+    <p>
+        This is the first time you started the device after the initial installation.
+        You have been automatically routed to the <b>initial setup procedure</b>.
+        With the prodecure the basic setup of your device within seven steps will be performed.
+        After completion of all steps the setup mode will be completed
+        and the device restarts automatically to the regular web interface.<br>
+        Note: All settings of the initial setup will be also accessible using regular web interface.
+        See documentation:
+        <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/initial-setup" target="_blank">
+            Initial setup procedure
+        </a>
+        for additional explanations.
+    </p>
 
-<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script> 
+    <p>
+        You can navigate forward and backward during the setup with the buttons
+        "Next Step" and "Previous Step".<br>
+        With the button "Abort Setup" the setup will be skipped and abort screen will be presented.<br>
+        To restart the setup process, push the button "Restart Setup".
+    </p>
+
+    <p>This is an overview over the seven steps:</p>
+
+    <ol>
+        <li>
+            <p>
+                Adjust <b>lens focus</b> and check for <b>reflections of flashlight</b>.<br>
+                Ensure you camera lens has proper focus to object and flashlight do not create any distoring reflections.
+            </p>
+        </li>
+        <li>
+            <p>
+                Create the <b>reference image</b>.<br>
+                It is the base for the position referencing and the identification of the digits and counters.
+            </p>
+        </li>
+        <li>
+            <p>
+                Define two unique <b>alignment marker</b>.<br>
+                They are used to perform an orientation alignment of the taken camera images before further processing
+            </p>
+        </li>
+        <li>
+            <p>
+                Define <b>ROI's</b> for the <b>digits</b>.<br>
+                They will be used to digitize the digit part of your meter.<br>
+                NOTE: If your meter has no digits, this step can be skipped.
+            </p>
+        </li>
+        <li>
+            <p>
+                Define <b>ROI's</b> for the <b>analog counters</b>.<br>
+                They will be used to digitize the analog part of your meter.<br>
+                NOTE: If your meter has no analog counters, this step can be skipped.
+            </p>
+        </li>
+        <li>
+            <p>
+                <b>Additional configuration:</b> List of all parameters<br>
+                Further configuration of your device can be done here.<br>
+                NOTE: This can also be performed later with regular web interface, e.g. to setup any publishing service like MQTT
+            </p>
+        </li>
+        <li>
+            <p>
+                <b>Setup Completion:</b> End/Abort setup mode<br>
+                In the final step the setup mode needs to be properly terminated by pushing the button in this page.<br>
+                NOTE: This is important, otherwise the setup mode is recalled again after reboot.
+            </p>
+        </li>
+    </ol>
+
+    <p>
+        Please be patient when switching to another step.
+        The device takes some time to load all needed information!
+    </p>
+
+    <p>
+        If you need support, have a look to the
+        <a href="https://jomjol.github.io/AI-on-the-edge-device-docs" target="_blank">documentation</a>
+        or the
+        <a href="https://github.com/jomjol/AI-on-the-edge-device/discussions" target="_blank">discussion</a>
+        pages.
+    </p>
+
+    <p><b>Have fun with your AI-on-the-edge-device!</b></p>
+</template>
+
+<template id="page_explain_1">
+    <h4>Step 1 / 7: Adjust Focus And Verify Flashlight</h4>
+
+    Firstly you have find a proper mounting position and potentially have to adjust the focus of the camera lens to get a sharp and crisp image.
+
+    This <b>live stream with flashlight on</b> could be helpful for this task. More details about adjusting the camera lens can be found here:
+    <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/Reference-Image/#focus" target="_blank">Focus Adjustment</a><br>
+
+    Additionally it should be verfied that the flashlight is not creating any distrubing reflection in the processing relevant areas.
+
+    Beside using the built-in internal flash LED it's also possible to attach additional external LEDs to the device to have more possiblities to get proper light condition. Please read the documentation if you'd like to use extenal LEDs:
+    <a href="https://jomjol.github.io/AI-on-the-edge-device-docs/External-LED/" target="_blank">Installation Of External LEDs</a>
+
+    <p>
+        NOTE: The flashlight indensity is set to default (50%) for initial verfication in this step and can be modified in next step. After modification you can come back to this step if you'd like to test with adjusted light intensity.<br>
+        The live stream can also be called at any time also after setup mode is completed on regular web interface.
+    </p>
+</template>
+
+<template id="page_explain_2">
+    <h4>Step 2 / 7: Create A Reference Image</h4>
+</template>
+
+<template id="page_explain_3">
+    <h4>Step 3 / 7: Definement Of Alignment Marker</h4>
+</template>
+
+<template id="page_explain_4">
+    <h4>Step 4 / 7: Configuration Of ROIs For Digit Numbers</h4>
+</template>
+
+<template id="page_explain_5">
+    <h4>Step 5 / 7: Configuration Of ROIs For Analog Counters</h4>
+</template>
+
+<template id="page_explain_6">
+    <h4>Step 6 / 7: Configuration Page: List Of All Parameters</h4>
+    <p>
+        NOTE: All parameter can be edited later in the regular web interface.
+        So don't worry if you do not understand the parameters yet!
+    </p>
+</template>
+
+<template id="page_completion">
+    <h4>Step 7 / 7: Initial setup completed!</h4>
+
+    <p>
+        Congratulations! You have completed the initial setup and you are now ready to restart to the regular operation mode!
+    </p>
+
+    <p>
+        Once you push the button below, the setup mode will be completed and the device will be automatically restart to regular web interface.
+        If configuration is error free, the device will automatically start with first processing.
+        It will take some time until you get the first reading.
+    </p>
+
+    <p>
+        <button class="button" onclick="parent.completeSetup()">
+            Complete Setup + Reboot
+        </button>
+    </p>
+</template>
+
+<template id="page_abort">
+    <h4>Initial setup aborted!</h4>
+
+    <p>You have <b>aborted</b> the initial setup!</p>
+
+    <p>
+        Once you push the button below, the setup mode will be ended and the device will be automatically restart to regular web interface.
+        Please be aware: The configuration of the device is not or only parly adapted to your needs!<br>
+        Configuration can still be adapted / completed using regular web interface.
+    </p>
+
+    <p>
+        <button class="button" onclick="parent.abortSetup()">
+            Abort Setup + Reboot
+        </button>
+    </p>
+</template>
+
+<script type="text/javascript" src="common.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="jquery-3.6.0.min.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="firework.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="readconfigparam.js?v=$COMMIT_HASH"></script>
+<script type="text/javascript" src="readconfigcommon.js?v=$COMMIT_HASH"></script>
+
 <script type="text/javascript">
     var aktstep = 0;
     var setupCompleted = false;
-    document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
-    document.getElementById("progressBar").value = 0;
+    var currentStreamTimer = null;
 
+    var explanations = {
+        1: document.getElementById('page_explain_1').innerHTML,
+        2: document.getElementById('page_explain_2').innerHTML,
+        3: document.getElementById('page_explain_3').innerHTML,
+        4: document.getElementById('page_explain_4').innerHTML,
+        5: document.getElementById('page_explain_5').innerHTML,
+        6: document.getElementById('page_explain_6').innerHTML
+    };
+
+    // -----------------------------------------------------
+    // Create the content document inside the one main iframe
+    // -----------------------------------------------------
+    function renderPage(content, editorUrl, editorHeight) {
+        var iframe = document.getElementById('maincontent');
+        var baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+		
+        var editor = '';
+
+        if (editorUrl) {
+            editor = `
+                <iframe
+                    src="${editorUrl}"
+                    style="
+                        display:block;
+                        width:100%;
+                        height:${editorHeight}px;
+                        border:0;
+                        margin:0;
+                        padding:0;
+                    "
+                    allowfullscreen>
+                </iframe>
+            `;
+        }
+
+        var page = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+                <base href="${baseUrl}">
+
+                <style>
+                    * {
+                        box-sizing:border-box;
+                    }
+
+                    html, body {
+                        width:100%;
+                        height:100%;
+                        margin:0;
+                        padding:0;
+                        font-family:Arial,sans-serif;
+                    }
+
+                    body {
+                        height:800px;
+                        overflow:hidden;
+                    }
+
+                    #content {
+                        width:100%;
+                        height:100%;
+                        overflow-y:auto;
+                        overflow-x:hidden;
+                        padding:5px;
+                    }
+
+                    #explanation {
+                        width:100%;
+                        padding:0 5px 5px 5px;
+                    }
+
+                    #editor {
+                        width:100%;
+                        height:calc(100% - 50px);
+                        border:0;
+                    }
+
+                    h4 {
+                        margin-top:5px;
+                        margin-bottom:10px;
+                    }
+
+                    p {
+                        font-size:1em;
+                    }
+
+                    img {
+                        max-width:100%;
+                    }
+
+                    .button {
+                        padding:5px 10px;
+                        width:205px;
+                        font-size:16px;
+                    }
+                </style>
+            </head>
+
+            <body>
+                <div id="content">
+                    ${content}
+                    ${editor}
+                </div>
+            </body>
+            </html>
+        `;
+
+        iframe.style.display = "block";
+        iframe.srcdoc = page;
+    }
+
+
+    // -----------------------------------------------------
+    // Show a local integrated page
+    // -----------------------------------------------------
+    function showTemplate(templateId) {
+        var template = document.getElementById(templateId);
+
+        if (!template) {
+            console.error("Missing template: " + templateId);
+            return;
+        }
+
+        renderPage(template.innerHTML, null, 0);
+    }
+
+    // -----------------------------------------------------
+    // Show explanation + external editor in same frame
+    // -----------------------------------------------------
+    function showEditor(step, editorFile) {
+        var explanation = explanations[step];
+        var editorUrl = editorFile + '?v=$COMMIT_HASH#description';
+        renderPage(explanation, editorUrl, 735);
+    }
+
+    // -----------------------------------------------------
+    // Stream
+    // -----------------------------------------------------
+    function stopStream() {
+        if (currentStreamTimer !== null) {
+            clearTimeout(currentStreamTimer);
+            currentStreamTimer = null;
+        }
+    }
+
+    function showStream() {
+        var streamUrl = getDomainname() + '/stream?flashlight=true';
+
+        renderPage(
+            explanations[1] +
+            '<iframe src="' + streamUrl + '" ' +
+            'style="width:100%;height:620px;border:0;" ' +
+            'allowfullscreen></iframe>',
+            null,
+            0
+        );
+    }
+
+    // -----------------------------------------------------
+    // Navigation
+    // -----------------------------------------------------
     function clickStart() {
         aktstep = 0;
         setupCompleted = false;
-        document.getElementById('stream').src = "";     
-        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+
+        stopStream();
         LoadStep();
     }
 
     function clickAbort() {
-        setupCompleted = false;
         aktstep = 7;
-        document.getElementById('stream').src = "";     
-        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+        setupCompleted = false;
+
+        stopStream();
         LoadStep();
     }
 
-   function clickNext() {
-        aktstep++;
-        if (aktstep > 7) {
-            aktstep = 7;
+    function clickNext() {
+        if (aktstep < 7) {
+            aktstep++;
         }
-        document.getElementById('stream').src = "";     
-        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+
+        stopStream();
         LoadStep();
     }
 
-   function clickPrevious() {
-        aktstep--;
-        if (aktstep < 0) {
-            aktstep = 0;
+    function clickPrevious() {
+        if (aktstep > 0) {
+            aktstep--;
         }
-        document.getElementById('stream').src = "";     
-        document.getElementById('stream').style.display = "none";   // Make sure that stream iframe is always hidden
+
+        stopStream();
         LoadStep();
-   }
+    }
 
-   function LoadStep(){
-      loadRSSI();
-      switch (aktstep) {
-        case 0: // Start page
-            document.getElementById('maincontent').src = 'edit_explain_0.html?v=$COMMIT_HASH';
-            document.getElementById('maincontent').style.display = "";
+    // -----------------------------------------------------
+    // Load the current step
+    // -----------------------------------------------------
+    function LoadStep() {
+        loadRSSI();
 
-            document.getElementById('h_iframe_explain').style.display = "none";
+        var restart = document.getElementById("restart");
+        var previous = document.getElementById("previous");
+        var next = document.getElementById("next");
+        var skip = document.getElementById("skip");
+        var progress = document.getElementById("progressBar");
 
-            document.getElementById("restart").disabled = true;
-            document.getElementById("previous").disabled = true;
-            document.getElementById("next").disabled = false;
-            document.getElementById("skip").disabled = false;
+        restart.disabled = false;
+        previous.disabled = false;
+        next.disabled = false;
+        skip.disabled = false;
 
-            document.getElementById("progressBar").value = 0;
-            setupCompleted = false;
-            break;
+        switch (aktstep) {
+            case 0:
+                showTemplate('page_welcome');
+                restart.disabled = true;
+                previous.disabled = true;
+                progress.value = 0;
+                setupCompleted = false;
+                break;
 
-        case 1: // Live stream
-            document.getElementById('maincontent').style.display = "none";
+            case 1:
+                showStream();
+                progress.value = 1;
+                setupCompleted = false;
+                break;
 
-            document.getElementById('h_iframe_explain').style.display = "";
-            document.getElementById('h_iframe_explain').style="height:155px;"
-            document.getElementById('explaincontent').style="height:155px;"
-            document.getElementById('explaincontent').scrolling="yes"
-            document.getElementById('explaincontent').src = 'explain_1.html?v=$COMMIT_HASH';
-            
-            document.getElementById("restart").disabled = false;
-            document.getElementById("previous").disabled = false;
-            document.getElementById("next").disabled = false;
-            document.getElementById("skip").disabled = false;
+            case 2:
+                showEditor(2, 'edit_reference.html');
+                progress.value = 2;
+                setupCompleted = false;
+                break;
 
-            document.getElementById('h_iframe').style="height:480px;"
-            document.getElementById('stream').style="height:480px;"
+            case 3:
+                showEditor(3, 'edit_alignment.html');
+                progress.value = 3;
+                setupCompleted = false;
+                break;
 
-            document.getElementById("progressBar").value = 1;
-            setupCompleted = false;
+            case 4:
+                showEditor(4, 'edit_digits.html');
+                progress.value = 4;
+                setupCompleted = false;
+                break;
 
-            setTimeout(function() {
-                document.getElementById('stream').src = getDomainname() + '/stream?flashlight=true';   // needs to be the last statement because it's kind of blocking
-                document.getElementById('stream').style.display = "";
-            }, 500);
-            break;
+            case 5:
+                showEditor(5, 'edit_analog.html');
+                progress.value = 5;
+                setupCompleted = false;
+                break;
 
-        case 2: // Reference image
-            document.getElementById('maincontent').src = 'edit_reference.html?v=$COMMIT_HASH#description';
-            document.getElementById('maincontent').style.display = "";
+            case 6:
+                showEditor(6, 'edit_config.html');
+                progress.value = 6;
+                setupCompleted = true;
+                break;
 
-            document.getElementById('h_iframe_explain').style.display = "";
-            document.getElementById('h_iframe_explain').style="height:45px;"
-            document.getElementById('explaincontent').style="height:45px;"
-            document.getElementById('explaincontent').scrolling="no"
-            document.getElementById('explaincontent').src = 'explain_2.html?v=$COMMIT_HASH';
+            case 7:
+                if (setupCompleted) {
+                    showTemplate('page_completion');
+                    previous.disabled = false;
+                } else {
+                    showTemplate('page_abort');
+                    previous.disabled = true;
+                }
 
-            document.getElementById("restart").disabled = false;
-            document.getElementById("previous").disabled = false;
-            document.getElementById("next").disabled = false;
-            document.getElementById("skip").disabled = false;
-
-            document.getElementById("progressBar").value = 2;
-            setupCompleted = false;
-            break;
-
-        case 3: // Alignment marker
-            document.getElementById('maincontent').src = 'edit_alignment.html?v=$COMMIT_HASH#description';
-
-            document.getElementById('h_iframe_explain').style.display = "";
-            document.getElementById('h_iframe_explain').style="height:45px;"
-            document.getElementById('explaincontent').style="height:45px;"
-            document.getElementById('explaincontent').scrolling="no"
-            document.getElementById('explaincontent').src = 'explain_3.html?v=$COMMIT_HASH';
-
-            document.getElementById("restart").disabled = false;
-            document.getElementById("previous").disabled = false;
-            document.getElementById("next").disabled = false;
-            document.getElementById("skip").disabled = false;
-
-            document.getElementById("progressBar").value = 3;
-            setupCompleted = false;
-            break;
-
-        case 4: // Digit ROIs
-            document.getElementById('maincontent').src = 'edit_digits.html?v=$COMMIT_HASH#description';
-
-            document.getElementById('h_iframe_explain').style.display = "";
-            document.getElementById('h_iframe_explain').style="height:45px;"
-            document.getElementById('explaincontent').style="height:45px;"
-            document.getElementById('explaincontent').scrolling="no"
-            document.getElementById('explaincontent').src = 'explain_4.html?v=$COMMIT_HASH';
-
-            document.getElementById("restart").disabled = false;
-            document.getElementById("previous").disabled = false;
-            document.getElementById("next").disabled = false;
-            document.getElementById("skip").disabled = false;
-
-            document.getElementById("progressBar").value = 4;
-            setupCompleted = false;
-            break;
-
-        case 5: // Analog ROIs
-            document.getElementById('maincontent').src = 'edit_analog.html?v=$COMMIT_HASH#description';
-
-            document.getElementById('h_iframe_explain').style.display = "";
-            document.getElementById('h_iframe_explain').style="height:45px;"
-            document.getElementById('explaincontent').style="height:45px;"
-            document.getElementById('explaincontent').scrolling="no"
-            document.getElementById('explaincontent').src = 'explain_5.html?v=$COMMIT_HASH';
-
-            document.getElementById("restart").disabled = false;
-            document.getElementById("previous").disabled = false;
-            document.getElementById("next").disabled = false;
-            document.getElementById("skip").disabled = false;
-
-            document.getElementById("progressBar").value = 5;
-            setupCompleted = false;
-            break;
-
-        case 6: // Config page
-            document.getElementById('maincontent').src = 'edit_config.html?v=$COMMIT_HASH#description';
-
-            document.getElementById('h_iframe_explain').style.display = "";
-            document.getElementById('h_iframe_explain').style="height:100px;"
-            document.getElementById('explaincontent').style="height:100px;"
-            document.getElementById('explaincontent').scrolling="no"
-            document.getElementById('explaincontent').src = 'explain_6.html?v=$COMMIT_HASH';
-
-            document.getElementById("restart").disabled = false;
-            document.getElementById("previous").disabled = false;
-            document.getElementById("next").disabled = false;
-            document.getElementById("skip").disabled = false;
-
-            document.getElementById("progressBar").value = 6;
-            setupCompleted = true;
-            break; 
-
-        case 7: // Setup completed / aborted
-            document.getElementById('h_iframe').style="height:660px;"
-            document.getElementById('maincontent').style="height:660px;"
-            if (setupCompleted) {
-                document.getElementById('maincontent').src = 'edit_explain_7.html?v=$COMMIT_HASH';
-            }
-            else {
-                document.getElementById('maincontent').src = 'edit_explain_7_abort.html?v=$COMMIT_HASH';
-                document.getElementById("previous").disabled = true; 
-            }
-
-            document.getElementById('h_iframe_explain').style.display = "none";
-
-            document.getElementById("skip").disabled = true;
-            document.getElementById("restart").disabled = false;
-            document.getElementById("next").disabled = true;
-
-            document.getElementById("progressBar").value = 7;
-            break;
+                skip.disabled = true;
+                next.disabled = true;
+                progress.value = 7;
+                break;
         }
-   }
+    }
 
-   function loadRSSI() {
-		url = getDomainname() + '/rssi';     
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				var _rsp = xhttp.responseText;
-				
-				if (_rsp >= -55) {
-					document.getElementById('rssi').value = ("WIFI Signal: Excellent (" + _rsp + "dBm)");
-				}
-				else if (_rsp < -55 && _rsp >= -67) {
-					document.getElementById('rssi').value = ("WIFI Signal: Good (" + _rsp + "dBm)");
-				}
-				else if (_rsp < -67 && _rsp >= -78) {
-					document.getElementById('rssi').value = ("WIFI Signal: Fair (" + _rsp + "dBm)");
-				}
-				else if (_rsp < -78 && _rsp >= -85) {
-					document.getElementById('rssi').value = ("WIFI Signal: Weak (" + _rsp + "dBm)");
-				}
-				else {
-					document.getElementById('rssi').value = ("WIFI Signal: Unreliable (" + _rsp + "dBm)");
-				}
-			}
-		}
-		xhttp.open("GET", url, true);
-		xhttp.send();		
-	}
+    // -----------------------------------------------------
+    // Complete setup
+    // -----------------------------------------------------
+    function completeSetup() {
+        if (confirm("Do you want to complete the setup mode and switch to regular web interface?")) {
+            var domainname = getDomainname();
 
+            if (!loadConfig(domainname)) {
+                firework.launch('Setup mode could not be deactivated! Please try again!', 'danger', 30000);
+                return;
+            }
 
-   LoadStep();
+            param = getCamConfig();
+
+            param["System"]["SetupMode"]["enabled"] = true;
+            param["System"]["SetupMode"]["value1"] = "false";
+
+            WriteConfigININew();
+            SaveConfigToServer(domainname);
+
+            var stringota = getDomainname() + "/reboot";
+            window.location.href = stringota;
+        }
+    }
+
+    // -----------------------------------------------------
+    // Abort setup
+    // -----------------------------------------------------
+    function abortSetup() {
+        if (confirm("Do you want to abort the setup mode and switch to regular web interface?")) {
+            var domainname = getDomainname();
+
+            if (!loadConfig(domainname)) {
+                firework.launch('Setup mode could not be deactivated! Please try again!', 'danger', 30000);
+                return;
+            }
+
+            ParseConfig();
+            param = getConfigParameters();
+
+            param["System"]["SetupMode"]["enabled"] = true;
+            param["System"]["SetupMode"]["value1"] = "false";
+
+            WriteConfigININew();
+            SaveConfigToServer(domainname);
+
+            var stringota = getDomainname() + "/reboot";
+            window.location.href = stringota;
+        }
+    }
+
+    // -----------------------------------------------------
+    // Read WiFi RSSI
+    // Original logic from setup.html
+    // -----------------------------------------------------
+    function loadRSSI() {
+        var url = getDomainname() + '/rssi';
+        var xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var _rsp = xhttp.responseText;
+
+                if (_rsp >= -55) {
+                    document.getElementById('rssi').value = "WIFI Signal: Excellent (" + _rsp + "dBm)";
+
+                } else if (_rsp < -55 && _rsp >= -67) {
+                    document.getElementById('rssi').value = "WIFI Signal: Good (" + _rsp + "dBm)";
+
+                } else if (_rsp < -67 && _rsp >= -78) {
+                    document.getElementById('rssi').value = "WIFI Signal: Fair (" + _rsp + "dBm)";
+
+                } else if (_rsp < -78 && _rsp >= -85) {
+                    document.getElementById('rssi').value = "WIFI Signal: Weak (" + _rsp + "dBm)";
+
+                } else {
+                    document.getElementById('rssi').value = "WIFI Signal: Unreliable (" + _rsp + "dBm)";
+
+                }
+            }
+        };
+
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    }
+
+    // -----------------------------------------------------
+    // Initial start
+    // -----------------------------------------------------
+    document.getElementById('progressBar').value = 0;
+
+    LoadStep();
 
 </script>
 

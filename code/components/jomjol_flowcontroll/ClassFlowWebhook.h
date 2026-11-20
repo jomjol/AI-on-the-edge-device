@@ -1,6 +1,6 @@
-#ifdef ENABLE_WEBHOOK
-
 #pragma once
+
+#ifdef ENABLE_WEBHOOK
 
 #ifndef CLASSFWEBHOOK_H
 #define CLASSFWEBHOOK_H
@@ -12,32 +12,31 @@
 
 #include <string>
 
-class ClassFlowWebhook :
-    public ClassFlow
+class ClassFlowWebhook : public ClassFlow
 {
 protected:
     std::string uri, apikey;
-	ClassFlowPostProcessing* flowpostprocessing;
-    ClassFlowAlignment* flowAlignment;
+    ClassFlowPostProcessing *flowpostprocessing;
+    ClassFlowAlignment *flowAlignment;
 
     bool WebhookEnable;
     int WebhookUploadImg;
 
-    void SetInitialParameter(void); 
+    void SetInitialParameter(void);
 
-    void handleFieldname(string _decsep, string _value);   
-    void handleMeasurement(string _decsep, string _value);
-
+    void handleFieldname(std::string _decsep, std::string _value);
+    void handleMeasurement(std::string _decsep, std::string _value);
 
 public:
-    ClassFlowWebhook();
-    ClassFlowWebhook(std::vector<ClassFlow*>* lfc);
-    ClassFlowWebhook(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
+    ClassFlowWebhook(void);
+    ClassFlowWebhook(std::vector<ClassFlow *> *lfc);
+    ClassFlowWebhook(std::vector<ClassFlow *> *lfc, ClassFlow *_prev);
 
-    bool ReadParameter(FILE* pfile, string& aktparamgraph);
-    bool doFlow(string time);
-    string name(){return "ClassFlowWebhook";};
+    bool ReadParameter(FILE *pfile, std::string &aktparamgraph);
+    bool doFlow(std::string time);
+	
+    std::string name(void) { return "ClassFlowWebhook"; };
 };
 
-#endif //CLASSFWEBHOOK_H
-#endif //ENABLE_WEBHOOK
+#endif // CLASSFWEBHOOK_H
+#endif // ENABLE_WEBHOOK

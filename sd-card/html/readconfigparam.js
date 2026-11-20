@@ -7,22 +7,21 @@ var NUMBERS = new Array(0);
 var REFERENCES = new Array(0);
 
 function getNUMBERSList() {
-    _domainname = getDomainname(); 
+    var _domainname = getDomainname(); 
     var namenumberslist = "";
 
     var xhttp = new XMLHttpRequest();
-	
     xhttp.addEventListener('load', function(event) {
         if (xhttp.status >= 200 && xhttp.status < 300) {
             namenumberslist = xhttp.responseText;
         } 
         else {
-            console.warn(request.statusText, request.responseText);
+            console.warn(xhttp.statusText, xhttp.responseText);
         }
     });
 
     try {
-        url = _domainname + '/editflow?task=namenumbers';     
+        var url = _domainname + '/editflow?task=namenumbers';     
         xhttp.open("GET", url, false);
         xhttp.send();
     } catch (error) {}
@@ -33,22 +32,21 @@ function getNUMBERSList() {
 }
 
 function getDATAList() {
-    _domainname = getDomainname(); 
-    datalist = "";
+    var _domainname = getDomainname(); 
+    var datalist = "";
 
     var xhttp = new XMLHttpRequest();
-	
     xhttp.addEventListener('load', function(event) {
         if (xhttp.status >= 200 && xhttp.status < 300) {
             datalist = xhttp.responseText;
         } 
         else {
-            console.warn(request.statusText, request.responseText);
+            console.warn(xhttp.statusText, xhttp.responseText);
         }
     });
 
     try {
-        url = _domainname + '/editflow?task=data';     
+        var url = _domainname + '/editflow?task=data';     
         xhttp.open("GET", url, false);
         xhttp.send();
     } catch (error) {}
@@ -61,22 +59,21 @@ function getDATAList() {
 }
 
 function getTFLITEList() {
-    _domainname = getDomainname(); 
-    tflitelist = "";
+    var _domainname = getDomainname(); 
+    var tflitelist = "";
 
     var xhttp = new XMLHttpRequest();
-	
     xhttp.addEventListener('load', function(event) {
         if (xhttp.status >= 200 && xhttp.status < 300) {
             tflitelist = xhttp.responseText;
         } 
         else {
-            console.warn(request.statusText, request.responseText);
+            console.warn(xhttp.statusText, xhttp.responseText);
         }
     });
 
     try {
-        url = _domainname + '/editflow?task=tflite';
+        var url = _domainname + '/editflow?task=tflite';
         xhttp.open("GET", url, false);
         xhttp.send();
     } catch (error) {}
@@ -299,9 +296,9 @@ function ParseConfig() {
      
     while (aktline < config_split.length){
         for (var cat in category) {
-            zw = cat.toUpperCase();
-            zw1 = "[" + zw + "]";
-            zw2 = ";[" + zw + "]";
+            var zw = cat.toUpperCase();
+            var zw1 = "[" + zw + "]";
+            var zw2 = ";[" + zw + "]";
             
             if ((config_split[aktline].trim().toUpperCase() == zw1) || (config_split[aktline].trim().toUpperCase() == zw2)) {
                 if (config_split[aktline].trim().toUpperCase() == zw1) {
@@ -395,7 +392,7 @@ function ParseConfigParamAll(_aktline, _catname) {
         }
         
         if (!isCom && (linesplit.length == 3) && (_catname == 'Alignment')) {
-            _newref = new Object();
+            var _newref = new Object();
             _newref["name"] = linesplit[0];
             _newref["x"] = linesplit[1];
             _newref["y"] = linesplit[2];
@@ -423,9 +420,9 @@ function ParamExtractValue(_param, _linesplit, _catname, _paramname, _aktline, _
 
 function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom) {
     for (var paramname in _param[_catname]) {
-        _AktROI = "default";
-        _AktPara = _linesplit[0];
-        _pospunkt = _AktPara.indexOf (".");
+        var _AktROI = "default";
+        var _AktPara = _linesplit[0];
+        var _pospunkt = _AktPara.indexOf (".");
         
         if (_pospunkt > -1) {
             _AktROI = _AktPara.substring(0, _pospunkt);
@@ -442,7 +439,7 @@ function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom) {
             _param[_catname][paramname]["line"] = _aktline;
             
             if (_param[_catname][paramname]["Numbers"] == true) {        // möglicher Multiusage
-                abc = getNUMBERS(_linesplit[0]);
+                var abc = getNUMBERS(_linesplit[0]);
                 abc[_catname][paramname] = new Object;
                 abc[_catname][paramname]["found"] = true;
                 abc[_catname][paramname]["enabled"] = !_iscom;
@@ -452,7 +449,7 @@ function ParamExtractValueAll(_param, _linesplit, _catname, _aktline, _iscom) {
                 }
 				
                 if (abc["name"] == "default") {
-                    for (_num in NUMBERS) {        // wert mit Default belegen
+                    for (var _num in NUMBERS) {        // wert mit Default belegen
                         if (NUMBERS[_num][_catname][paramname]["found"] == false) {
                             NUMBERS[_num][_catname][paramname]["found"] = true;
                             NUMBERS[_num][_catname][paramname]["enabled"] = !_iscom;
@@ -670,7 +667,7 @@ function WriteConfigININew() {
     config_split = new Array(0);
 
     for (var cat in param) {
-        text = "[" + cat + "]";
+        var text = "[" + cat + "]";
 		  
         if (!category[cat]["enabled"]) {
             text = ";" + text;
@@ -680,10 +677,10 @@ function WriteConfigININew() {
 
         for (var name in param[cat]) {
             if (param[cat][name]["Numbers"]) {
-                for (_num in NUMBERS) {
+                for (var _num in NUMBERS) {
                     text = NUMBERS[_num]["name"] + "." + name;
 
-                    var text = text + " =" 
+                    text = text + " =" 
                          
                     for (var j = 1; j <= param[cat][name]["anzParam"]; ++j) {
                         if (!(typeof NUMBERS[_num][cat][name]["value"+j] == 'undefined')) {
@@ -699,7 +696,7 @@ function WriteConfigININew() {
                 }
             }
             else {
-                var text = name + " =" 
+                text = name + " =" 
                     
                 for (var j = 1; j <= param[cat][name]["anzParam"]; ++j) {
                     if (!(typeof param[cat][name]["value"+j] == 'undefined')) {
@@ -779,7 +776,7 @@ function SaveConfigToServer(_domainname){
         config_split.pop();
     }
 
-    var config_gesamt = "";
+    config_gesamt = "";
 	 
     for (var i = 0; i < config_split.length; ++i)
     {
@@ -800,7 +797,7 @@ function getConfigCategory() {
 
 function ExtractROIs(_aktline, _type){
     var linesplit = ZerlegeZeile(_aktline);
-    abc = getNUMBERS(linesplit[0], _type);
+    var abc = getNUMBERS(linesplit[0], _type);
     abc["pos_ref"] = _aktline;
     abc["x"] = linesplit[1];
     abc["y"] = linesplit[2];
@@ -815,18 +812,16 @@ function ExtractROIs(_aktline, _type){
 }
 
 function getNUMBERS(_name, _type, _create = true) {
-    _pospunkt = _name.indexOf (".");
-    
+    var _pospunkt = _name.indexOf (".");
+    var _digit = "default";
+    var _roi = _name;
+	
     if (_pospunkt > -1) {
         _digit = _name.substring(0, _pospunkt);
         _roi = _name.substring(_pospunkt+1);
     }
-    else {
-        _digit = "default";
-        _roi = _name;
-    }
 
-    _ret = -1;
+    var _ret = -1;
 
     for (i = 0; i < NUMBERS.length; ++i) {
         if (NUMBERS[i]["name"] == _digit) {
@@ -866,7 +861,7 @@ function getNUMBERS(_name, _type, _create = true) {
         return _ret;
     }
 
-    neuroi = new Object();
+    var neuroi = new Object();
     neuroi["name"] = _roi;
     _ret[_type].push(neuroi);
 
@@ -875,8 +870,8 @@ function getNUMBERS(_name, _type, _create = true) {
 
 function CopyReferenceToImgTmp(_domainname) {
     for (index = 0; index < 2; ++index) {
-        _filenamevon = REFERENCES[index]["name"];
-        _filenamenach = _filenamevon.replace("/config/", "/img_tmp/");
+        var _filenamevon = REFERENCES[index]["name"];
+        var _filenamenach = _filenamevon.replace("/config/", "/img_tmp/");
         FileDeleteOnServer(_filenamenach, _domainname);
         FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
      
@@ -893,8 +888,8 @@ function GetReferencesInfo(){
 
 function UpdateConfigReferences(_domainname){
     for (var index = 0; index < 2; ++index) {
-        _filenamenach = REFERENCES[index]["name"];
-        _filenamevon = _filenamenach.replace("/config/", "/img_tmp/");
+        var _filenamenach = REFERENCES[index]["name"];
+        var _filenamevon = _filenamenach.replace("/config/", "/img_tmp/");
         FileDeleteOnServer(_filenamenach, _domainname);
         FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
      
@@ -916,8 +911,8 @@ function UpdateConfigReference(_anzneueref, _domainname){
         index = 1;
     }
 
-    _filenamenach = REFERENCES[index]["name"];
-    _filenamevon = _filenamenach.replace("/config/", "/img_tmp/");
+    var _filenamenach = REFERENCES[index]["name"];
+    var _filenamevon = _filenamenach.replace("/config/", "/img_tmp/");
 
     FileDeleteOnServer(_filenamenach, _domainname);
     FileCopyOnServer(_filenamevon, _filenamenach, _domainname);
@@ -938,8 +933,8 @@ function RenameNUMBER(_alt, _neu){
         return "Number sequence name must not contain , . \" or a space";
     }
 
-    index = -1;
-    found = false;
+    var index = -1;
+    var found = false;
     
 	for (i = 0; i < NUMBERS.length; ++i) {
         if (NUMBERS[i]["name"] == _alt) {
@@ -965,7 +960,7 @@ function DeleteNUMBER(_delete){
         return "One number sequence is mandatory. Therefore this cannot be deleted"
     }
      
-    index = -1;
+    var index = -1;
 	 
     for (i = 0; i < NUMBERS.length; ++i) {
         if (NUMBERS[i]["name"] == _delete) {
@@ -981,7 +976,7 @@ function DeleteNUMBER(_delete){
 }
 
 function CreateNUMBER(_numbernew){
-    found = false;
+    var found = false;
     
     for (i = 0; i < NUMBERS.length; ++i) {
         if (NUMBERS[i]["name"] == _numbernew) {
@@ -993,7 +988,7 @@ function CreateNUMBER(_numbernew){
         return "Number sequence name is already existing, please choose another name";
     }
 
-    _ret = new Object();
+    var _ret = new Object();
     _ret["name"] = _numbernew;
     _ret['digit'] = new Array();
     _ret['analog'] = new Array();
@@ -1028,7 +1023,7 @@ function CreateNUMBER(_numbernew){
 }
 
 function getROIInfo(_typeROI, _number){
-    index = -1;
+    var index = -1;
     
     for (var i = 0; i < NUMBERS.length; ++i) {
         if (NUMBERS[i]["name"] == _number) {
@@ -1049,9 +1044,9 @@ function RenameROI(_number, _type, _alt, _neu){
         return "ROI name must not contain . : , ; = \" or space";
     }
 
-    index = -1;
-    found = false;
-    _indexnumber = -1;
+    var index = -1;
+    var found = false;
+    var _indexnumber = -1;
     
     for (j = 0; j < NUMBERS.length; ++j) {
         if (NUMBERS[j]["name"] == _number) {
@@ -1087,7 +1082,7 @@ function DeleteNUMBER(_delte) {
         return "The last number cannot be deleted"
     }
 	
-    index = -1;
+    var index = -1;
     
     for (i = 0; i < NUMBERS.length; ++i) {
         if (NUMBERS[i]["name"] == _delte) {
@@ -1103,7 +1098,7 @@ function DeleteNUMBER(_delte) {
 }
 
 function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
-    _indexnumber = -1;
+    var _indexnumber = -1;
     
     for (j = 0; j < NUMBERS.length; ++j) {
         if (NUMBERS[j]["name"] == _number) {
@@ -1115,7 +1110,7 @@ function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
         return "Number sequence not existing. ROI cannot be created"
     }
 
-    found = false;
+    var found = false;
     
     for (i = 0; i < NUMBERS[_indexnumber][_type].length; ++i) {
         if (NUMBERS[_indexnumber][_type][i]["name"] == _roinew) {
@@ -1127,7 +1122,7 @@ function CreateROI(_number, _type, _pos, _roinew, _x, _y, _dx, _dy, _CCW){
         return "ROI name is already existing, please choose another name";
     }
 
-    _ret = new Object();
+    var _ret = new Object();
     _ret["name"] = _roinew;
     _ret["x"] = _x;
     _ret["y"] = _y;

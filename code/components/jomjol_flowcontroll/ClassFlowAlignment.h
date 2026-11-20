@@ -20,11 +20,12 @@ protected:
     bool use_antialiasing;
     RefInfo References[2];
     int anz_ref;
-    string namerawimage;
+    std::string namerawimage;
     bool SaveAllFiles;
     CAlignAndCutImage *AlignAndCutImage;
     std::string FileStoreRefAlignment;
     float SAD_criteria;
+    bool ownsImageBasis;
 
     void SetInitialParameter(void);
     bool LoadReferenceAlignmentValues(void);
@@ -37,15 +38,16 @@ public:
 #endif
 
     ClassFlowAlignment(std::vector<ClassFlow *> *lfc);
+    ~ClassFlowAlignment();
 
     CAlignAndCutImage *GetAlignAndCutImage() { return AlignAndCutImage; };
 
     void DrawRef(CImageBasis *_zw);
 
-    bool ReadParameter(FILE *pfile, string &aktparamgraph);
-    bool doFlow(string time);
-    string getHTMLSingleStep(string host);
-    string name() { return "ClassFlowAlignment"; };
+    bool ReadParameter(FILE *pfile, std::string &aktparamgraph);
+    bool doFlow(std::string time);
+    std::string getHTMLSingleStep(std::string host);
+    std::string name(void) { return "ClassFlowAlignment"; };
 };
 
 #endif // CLASSFLOWALIGNMENT_H

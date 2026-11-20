@@ -3,10 +3,8 @@
 #ifndef CLASSLOGFILE_H
 #define CLASSLOGFILE_H
 
-
 #include <string>
 #include "esp_log.h"
-
 
 class ClassLogFile
 {
@@ -15,10 +13,14 @@ private:
     std::string logfile;
     std::string dataroot;
     std::string datafile;
+
     unsigned short logFileRetentionInDays;
     unsigned short dataLogRetentionInDays;
+
     bool doDataLogToSD;
+
     esp_log_level_t loglevel;
+
 public:
     ClassLogFile(std::string _logpath, std::string _logfile, std::string _logdatapath, std::string _datafile);
 
@@ -39,9 +41,7 @@ public:
     void RemoveOldLogFile();
     void RemoveOldDataLog();
 
-//    void WriteToData(std::string _ReturnRawValue, std::string _ReturnValue, std::string _ReturnPreValue, std::string _ErrorMessageText, std::string _digit, std::string _analog);
-    void WriteToData(std::string _timestamp, std::string _name, std::string  _ReturnRawValue, std::string  _ReturnValue, std::string  _ReturnPreValue, std::string  _ReturnRateValue, std::string  _ReturnChangeAbsolute, std::string  _ErrorMessageText, std::string  _digit, std::string  _analog);
-
+    void WriteToData(std::string _timestamp, std::string _name, std::string _ReturnRawValue, std::string _ReturnValue, std::string _ReturnPreValue, std::string _ReturnRateValue, std::string _ReturnChangeAbsolute, std::string _ErrorMessageText, std::string _digit, std::string _analog);
 
     std::string GetCurrentFileName();
     std::string GetCurrentFileNameData();
@@ -49,4 +49,4 @@ public:
 
 extern ClassLogFile LogFile;
 
-#endif //CLASSLOGFILE_H
+#endif // CLASSLOGFILE_H

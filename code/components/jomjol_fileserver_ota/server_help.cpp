@@ -14,11 +14,11 @@
 
 #include "Helper.h"
 #include "ClassLogFile.h"
-#include "../../include/defines.h"
+#include "defines.h"
 
 static const char *TAG = "SERVER HELP";
 
-string SUFFIX_ZW = "_tmp";
+std::string SUFFIX_ZW = "_tmp";
 
 char scratch[SERVER_HELPER_SCRATCH_BUFSIZE];
 
@@ -49,8 +49,8 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
         _gz_file_exists = true;
     }
 
-    FILE *fd = fopen(filename.c_str(), "r");
-    if (!fd)
+    FILE *pFile = fopen(filename.c_str(), "r");
+    if (!pFile)
     {
         ESP_LOGE(TAG, "Failed to read file: %s", filename.c_str());
 
@@ -105,12 +105,12 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
     do
     {
         /* Read file in chunks into the scratch buffer */
-        chunksize = fread(chunk, 1, SERVER_HELPER_SCRATCH_BUFSIZE, fd);
+        chunksize = fread(chunk, 1, SERVER_HELPER_SCRATCH_BUFSIZE, pFile);
 
         /* Send the buffer contents as HTTP response chunk */
         if (httpd_resp_send_chunk(req, chunk, chunksize) != ESP_OK)
         {
-            fclose(fd);
+            fclose(pFile);
             ESP_LOGE(TAG, "File sending failed!");
 
             /* Abort sending file */
@@ -126,7 +126,7 @@ esp_err_t send_file(httpd_req_t *req, std::string filename)
     } while (chunksize != 0);
 
     /* Close file after sending complete */
-    fclose(fd);
+    fclose(pFile);
     ESP_LOGD(TAG, "File sending complete");
 
     return ESP_OK;
@@ -144,6 +144,7 @@ const char *get_path_from_uri(char *dest, const char *base_path, const char *uri
     {
         pathlen = MIN(pathlen, quest - uri);
     }
+
     const char *hash = strchr(uri, '#');
     if (hash)
     {
@@ -227,7 +228,7 @@ esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filename)
 
 struct unzip_context_t
 {
-    FILE *file;
+    FILE *pFile;
 };
 
 static size_t unzip_write_callback(void *pOpaque, mz_uint64 file_ofs, const void *pBuf, size_t n)
@@ -235,12 +236,12 @@ static size_t unzip_write_callback(void *pOpaque, mz_uint64 file_ofs, const void
     (void)file_ofs;
 
     unzip_context_t *ctx = (unzip_context_t *)pOpaque;
-    if (!ctx || !ctx->file)
+    if (!ctx || !ctx->pFile)
     {
         return 0;
     }
 
-    size_t written = fwrite(pBuf, 1, n, ctx->file);
+    size_t written = fwrite(pBuf, 1, n, ctx->pFile);
     if (written != n)
     {
         return 0;
@@ -262,7 +263,7 @@ static bool unzip_extract_file(mz_zip_archive *zip_archive, int i, const std::st
     setvbuf(pFile, NULL, _IOFBF, SERVER_FILER_SCRATCH_BUFSIZE);
 
     unzip_context_t ctx;
-    ctx.file = pFile;
+    ctx.pFile = pFile;
 
     mz_bool status = mz_zip_reader_extract_to_callback(zip_archive, i, unzip_write_callback, &ctx, 0);
 
@@ -335,7 +336,7 @@ std::string unzip_firmware(std::string _in_zip_file, std::string _html_tmp, std:
     if (!mz_zip_reader_init_file(&zip_archive, _in_zip_file.c_str(), 0))
     {
         ESP_LOGD(TAG, "mz_zip_reader_init_file() failed!");
-        return "";
+        return "ERROR";
     }
 
     int numberoffiles = (int)mz_zip_reader_get_num_files(&zip_archive);
@@ -348,6 +349,8 @@ std::string unzip_firmware(std::string _in_zip_file, std::string _html_tmp, std:
 
         if (!mz_zip_reader_file_stat(&zip_archive, i, &file_stat))
         {
+            ESP_LOGE(TAG, "mz_zip_reader_file_stat() failed for entry %d!", i);
+            ret = "ERROR";
             continue;
         }
 
@@ -357,7 +360,6 @@ std::string unzip_firmware(std::string _in_zip_file, std::string _html_tmp, std:
         }
 
         std::string path(file_stat.m_filename);
-
         std::string logical_path;
 
         if (toUpper(path) == "FIRMWARE.BIN")
@@ -377,6 +379,7 @@ std::string unzip_firmware(std::string _in_zip_file, std::string _html_tmp, std:
             std::string modified = path;
             std::string _s1 = "config-initial";
             std::string _dir_new = "config";
+
             FindReplace(modified, _s1, _dir_new);
 
             if (!dir.empty())
@@ -395,8 +398,8 @@ std::string unzip_firmware(std::string _in_zip_file, std::string _html_tmp, std:
         }
 
         std::string temp_file = logical_path + SUFFIX_ZW;
-
         std::string folder = temp_file.substr(0, temp_file.find_last_of('/'));
+
         MakeDir(folder);
 
         ESP_LOGI(TAG, "Extract: %s", temp_file.c_str());

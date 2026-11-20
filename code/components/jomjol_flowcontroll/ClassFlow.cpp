@@ -4,19 +4,18 @@
 #include <iostream>
 #include <string.h>
 #include "esp_log.h"
-#include "../../include/defines.h"
+#include "defines.h"
 
 static const char *TAG = "CLASS";
-
 
 void ClassFlow::SetInitialParameter(void)
 {
 	ListFlowControll = NULL;
-	previousElement = NULL;	
+	previousElement = NULL;
 	disabled = false;
 }
 
-bool ClassFlow::isNewParagraph(string input)
+bool ClassFlow::isNewParagraph(std::string input)
 {
 	if ((input[0] == '[') || ((input[0] == ';') && (input[1] == '[')))
 	{
@@ -25,66 +24,66 @@ bool ClassFlow::isNewParagraph(string input)
 	return false;
 }
 
-bool ClassFlow::GetNextParagraph(FILE* pfile, string& aktparamgraph)
+bool ClassFlow::GetNextParagraph(FILE *pfile, std::string &aktparamgraph)
 {
-	while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph));
+	while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph))
+		;
 
 	if (isNewParagraph(aktparamgraph))
 		return true;
 	return false;
 }
 
-
 ClassFlow::ClassFlow(void)
 {
 	SetInitialParameter();
 }
 
-ClassFlow::ClassFlow(std::vector<ClassFlow*> * lfc)
+ClassFlow::ClassFlow(std::vector<ClassFlow *> *lfc)
 {
-	SetInitialParameter();	
+	SetInitialParameter();
 	ListFlowControll = lfc;
 }
 
-ClassFlow::ClassFlow(std::vector<ClassFlow*> * lfc, ClassFlow *_prev)
+ClassFlow::ClassFlow(std::vector<ClassFlow *> *lfc, ClassFlow *_prev)
 {
-	SetInitialParameter();	
+	SetInitialParameter();
 	ListFlowControll = lfc;
 	previousElement = _prev;
-}	
+}
 
-bool ClassFlow::ReadParameter(FILE* pfile, string &aktparamgraph)
+bool ClassFlow::ReadParameter(FILE *pfile, std::string &aktparamgraph)
 {
 	return false;
 }
 
-bool ClassFlow::doFlow(string time)
+bool ClassFlow::doFlow(std::string time)
 {
 	return false;
 }
 
-string ClassFlow::getHTMLSingleStep(string host){
+std::string ClassFlow::getHTMLSingleStep(std::string host)
+{
 	return "";
 }
 
 std::string ClassFlow::GetParameterName(std::string _input)
 {
-    string _param;
-    int _pospunkt = _input.find_first_of(".");
-    if (_pospunkt > -1)
-    {
-        _param = _input.substr(_pospunkt+1, _input.length() - _pospunkt - 1);
-    }
-    else
-    {
-        _param = _input;
-    }
-//    ESP_LOGD(TAG, "Parameter: %s, Pospunkt: %d", _param.c_str(), _pospunkt);
+	std::string _param;
+	int _pospunkt = _input.find_first_of(".");
+	if (_pospunkt > -1)
+	{
+		_param = _input.substr(_pospunkt + 1, _input.length() - _pospunkt - 1);
+	}
+	else
+	{
+		_param = _input;
+	}
+	//    ESP_LOGD(TAG, "Parameter: %s, Pospunkt: %d", _param.c_str(), _pospunkt);
 	return _param;
 }
 
-
-bool ClassFlow::getNextLine(FILE* pfile, string *rt)
+bool ClassFlow::getNextLine(FILE *pfile, std::string *rt)
 {
 	char zw[1024];
 	if (pfile == NULL)

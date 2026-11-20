@@ -7,24 +7,28 @@
 var domainname_for_testing = "";
 //var domainname_for_testing = "192.168.1.151";
 
+var fwVersion = "NaN";
+var webUiVersion = "NaN";
 
 /* Returns the domainname with prepended protocol.
 Eg. http://watermeter.fritz.box or http://192.168.1.5 */
 function getDomainname(){
+    var _domainname = "";
     var host = window.location.hostname;
+ 
     if (domainname_for_testing != "") {
         console.log("Using pre-defined domainname for testing: " + domainname_for_testing);
-        domainname = "http://" + domainname_for_testing
+        _domainname = "http://" + domainname_for_testing
     }
     else
     {
-        domainname = window.location.protocol + "//" + host;
+        _domainname = window.location.protocol + "//" + host;
         if (window.location.port != "") {
-            domainname = domainname + ":" + window.location.port;
+            _domainname = _domainname + ":" + window.location.port;
         }
     }
 
-    return domainname;
+    return _domainname;
 }
 
 function UpdatePage(_dosession = true){
@@ -38,29 +42,25 @@ function UpdatePage(_dosession = true){
     }
 }
 
-        
 function LoadHostname() {
-    _domainname = getDomainname(); 
-
+    var _domainname = getDomainname(); 
 
     var xhttp = new XMLHttpRequest();
     xhttp.addEventListener('load', function(event) {
         if (xhttp.status >= 200 && xhttp.status < 300) {
-            hostname = xhttp.responseText;
-                document.title = hostname + " - AI on the edge";
-                document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
+            var hostname = xhttp.responseText;
+            document.title = hostname + " - AI on the edge";
+            document.getElementById("id_title").innerHTML  = "Digitizer - AI on the edge - " + hostname;
         } 
         else {
-                console.warn(request.statusText, request.responseText);
+            console.warn(xhttp.statusText, xhttp.responseText);
         }
     });
 
-//     var xhttp = new XMLHttpRequest();
     try {
-            url = _domainname + '/info?type=Hostname';     
-            xhttp.open("GET", url, true);
-            xhttp.send();
-
+        var url = _domainname + '/info?type=Hostname';     
+        xhttp.open("GET", url, true);
+        xhttp.send();
     }
     catch (error)
     {
@@ -68,12 +68,8 @@ function LoadHostname() {
     }
 }
 
-
-var fwVersion = "";
-var webUiVersion = "";
-
 function LoadFwVersion() {
-    _domainname = getDomainname(); 
+    var _domainname = getDomainname(); 
 
     var xhttp = new XMLHttpRequest();
     xhttp.addEventListener('load', function(event) {
@@ -84,13 +80,13 @@ function LoadFwVersion() {
             compareVersions();
         } 
         else {
-            console.warn(request.statusText, request.responseText);
+            console.warn(xhttp.statusText, xhttp.responseText);
             fwVersion = "NaN";
         }
     });
 
     try {
-        url = _domainname + '/info?type=FirmwareVersion';     
+        var url = _domainname + '/info?type=FirmwareVersion';     
         xhttp.open("GET", url, true);
         xhttp.send();
     }
@@ -100,7 +96,7 @@ function LoadFwVersion() {
 }
 
 function LoadWebUiVersion() {
-    _domainname = getDomainname(); 
+    var _domainname = getDomainname(); 
 
     var xhttp = new XMLHttpRequest();
     xhttp.addEventListener('load', function(event) {
@@ -110,13 +106,13 @@ function LoadWebUiVersion() {
             compareVersions();
         } 
         else {
-            console.warn(request.statusText, request.responseText);
+            console.warn(xhttp.statusText, xhttp.responseText);
             webUiVersion = "NaN";
         }
     });
 
     try {
-        url = _domainname + '/info?type=HTMLVersion';     
+        var url = _domainname + '/info?type=HTMLVersion';     
         console.log("url");
         xhttp.open("GET", url, true);
         xhttp.send();
@@ -126,16 +122,15 @@ function LoadWebUiVersion() {
     }
 }
 
-
 function compareVersions() {
     if (fwVersion == "" || webUiVersion == "") {
         return;
     }
 
-    arr = fwVersion.split(" ");
-    fWGitHash = arr[arr.length - 1].substring(0, 7);
+    var arr = fwVersion.split(" ");
+    var fWGitHash = arr[arr.length - 1].substring(0, 7);
     arr = webUiVersion.split(" ");
-    webUiHash = arr[arr.length - 1].substring(0, 7);
+    var webUiHash = arr[arr.length - 1].substring(0, 7);
     console.log("FW Hash: " + fWGitHash + ", Web UI Hash: " + webUiHash);
     
     if (fWGitHash != webUiHash) {

@@ -12,21 +12,12 @@
 #include <fstream>
 #include <iostream>
 #include <math.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 #include <dirent.h>
-#ifdef __cplusplus
-}
-#endif
-
 #include <string.h>
 #include <esp_log.h>
 #include <esp_mac.h>
 #include <esp_timer.h>
-#include "../../include/defines.h"
+#include "defines.h"
 
 #include "ClassLogFile.h"
 
@@ -40,20 +31,16 @@ extern "C"
 
 static const char *TAG = "HELPER";
 
-using namespace std;
-
 unsigned int systemStatus = 0;
 
 sdmmc_cid_t SDCardCid;
 sdmmc_csd_t SDCardCsd;
 bool SDCardIsMMC;
 
-// #define DEBUG_DETAIL_ON
-
 /////////////////////////////////////////////////////////////////////////////////////////////
-string getESPHeapInfo()
+std::string getESPHeapInfo()
 {
-	string espInfoResultStr = "";
+	std::string espInfoResultStr = "";
 	char aMsgBuf[80];
 
 	size_t aFreeHeapSize = heap_caps_get_free_size(MALLOC_CAP_8BIT);
@@ -68,21 +55,21 @@ string getESPHeapInfo()
 	size_t aMinFreeInternalHeapSize = heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
 
 	sprintf(aMsgBuf, "Heap Total: %ld", (long)aFreeHeapSize);
-	espInfoResultStr += string(aMsgBuf);
+	espInfoResultStr += std::string(aMsgBuf);
 
 	sprintf(aMsgBuf, " | SPI Free: %ld", (long)aFreeSPIHeapSize);
-	espInfoResultStr += string(aMsgBuf);
+	espInfoResultStr += std::string(aMsgBuf);
 	sprintf(aMsgBuf, " | SPI Large Block:  %ld", (long)aHeapLargestFreeBlockSize);
-	espInfoResultStr += string(aMsgBuf);
+	espInfoResultStr += std::string(aMsgBuf);
 	sprintf(aMsgBuf, " | SPI Min Free: %ld", (long)aMinFreeHeapSize);
-	espInfoResultStr += string(aMsgBuf);
+	espInfoResultStr += std::string(aMsgBuf);
 
 	sprintf(aMsgBuf, " | Int Free: %ld", (long)(aFreeInternalHeapSize));
-	espInfoResultStr += string(aMsgBuf);
+	espInfoResultStr += std::string(aMsgBuf);
 	sprintf(aMsgBuf, " | Int Large Block:  %ld", (long)aHeapIntLargestFreeBlockSize);
-	espInfoResultStr += string(aMsgBuf);
+	espInfoResultStr += std::string(aMsgBuf);
 	sprintf(aMsgBuf, " | Int Min Free: %ld", (long)(aMinFreeInternalHeapSize));
-	espInfoResultStr += string(aMsgBuf);
+	espInfoResultStr += std::string(aMsgBuf);
 
 	return espInfoResultStr;
 }
@@ -97,7 +84,7 @@ size_t getInternalESPHeapSize()
 	return heap_caps_get_free_size(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
 }
 
-string getSDCardPartitionSize()
+std::string getSDCardPartitionSize()
 {
 	FATFS *fs;
 	uint32_t fre_clust, tot_sect;
@@ -106,12 +93,10 @@ string getSDCardPartitionSize()
 	f_getfree("0:", (DWORD *)&fre_clust, &fs);
 	tot_sect = ((fs->n_fatent - 2) * fs->csize) / 1024 / (1024 / SDCardCsd.sector_size); // corrected by SD Card sector size (usually 512 bytes) and convert to MB
 
-	// ESP_LOGD(TAG, "%d MB total drive space (Sector size [bytes]: %d)", (int)tot_sect, (int)fs->ssize);
-
 	return std::to_string(tot_sect);
 }
 
-string getSDCardFreePartitionSpace()
+std::string getSDCardFreePartitionSpace()
 {
 	FATFS *fs;
 	uint32_t fre_clust, fre_sect;
@@ -120,12 +105,10 @@ string getSDCardFreePartitionSpace()
 	f_getfree("0:", (DWORD *)&fre_clust, &fs);
 	fre_sect = (fre_clust * fs->csize) / 1024 / (1024 / SDCardCsd.sector_size); // corrected by SD Card sector size (usually 512 bytes) and convert to MB
 
-	// ESP_LOGD(TAG, "%d MB free drive space (Sector size [bytes]: %d)", (int)fre_sect, (int)fs->ssize);
-
 	return std::to_string(fre_sect);
 }
 
-string getSDCardPartitionAllocationSize()
+std::string getSDCardPartitionAllocationSize()
 {
 	FATFS *fs;
 	uint32_t fre_clust, allocation_size;
@@ -133,8 +116,6 @@ string getSDCardPartitionAllocationSize()
 	/* Get volume information and free clusters of drive 0 */
 	f_getfree("0:", (DWORD *)&fre_clust, &fs);
 	allocation_size = fs->ssize;
-
-	// ESP_LOGD(TAG, "SD Card Partition Allocation Size: %d bytes", allocation_size);
 
 	return std::to_string(allocation_size);
 }
@@ -146,35 +127,27 @@ void SaveSDCardInfo(sdmmc_card_t *card)
 	SDCardIsMMC = card->is_mmc;
 }
 
-string getSDCardManufacturer()
+std::string getSDCardManufacturer()
 {
-	string SDCardManufacturer = SDCardParseManufacturerIDs(SDCardCid.mfg_id);
-	// ESP_LOGD(TAG, "SD Card Manufacturer: %s", SDCardManufacturer.c_str());
-
+	std::string SDCardManufacturer = SDCardParseManufacturerIDs(SDCardCid.mfg_id);
 	return (SDCardManufacturer + " (ID: " + std::to_string(SDCardCid.mfg_id) + ")");
 }
 
-string getSDCardName()
+std::string getSDCardName()
 {
 	char *SDCardName = SDCardCid.name;
-	// ESP_LOGD(TAG, "SD Card Name: %s", SDCardName);
-
 	return std::string(SDCardName);
 }
 
-string getSDCardCapacity()
+std::string getSDCardCapacity()
 {
 	int SDCardCapacity = SDCardCsd.capacity / (1024 / SDCardCsd.sector_size) / 1024; // total sectors * sector size  --> Byte to MB (1024*1024)
-	// ESP_LOGD(TAG, "SD Card Capacity: %s", std::to_string(SDCardCapacity).c_str());
-
 	return std::to_string(SDCardCapacity);
 }
 
-string getSDCardSectorSize()
+std::string getSDCardSectorSize()
 {
 	int SDCardSectorSize = SDCardCsd.sector_size;
-	// ESP_LOGD(TAG, "SD Card Sector Size: %s bytes", std::to_string(SDCardSectorSize).c_str());
-
 	return std::to_string(SDCardSectorSize);
 }
 
@@ -426,14 +399,14 @@ bool MakeDir(std::string path)
 	return bSuccess;
 }
 
-bool ctype_space(const char c, string adddelimiter)
+bool ctype_space(const char c, std::string adddelimiter)
 {
 	if (c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == 11)
 	{
 		return true;
 	}
 
-	if (adddelimiter.find(c) != string::npos)
+	if (adddelimiter.find(c) != std::string::npos)
 	{
 		return true;
 	}
@@ -441,7 +414,7 @@ bool ctype_space(const char c, string adddelimiter)
 	return false;
 }
 
-string trim(string istring, string adddelimiter)
+std::string trim(std::string istring, std::string adddelimiter)
 {
 	bool trimmed = false;
 
@@ -467,11 +440,11 @@ string trim(string istring, string adddelimiter)
 	}
 }
 
-size_t findDelimiterPos(string input, string delimiter)
+size_t findDelimiterPos(std::string input, std::string delimiter)
 {
 	size_t pos = std::string::npos;
 	// size_t zw;
-	string akt_del;
+	std::string akt_del;
 
 	for (int anz = 0; anz < delimiter.length(); ++anz)
 	{
@@ -494,92 +467,99 @@ size_t findDelimiterPos(string input, string delimiter)
 	return pos;
 }
 
-bool RenameFile(string from, string to)
+bool RenameFile(std::string from, std::string to)
 {
-	// ESP_LOGI(logTag, "Renaming File: %s", from.c_str());
-	FILE *fpSourceFile = fopen(from.c_str(), "rb");
+	FILE *pFile = fopen(from.c_str(), "rb");
 
 	// Sourcefile does not exist otherwise there is a mistake when renaming!
-	if (!fpSourceFile)
+	if (!pFile)
 	{
 		ESP_LOGE(TAG, "RenameFile: File %s does not exist!", from.c_str());
 		return false;
 	}
 
-	fclose(fpSourceFile);
-	rename(from.c_str(), to.c_str());
+	fclose(pFile);
+
+	if (rename(from.c_str(), to.c_str()) != 0)
+	{
+		ESP_LOGE(TAG, "RenameFile: Failed to rename %s to %s (errno: %d)", from.c_str(), to.c_str(), errno);
+		return false;
+	}
 
 	return true;
 }
 
-bool RenameFolder(string from, string to)
+bool RenameFolder(std::string from, std::string to)
 {
-	// ESP_LOGI(logTag, "Renaming Folder: %s", from.c_str());
-	DIR *fpSourceFolder = opendir(from.c_str());
+	DIR *pDir = opendir(from.c_str());
 
 	// Sourcefolder does not exist otherwise there is a mistake when renaming!
-	if (!fpSourceFolder)
+	if (!pDir)
 	{
 		ESP_LOGE(TAG, "RenameFolder: Folder %s does not exist!", from.c_str());
 		return false;
 	}
 
-	closedir(fpSourceFolder);
-	rename(from.c_str(), to.c_str());
+	closedir(pDir);
+
+	if (rename(from.c_str(), to.c_str()) != 0)
+	{
+		ESP_LOGE(TAG, "RenameFolder: Failed to rename %s to %s (errno: %d)", from.c_str(), to.c_str(), errno);
+		return false;
+	}
 
 	return true;
 }
 
-bool FileExists(string filename)
+bool FileExists(std::string filename)
 {
-	FILE *fpSourceFile = fopen(filename.c_str(), "rb");
+	FILE *pFile = fopen(filename.c_str(), "rb");
 
 	// Sourcefile does not exist
-	if (!fpSourceFile)
+	if (!pFile)
 	{
 		return false;
 	}
 
-	fclose(fpSourceFile);
+	fclose(pFile);
 
 	return true;
 }
 
-bool FolderExists(string foldername)
+bool FolderExists(std::string foldername)
 {
-	DIR *fpSourceFolder = opendir(foldername.c_str());
+	DIR *pDir = opendir(foldername.c_str());
 
 	// Sourcefolder does not exist
-	if (!fpSourceFolder)
+	if (!pDir)
 	{
 		return false;
 	}
 
-	closedir(fpSourceFolder);
+	closedir(pDir);
 
 	return true;
 }
 
-bool DeleteFile(string filename)
+bool DeleteFile(std::string filename)
 {
-	// ESP_LOGI(logTag, "Deleting file: %s", filename.c_str());
 	/* Delete file */
-	FILE *fpSourceFile = fopen(filename.c_str(), "rb");
+	FILE *pFile = fopen(filename.c_str(), "rb");
 
 	// Sourcefile does not exist otherwise there is a mistake in copying!
-	if (!fpSourceFile)
+	if (!pFile)
 	{
 		ESP_LOGD(TAG, "DeleteFile: File %s existiert nicht!", filename.c_str());
 		return false;
 	}
 
-	fclose(fpSourceFile);
+	fclose(pFile);
 	unlink(filename.c_str());
 
 	return true;
 }
 
-bool CopyFile(string input, string output)
+bool CopyFile(std::string input, std::string output)
 {
 	input = FormatFileName(input);
 	output = FormatFileName(output);
@@ -614,48 +594,42 @@ bool CopyFile(string input, string output)
 	// Close The Files
 	fclose(fpSourceFile);
 	fclose(fpTargetFile);
+
 	ESP_LOGD(TAG, "File copied: %s to %s", input.c_str(), output.c_str());
 
 	return true;
 }
 
-string getFileFullFileName(string filename)
+std::string getFileFullFileName(std::string filename)
 {
 	size_t lastpos = filename.find_last_of('/');
 
-	if (lastpos == string::npos)
+	if (lastpos == std::string::npos)
 	{
 		return "";
 	}
 
-	//	ESP_LOGD(TAG, "Last position: %d", lastpos);
-
-	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
-
-	return zw;
+	return filename.substr(lastpos + 1, filename.size() - lastpos);
 }
 
-string getDirectory(string filename)
+std::string getDirectory(std::string filename)
 {
 	size_t lastpos = filename.find('/');
 
-	if (lastpos == string::npos)
+	if (lastpos == std::string::npos)
 	{
 		lastpos = filename.find('\\');
 	}
 
-	if (lastpos == string::npos)
+	if (lastpos == std::string::npos)
 	{
 		return "";
 	}
 
-	//	ESP_LOGD(TAG, "Directory: %d", lastpos);
-
-	string zw = filename.substr(0, lastpos - 1);
-	return zw;
+	return filename.substr(0, lastpos - 1);
 }
 
-string getFileType(string filename)
+std::string getFileType(std::string filename)
 {
 	size_t lastpos = filename.rfind(".", filename.length());
 	size_t neu_pos;
@@ -665,15 +639,12 @@ string getFileType(string filename)
 		lastpos = neu_pos;
 	}
 
-	if (lastpos == string::npos)
+	if (lastpos == std::string::npos)
 	{
 		return "";
 	}
 
-	string zw = filename.substr(lastpos + 1, filename.size() - lastpos);
-	zw = toUpper(zw);
-
-	return zw;
+	return toUpper(filename.substr(lastpos + 1, filename.size() - lastpos));
 }
 
 /* recursive mkdir */
@@ -754,7 +725,7 @@ int mkdir_r(const char *dir, const mode_t mode)
 	return 0;
 }
 
-string toUpper(string in)
+std::string toUpper(std::string in)
 {
 	for (int i = 0; i < in.length(); ++i)
 	{
@@ -764,7 +735,7 @@ string toUpper(string in)
 	return in;
 }
 
-string toLower(string in)
+std::string toLower(std::string in)
 {
 	for (int i = 0; i < in.length(); ++i)
 	{
@@ -774,12 +745,55 @@ string toLower(string in)
 	return in;
 }
 
-// CPU Temp
-extern "C" uint8_t temprature_sens_read();
-float temperatureRead()
+#if CONFIG_SOC_TEMP_SENSOR_SUPPORTED
+// The ESP32-S2/C3/S3/C2 has a built-in temperature sensor.
+// The temperature sensor module contains an 8-bit Sigma-Delta ADC and a temperature offset DAC.
+// https://github.com/espressif/esp-idf/blob/master/examples/peripherals/temperature_sensor/
+temperature_sensor_handle_t temp_handle = NULL;
+temperature_sensor_config_t temp_sensor = {
+	.range_min = -10,
+	.range_max = 80,
+	.clk_src = TEMPERATURE_SENSOR_CLK_SRC_DEFAULT,
+};
+
+void init_tempsensor(void)
 {
-	return (temprature_sens_read() - 32) / 1.8;
+	ESP_ERROR_CHECK(temperature_sensor_install(&temp_sensor, &temp_handle));
+
+	xTaskCreate(
+		[](void *pvParameters)
+		{
+			while (1)
+			{
+				// Get converted sensor data
+				float tsens_out;
+
+				// Enable temperature sensor
+				ESP_ERROR_CHECK(temperature_sensor_enable(temp_handle));
+				ESP_ERROR_CHECK(temperature_sensor_get_celsius(temp_handle, &tsens_out));
+				temp_sens_value = tsens_out;
+				// Disable the temperature sensor if it is not needed and save the power
+				ESP_ERROR_CHECK(temperature_sensor_disable(temp_handle));
+
+				vTaskDelay(pdMS_TO_TICKS(5000));
+			}
+		},
+		"tempsensor_task", 2048, NULL, 5, NULL);
 }
+
+float temperatureRead(void)
+{
+	return temp_sens_value;
+}
+#elif CONFIG_IDF_TARGET_ESP32
+extern "C" uint8_t temprature_sens_read(void);
+float temperatureRead(void)
+{
+	// convert Fahrenheit to Celsius (F-32) * (5/9) = degree Celsius
+	temp_sens_value = (temprature_sens_read() - 32) / 1.8;
+	return temp_sens_value;
+}
+#endif
 
 time_t addDays(time_t startTime, int days)
 {
@@ -792,9 +806,9 @@ int removeFolder(const char *folderPath, const char *logTag)
 {
 	// ESP_LOGD(logTag, "Delete content in path %s", folderPath);
 
-	DIR *dir = opendir(folderPath);
+	DIR *pDir = opendir(folderPath);
 
-	if (!dir)
+	if (!pDir)
 	{
 		ESP_LOGE(logTag, "Failed to stat dir: %s", folderPath);
 		return -1;
@@ -803,9 +817,9 @@ int removeFolder(const char *folderPath, const char *logTag)
 	struct dirent *entry;
 	int deleted = 0;
 
-	while ((entry = readdir(dir)) != NULL)
+	while ((entry = readdir(pDir)) != NULL)
 	{
-		std::string path = string(folderPath) + "/" + entry->d_name;
+		std::string path = std::string(folderPath) + "/" + entry->d_name;
 
 		if (entry->d_type == DT_REG)
 		{
@@ -825,7 +839,7 @@ int removeFolder(const char *folderPath, const char *logTag)
 		}
 	}
 
-	closedir(dir);
+	closedir(pDir);
 
 	if (rmdir(folderPath) != 0)
 	{
@@ -837,9 +851,9 @@ int removeFolder(const char *folderPath, const char *logTag)
 	return deleted;
 }
 
-std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter = "")
+std::vector<std::string> HelperZerlegeZeile(std::string input, std::string _delimiter = "")
 {
-	std::vector<string> Output;
+	std::vector<std::string> Output;
 	std::string delimiter = " =,";
 
 	if (_delimiter.length() > 0)
@@ -850,9 +864,9 @@ std::vector<string> HelperZerlegeZeile(std::string input, std::string _delimiter
 	return ZerlegeZeile(input, delimiter);
 }
 
-std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
+std::vector<std::string> ZerlegeZeile(std::string input, std::string delimiter)
 {
-	std::vector<string> Output;
+	std::vector<std::string> Output;
 	/* The input can have multiple formats:
 	 *  - key = value
 	 *  - key = value1 value2 value3 ...
@@ -867,12 +881,12 @@ std::vector<string> ZerlegeZeile(std::string input, std::string delimiter)
 	 * As a workaround and to not break any legacy usage, we enforce to only use the
 	 * equal sign, if the key is "password"
 	 */
-	if ((input.find("password") != string::npos) || (input.find("Token") != string::npos))
+	if ((input.find("password") != std::string::npos) || (input.find("Token") != std::string::npos))
 	{
 		// Line contains a password, use the equal sign as the only delimiter and only split on first occurrence
 		size_t pos = input.find("=");
 		Output.push_back(trim(input.substr(0, pos), ""));
-		Output.push_back(trim(input.substr(pos + 1, string::npos), ""));
+		Output.push_back(trim(input.substr(pos + 1, std::string::npos), ""));
 	}
 	else
 	{
@@ -914,9 +928,9 @@ std::string ReplaceString(std::string subject, const std::string &search, const 
 /* SD Card Manufacturer Database */
 struct SDCard_Manufacturer_database
 {
-	string type;
+	std::string type;
 	int id;
-	string manufacturer;
+	std::string manufacturer;
 };
 
 /* Source: https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git/tree/lsmmc.c */
@@ -1133,12 +1147,12 @@ struct SDCard_Manufacturer_database mmc_database[] = {
 };
 
 /* Parse SD Card Manufacturer Database */
-string SDCardParseManufacturerIDs(int id)
+std::string SDCardParseManufacturerIDs(int id)
 {
 	if (SDCardIsMMC)
 	{
 		unsigned int id_cnt = sizeof(mmc_database) / sizeof(struct SDCard_Manufacturer_database);
-		string ret_val = "";
+		std::string ret_val = "";
 
 		for (int i = 0; i < id_cnt; i++)
 		{
@@ -1158,7 +1172,7 @@ string SDCardParseManufacturerIDs(int id)
 	else
 	{
 		unsigned int id_cnt = sizeof(sd_database) / sizeof(struct SDCard_Manufacturer_database);
-		string ret_val = "";
+		std::string ret_val = "";
 
 		for (int i = 0; i < id_cnt; i++)
 		{
@@ -1176,7 +1190,7 @@ string SDCardParseManufacturerIDs(int id)
 	}
 }
 
-string RundeOutput(double _in, int _anzNachkomma)
+std::string RundeOutput(double _in, int _anzNachkomma)
 {
 	std::stringstream stream;
 	int _zw = _in;
@@ -1194,7 +1208,7 @@ string RundeOutput(double _in, int _anzNachkomma)
 	return stream.str();
 }
 
-string getMac(void)
+std::string getMac(void)
 {
 	uint8_t macInt[6];
 	char macFormated[6 * 2 + 5 + 1]; // AA:BB:CC:DD:EE:FF
@@ -1247,7 +1261,7 @@ time_t getUpTime(void)
 	return (uint32_t)(esp_timer_get_time() / 1000 / 1000); // in seconds
 }
 
-string getResetReason(void)
+std::string getResetReason(void)
 {
 	std::string reasonText;
 
@@ -1389,7 +1403,7 @@ bool isInString(std::string &s, std::string const &toFind)
 {
 	std::size_t pos = s.find(toFind);
 
-	if (pos == std::string::npos) 
+	if (pos == std::string::npos)
 	{
 		// Not found
 		return false;
@@ -1399,11 +1413,11 @@ bool isInString(std::string &s, std::string const &toFind)
 }
 
 // from https://stackoverflow.com/a/14678800
-void replaceAll(std::string& s, const std::string& toReplace, const std::string& replaceWith)
+void replaceAll(std::string &s, const std::string &toReplace, const std::string &replaceWith)
 {
 	size_t pos = 0;
-	
-	while ((pos = s.find(toReplace, pos)) != std::string::npos) 
+
+	while ((pos = s.find(toReplace, pos)) != std::string::npos)
 	{
 		s.replace(pos, toReplace.length(), replaceWith);
 		pos += replaceWith.length();
@@ -1416,10 +1430,10 @@ bool isStringNumeric(std::string &input)
 	{
 		return false;
 	}
-    
+
 	// Replace comma with a dot
 	replaceString(input, ",", ".", false);
-	
+
 	int start = 0;
 	int punkt_existiert_schon = 0;
 
@@ -1505,4 +1519,24 @@ bool numericStrToBool(std::string input)
 bool stringToBoolean(std::string input)
 {
 	return (input == "TRUE");
+}
+
+int get_value_or_default_int(int input, int high, int low, int default_value)
+{
+	if ((input < low) || (input > high))
+	{
+		input = default_value;
+	}
+
+	return input;
+}
+
+int get_value_or_default_uint(int input, int high, int default_value)
+{
+	if ((input < 0) || (input > high))
+	{
+		input = default_value;
+	}
+
+	return input;
 }

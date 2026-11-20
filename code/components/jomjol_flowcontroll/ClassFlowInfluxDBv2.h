@@ -1,6 +1,6 @@
-#ifdef ENABLE_INFLUXDB
-
 #pragma once
+
+#ifdef ENABLE_INFLUXDB
 
 #ifndef CLASSFINFLUXDBv2_H
 #define CLASSFINFLUXDBv2_H
@@ -13,35 +13,33 @@
 
 #include <string>
 
-class ClassFlowInfluxDBv2 :
-    public ClassFlow
+class ClassFlowInfluxDBv2 : public ClassFlow
 {
 protected:
     std::string uri, bucket;
     std::string dborg, dbtoken, dbfield;
     std::string OldValue;
-	ClassFlowPostProcessing* flowpostprocessing;  
+    ClassFlowPostProcessing *flowpostprocessing;
     bool InfluxDBenable;
 
     InfluxDB influxdb;
 
-    void SetInitialParameter(void);     
+    void SetInitialParameter(void);
 
-    void handleFieldname(string _decsep, string _value);   
-    void handleMeasurement(string _decsep, string _value);
-
+    void handleFieldname(std::string _decsep, std::string _value);
+    void handleMeasurement(std::string _decsep, std::string _value);
 
 public:
-    ClassFlowInfluxDBv2();
-    ClassFlowInfluxDBv2(std::vector<ClassFlow*>* lfc);
-    ClassFlowInfluxDBv2(std::vector<ClassFlow*>* lfc, ClassFlow *_prev);
+    ClassFlowInfluxDBv2(void);
+    ClassFlowInfluxDBv2(std::vector<ClassFlow *> *lfc);
+    ClassFlowInfluxDBv2(std::vector<ClassFlow *> *lfc, ClassFlow *_prev);
 
-//    string GetInfluxDBMeasurement();
+    // std::string GetInfluxDBMeasurement(void);
 
-    bool ReadParameter(FILE* pfile, string& aktparamgraph);
-    bool doFlow(string time);
-    string name(){return "ClassFlowInfluxDBv2";};
+    bool ReadParameter(FILE *pfile, std::string &aktparamgraph);
+    bool doFlow(std::string time);
+    std::string name(void) { return "ClassFlowInfluxDBv2"; };
 };
 
-#endif //CLASSFINFLUXDBv2_H
-#endif //ENABLE_INFLUXDB
+#endif // CLASSFINFLUXDBv2_H
+#endif // ENABLE_INFLUXDB

@@ -3,7 +3,6 @@
 #ifndef TIMESNTP_H
 #define TIMESNTP_H
 
-
 #include <string>
 #include <time.h>
 #include <sys/time.h>
@@ -16,9 +15,8 @@
 #include "esp_sleep.h"
 #include "esp_sntp.h"
 
-std::string getCurrentTimeString(const char * frm);
-std::string ConvertTimeToString(time_t _time, const char * frm);
-
+std::string getCurrentTimeString(const char *frm);
+std::string ConvertTimeToString(time_t _time, const char *frm);
 
 bool getTimeIsSet(void);
 bool getTimeWasNotSetAtBoot(void);
@@ -30,5 +28,4 @@ bool time_manual_reset_sync(void);
 
 extern int LocalTimeToUTCOffsetSeconds;
 
-
-#endif //TIMESNTP_H
+#endif // TIMESNTP_H
