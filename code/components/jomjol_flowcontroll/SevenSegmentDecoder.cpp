@@ -3,12 +3,13 @@
 #include <math.h>
 
 /**
- * Position of the sub-ROIs, relative to the digit ROI (0.0 .. 1.0), as {x0, y0, x1, y1}.
- * The ROI should be drawn tightly around the segments of the digit.
+ * Default position of the sub-ROIs, relative to the digit ROI (0.0 .. 1.0), as {x0, y0, x1, y1}.
+ * Assumes the ROI is drawn tightly around the segments of the digit.
  * The regions only cover the middle part of every segment so that neighbouring segments
  * (and small ROI misalignments) do not influence each other.
+ * Can be changed per [Digits] section with the parameters SegmentA .. SegmentG, SegmentBgUpper, SegmentBgLower.
  */
-static const float SegmentLayout[SEG_REGION_COUNT][4] = {
+const float SegmentDefaultLayout[SEG_REGION_COUNT][4] = {
     {0.28f, 0.02f, 0.72f, 0.12f},   // a - top
     {0.80f, 0.16f, 0.98f, 0.40f},   // b - top right
     {0.80f, 0.60f, 0.98f, 0.84f},   // c - bottom right
@@ -19,6 +20,32 @@ static const float SegmentLayout[SEG_REGION_COUNT][4] = {
     {0.32f, 0.20f, 0.68f, 0.38f},   // upper hole (background reference)
     {0.32f, 0.62f, 0.68f, 0.80f},   // lower hole (background reference)
 };
+
+SegmentDecoderConfig::SegmentDecoderConfig() {
+    for (int i = 0; i < SEG_REGION_COUNT; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            layout[i][j] = SegmentDefaultLayout[i][j];
+        }
+    }
+}
+
+bool SetSegmentLayout(SegmentDecoderConfig &config, int region, float xPercent, float yPercent, float dxPercent, float dyPercent) {
+    if ((region < 0) || (region >= SEG_REGION_COUNT)) {
+        return false;
+    }
+
+    if ((xPercent < 0) || (yPercent < 0) || (dxPercent <= 0) || (dyPercent <= 0) ||
+        (xPercent + dxPercent > 100.001f) || (yPercent + dyPercent > 100.001f)) {
+        return false;
+    }
+
+    config.layout[region][0] = xPercent / 100.0f;
+    config.layout[region][1] = yPercent / 100.0f;
+    config.layout[region][2] = (xPercent + dxPercent) / 100.0f;
+    config.layout[region][3] = (yPercent + dyPercent) / 100.0f;
+
+    return true;
+}
 
 #define SEGMASK(a, b, c, d, e, f, g) ((a) | ((b) << 1) | ((c) << 2) | ((d) << 3) | ((e) << 4) | ((f) << 5) | ((g) << 6))
 
@@ -64,17 +91,17 @@ static int clampInt(int value, int min, int max) {
     return value;
 }
 
-SegmentRect GetSegmentRect(int region, int roiWidth, int roiHeight, float slantDeg) {
+SegmentRect GetSegmentRect(int region, int roiWidth, int roiHeight, const SegmentDecoderConfig &config) {
     SegmentRect rect = {0, 0, 0, 0, 0};
 
     if ((region < 0) || (region >= SEG_REGION_COUNT) || (roiWidth <= 0) || (roiHeight <= 0)) {
         return rect;
     }
 
-    int x0 = (int) floorf(SegmentLayout[region][0] * roiWidth);
-    int y0 = (int) floorf(SegmentLayout[region][1] * roiHeight);
-    int x1 = (int) ceilf(SegmentLayout[region][2] * roiWidth);
-    int y1 = (int) ceilf(SegmentLayout[region][3] * roiHeight);
+    int x0 = (int) floorf(config.layout[region][0] * roiWidth);
+    int y0 = (int) floorf(config.layout[region][1] * roiHeight);
+    int x1 = (int) ceilf(config.layout[region][2] * roiWidth);
+    int y1 = (int) ceilf(config.layout[region][3] * roiHeight);
 
     x0 = clampInt(x0, 0, roiWidth - 1);
     y0 = clampInt(y0, 0, roiHeight - 1);
@@ -87,7 +114,7 @@ SegmentRect GetSegmentRect(int region, int roiWidth, int roiHeight, float slantD
     rect.dy = y1 - y0;
 
     float centerY = (y0 + y1) / 2.0f;
-    rect.slantOffset = (int) roundf((roiHeight / 2.0f - centerY) * tanf(slantDeg * (float) M_PI / 180.0f));
+    rect.slantOffset = (int) roundf((roiHeight / 2.0f - centerY) * tanf(config.slantDeg * (float) M_PI / 180.0f));
 
     return rect;
 }
@@ -95,9 +122,9 @@ SegmentRect GetSegmentRect(int region, int roiWidth, int roiHeight, float slantD
 /**
  * Mean grey value of one region. The slant is applied row by row so that italic digits are sampled correctly.
  */
-static float regionMean(const uint8_t *image, int width, int height, int channels, int region, float slantDeg) {
-    SegmentRect rect = GetSegmentRect(region, width, height, slantDeg);
-    float slant = tanf(slantDeg * (float) M_PI / 180.0f);
+static float regionMean(const uint8_t *image, int width, int height, int channels, int region, const SegmentDecoderConfig &config) {
+    SegmentRect rect = GetSegmentRect(region, width, height, config);
+    float slant = tanf(config.slantDeg * (float) M_PI / 180.0f);
     unsigned long sum = 0;
     unsigned long count = 0;
 
@@ -138,7 +165,7 @@ SegmentDecodeResult DecodeSevenSegment(const uint8_t *image, int width, int heig
     float mean[SEG_REGION_COUNT];
 
     for (int i = 0; i < SEG_REGION_COUNT; ++i) {
-        mean[i] = regionMean(image, width, height, channels, i, config.slantDeg);
+        mean[i] = regionMean(image, width, height, channels, i, config);
     }
 
     result.background = (mean[SEG_HOLE_UPPER] + mean[SEG_HOLE_LOWER]) / 2.0f;

@@ -361,6 +361,12 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph)) {
         splitted = ZerlegeZeile(aktparamgraph);
+
+        // Seven segment sub-ROI positions: "SegmentA = x y dx dy" (percent of the digit ROI).
+        // Must be handled before the ROI lines below, as they also have 5 elements.
+        if (isDigitSection && (splitted.size() > 0) && ReadSegmentLayoutParameter(splitted)) {
+            continue;
+        }
         if ((toUpper(splitted[0]) == "ROIIMAGESLOCATION") && (splitted.size() > 1)) {
             this->imagesLocation = "/sdcard" + splitted[1];
             this->isLogImage = true;
@@ -635,7 +641,7 @@ void ClassFlowCNNGeneral::DrawROI(CImageBasis *_zw) {
                     if (useSegmentDetection) {
                         // Show the segment sub-ROIs so they can be aligned with the display
                         for (int s = 0; s < SEG_REGION_COUNT; ++s) {
-                            SegmentRect r = GetSegmentRect(s, GENERAL[_dig]->ROI[i]->deltax, GENERAL[_dig]->ROI[i]->deltay, segmentConfig.slantDeg);
+                            SegmentRect r = GetSegmentRect(s, GENERAL[_dig]->ROI[i]->deltax, GENERAL[_dig]->ROI[i]->deltay, segmentConfig);
                             int red = (s < SEG_COUNT) ? 255 : 0;
                             _zw->drawRect(GENERAL[_dig]->ROI[i]->posx + r.x + r.slantOffset, GENERAL[_dig]->ROI[i]->posy + r.y, r.dx, r.dy, red, 255, 0, 1);
                         }
@@ -716,6 +722,31 @@ bool ClassFlowCNNGeneral::getNetworkParameter() {
 
     delete tflite;
     return true;
+}
+
+bool ClassFlowCNNGeneral::ReadSegmentLayoutParameter(std::vector<string> &splitted) {
+    static const char *names[SEG_REGION_COUNT] = {
+        "SEGMENTA", "SEGMENTB", "SEGMENTC", "SEGMENTD", "SEGMENTE", "SEGMENTF", "SEGMENTG", "SEGMENTBGUPPER", "SEGMENTBGLOWER"
+    };
+
+    string key = toUpper(splitted[0]);
+
+    for (int region = 0; region < SEG_REGION_COUNT; ++region) {
+        if (key != names[region]) {
+            continue;
+        }
+
+        if ((splitted.size() >= 5) && isStringNumeric(splitted[1]) && isStringNumeric(splitted[2]) && 
+                isStringNumeric(splitted[3]) && isStringNumeric(splitted[4]) &&
+                SetSegmentLayout(segmentConfig, region, std::stof(splitted[1]), std::stof(splitted[2]), std::stof(splitted[3]), std::stof(splitted[4]))) {
+            return true;
+        }
+
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Invalid value for " + splitted[0] + " (expected: x y dx dy in percent of the ROI) -> default is used");
+        return true;
+    }
+
+    return false;
 }
 
 bool ClassFlowCNNGeneral::doSegmentDetection(string time) {

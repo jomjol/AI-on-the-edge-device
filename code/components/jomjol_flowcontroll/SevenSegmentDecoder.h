@@ -40,7 +40,16 @@ enum t_SegmentIndex {
     SEG_REGION_COUNT
 };
 
+/**
+ * Default position of the sub-ROIs relative to the digit ROI (0.0 .. 1.0) as {x0, y0, x1, y1}.
+ * Order: a, b, c, d, e, f, g, upper background, lower background.
+ */
+extern const float SegmentDefaultLayout[SEG_REGION_COUNT][4];
+
 struct SegmentDecoderConfig {
+    SegmentDecoderConfig();
+
+    float layout[SEG_REGION_COUNT][4];   // Position of the sub-ROIs relative to the digit ROI (0.0 .. 1.0) as {x0, y0, x1, y1}
     t_SegmentPolarity polarity = SegmentPolarityAuto;
     float slantDeg = 0.0f;          // Italic slant of the digits in degrees (positive: top of the digit leans to the right)
     float threshold = 0.4f;         // A segment counts as lit if its contrast is >= threshold * contrast of the strongest segment
@@ -67,9 +76,15 @@ struct SegmentRect {
 int SegmentMaskToDigit(uint8_t mask);
 
 /**
- * @brief Returns the sub-ROI of one segment (or hole region) for a ROI of the given size
+ * @brief Sets the position of one sub-ROI, given in percent of the digit ROI (same convention as a ROI: x y dx dy)
+ * @return false if the values are out of range (layout is left unchanged)
  */
-SegmentRect GetSegmentRect(int region, int roiWidth, int roiHeight, float slantDeg);
+bool SetSegmentLayout(SegmentDecoderConfig &config, int region, float xPercent, float yPercent, float dxPercent, float dyPercent);
+
+/**
+ * @brief Returns the sub-ROI of one segment (or background region) for a ROI of the given size
+ */
+SegmentRect GetSegmentRect(int region, int roiWidth, int roiHeight, const SegmentDecoderConfig &config);
 
 /**
  * @brief Decodes one digit from an image buffer

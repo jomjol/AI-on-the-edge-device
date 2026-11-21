@@ -47,6 +47,7 @@ protected:
 
     bool doNeuralNetwork(string time); 
     bool doSegmentDetection(string time);
+    bool ReadSegmentLayoutParameter(std::vector<string> &splitted);
     bool doAlignAndCut(string time);
 
     bool getNetworkParameter();

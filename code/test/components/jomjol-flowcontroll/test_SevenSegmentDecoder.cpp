@@ -129,3 +129,42 @@ void test_SevenSegment_Variants() {
     img = renderDigit("abcf", 30, 54, 30, 200);                          // 7 with left bar
     TEST_ASSERT_EQUAL_INT(7, DecodeSevenSegment(img.data(), 30, 54, 3, config).digit);
 }
+
+void test_SevenSegment_SetLayout() {
+    SegmentDecoderConfig config;
+    TEST_ASSERT_EQUAL_INT(1, SetSegmentLayout(config, SEG_A, 20, 0, 60, 10));
+    TEST_ASSERT_EQUAL_INT(1, config.layout[SEG_A][0] == 0.2f);
+    TEST_ASSERT_EQUAL_INT(1, config.layout[SEG_A][2] == 0.8f);
+
+    // Invalid values are rejected and the layout is left unchanged
+    TEST_ASSERT_EQUAL_INT(0, SetSegmentLayout(config, SEG_B, 90, 0, 20, 10));    // exceeds the ROI
+    TEST_ASSERT_EQUAL_INT(0, SetSegmentLayout(config, SEG_B, 10, 10, 0, 10));    // zero width
+    TEST_ASSERT_EQUAL_INT(0, SetSegmentLayout(config, SEG_REGION_COUNT, 0, 0, 10, 10));
+    TEST_ASSERT_EQUAL_INT(1, config.layout[SEG_B][0] == SegmentDefaultLayout[SEG_B][0]);
+}
+
+/**
+ * ROI drawn with a margin around the digit: the sub-ROIs are moved to the segments via the layout.
+ */
+void test_SevenSegment_CustomLayout() {
+    const int w = 30, h = 54;               // ROI
+    const int ox = 4, oy = 6, dw = 22, dh = 42;  // digit inside the ROI
+
+    SegmentDecoderConfig config;
+    for (int r = 0; r < SEG_REGION_COUNT; ++r) {
+        float x0 = (ox + SegmentDefaultLayout[r][0] * dw) * 100.0f / w;
+        float y0 = (oy + SegmentDefaultLayout[r][1] * dh) * 100.0f / h;
+        float x1 = (ox + SegmentDefaultLayout[r][2] * dw) * 100.0f / w;
+        float y1 = (oy + SegmentDefaultLayout[r][3] * dh) * 100.0f / h;
+        TEST_ASSERT_EQUAL_INT(1, SetSegmentLayout(config, r, x0, y0, x1 - x0, y1 - y0));
+    }
+
+    for (int digit = 0; digit < 10; ++digit) {
+        std::vector<uint8_t> small = renderDigit(SegmentsOfDigit[digit], dw, dh, 30, 200);
+        std::vector<uint8_t> img(w * h * 3, 200);
+        for (int y = 0; y < dh; ++y) {
+            memcpy(&img[((y + oy) * w + ox) * 3], &small[y * dw * 3], dw * 3);
+        }
+        TEST_ASSERT_EQUAL_INT_MESSAGE(digit, DecodeSevenSegment(img.data(), w, h, 3, config).digit, SegmentsOfDigit[digit]);
+    }
+}

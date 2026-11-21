@@ -10,7 +10,8 @@ This can be more reliable than the CNN for displays whose digits look very consi
 When enabled, the configured digit `Model` is not used.
 
 !!! Note
-    The digit ROI must be drawn **tightly** around the segments of the digit (the outer edges of the segments should touch the ROI border).
+    The default sub-ROI positions expect the digit ROI to be drawn **tightly** around the segments of the digit (the outer edges of the segments should touch the ROI border).
+    The position of every sub-ROI can be adjusted with the parameters `SegmentA` ... `SegmentG`, `SegmentBgUpper` and `SegmentBgLower` (expert parameters).
     The segment sub-ROIs are drawn into the ROI overlay image (yellow = segments, green = background reference), so you can check that they sit on the segments.
 
 !!! Note

@@ -181,6 +181,8 @@ extern "C" void app_main()
     RUN_TEST(test_SevenSegment_NineWithWeakSegment);
     RUN_TEST(test_SevenSegment_Blank);
     RUN_TEST(test_SevenSegment_Variants);
+    RUN_TEST(test_SevenSegment_SetLayout);
+    RUN_TEST(test_SevenSegment_CustomLayout);
     RUN_TEST(test_openmetrics);
     RUN_TEST(test_mqtt);
   
