@@ -5,6 +5,7 @@
 
 #include"ClassFlowDefineTypes.h"
 #include "ClassFlowAlignment.h"
+#include "SevenSegmentDecoder.h"
 
 
 enum t_CNNType {
@@ -34,6 +35,10 @@ protected:
 
     bool SaveAllFiles;   
 
+    // Seven segment detection (alternative to the CNN for digit ROIs, see SevenSegmentDecoder.h)
+    bool useSegmentDetection;
+    SegmentDecoderConfig segmentConfig;
+
     int PointerEvalAnalogNew(float zahl, int numeral_preceder);
     int PointerEvalAnalogToDigitNew(float zahl, float numeral_preceder,  int eval_predecessors, float AnalogToDigitTransitionStart, bool ContinuousLastDigit = false);
     int PointerEvalHybridNew(float zahl, float number_of_predecessors, int eval_predecessors, bool Analog_Predecessors = false, float AnalogToDigitTransitionStart=9.2, bool ContinuousLastDigit = false);
@@ -41,6 +46,7 @@ protected:
 
 
     bool doNeuralNetwork(string time); 
+    bool doSegmentDetection(string time);
     bool doAlignAndCut(string time);
 
     bool getNetworkParameter();

@@ -808,6 +808,59 @@
             <td>$TOOLTIP_Digits_ROIImagesRetention</td>
         </tr>
 
+        <tr class="DigitItem">
+            <td class="indent1">
+                <input type="checkbox" id="Digits_SegmentDetection_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "SegmentDetection")' unchecked >
+                <label for=Digits_SegmentDetection_enabled><class id="Digits_SegmentDetection_text" style="color:black;">Segment Detection</class></label>
+            </td>
+            <td>
+                <select id="Digits_SegmentDetection_value1">
+                    <option value="true">enabled (true)</option>
+                    <option value="false" selected>disabled (false)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_Digits_SegmentDetection</td>
+        </tr>
+
+        <tr class="DigitItem">
+            <td class="indent1">
+                <input type="checkbox" id="Digits_SegmentPolarity_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "SegmentPolarity")' unchecked >
+                <label for=Digits_SegmentPolarity_enabled><class id="Digits_SegmentPolarity_text" style="color:black;">Segment Polarity</class></label>
+            </td>
+            <td>
+                <select id="Digits_SegmentPolarity_value1">
+                    <option value="auto" selected>auto</option>
+                    <option value="dark">dark (dark segments on light background)</option>
+                    <option value="bright">bright (bright segments on dark background)</option>
+                </select>
+            </td>
+            <td>$TOOLTIP_Digits_SegmentPolarity</td>
+        </tr>
+
+        <tr class="DigitItem">
+            <td class="indent1">
+                <input type="checkbox" id="Digits_SegmentSlant_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "SegmentSlant")' unchecked >
+                <label for=Digits_SegmentSlant_enabled><class id="Digits_SegmentSlant_text" style="color:black;">Segment Slant</class></label>
+            </td>
+            <td>
+                <input required type="number" id="Digits_SegmentSlant_value1" min="-30" max="30" step="0.5"
+                    oninput="(!validity.rangeUnderflow||(value=-30)) && (!validity.rangeOverflow||(value=30));">Degrees
+            </td>
+            <td>$TOOLTIP_Digits_SegmentSlant</td>
+        </tr>
+
+        <tr class="DigitItem expert" unused_id="ex92">
+            <td class="indent1">
+                <input type="checkbox" id="Digits_SegmentThreshold_enabled" value="1"  onclick = 'InvertEnableItem("Digits", "SegmentThreshold")' unchecked >
+                <label for=Digits_SegmentThreshold_enabled><class id="Digits_SegmentThreshold_text" style="color:black;">Segment Threshold</class></label>
+            </td>
+            <td>
+                <input required type="number" id="Digits_SegmentThreshold_value1" min="0.05" max="0.95" step="0.05"
+                    oninput="(!validity.rangeUnderflow||(value=0.05)) && (!validity.rangeOverflow||(value=0.95));">
+            </td>
+            <td>$TOOLTIP_Digits_SegmentThreshold</td>
+        </tr>
+
         <!------------- Ananlog ROIs ------------------>
         <tr style="border-bottom: 2px solid lightgray;" id="Category_Analog_ex4">
             <td colspan="3" style="padding-left: 0px; padding-bottom: 3px;">
@@ -2365,6 +2418,10 @@ function UpdateInput() {
     WriteParameter(param, category, "Digits", "CNNGoodThreshold", true);
     WriteParameter(param, category, "Digits", "ROIImagesLocation", true);		
     WriteParameter(param, category, "Digits", "ROIImagesRetention", true);		
+    WriteParameter(param, category, "Digits", "SegmentDetection", true);
+    WriteParameter(param, category, "Digits", "SegmentPolarity", true);
+    WriteParameter(param, category, "Digits", "SegmentSlant", true);
+    WriteParameter(param, category, "Digits", "SegmentThreshold", true);
     
     WriteParameter(param, category, "Analog", "ROIImagesLocation", true);		
     WriteParameter(param, category, "Analog", "ROIImagesRetention", true);		
@@ -2533,6 +2590,10 @@ function ReadParameterAll() {
     ReadParameter(param, "Digits", "CNNGoodThreshold", true);
     ReadParameter(param, "Digits", "ROIImagesLocation", true);
     ReadParameter(param, "Digits", "ROIImagesRetention", true);
+    ReadParameter(param, "Digits", "SegmentDetection", true);
+    ReadParameter(param, "Digits", "SegmentPolarity", true);
+    ReadParameter(param, "Digits", "SegmentSlant", true);
+    ReadParameter(param, "Digits", "SegmentThreshold", true);
 
     ReadParameter(param, "Analog", "Model", false);
     ReadParameter(param, "Analog", "ROIImagesLocation", true);
