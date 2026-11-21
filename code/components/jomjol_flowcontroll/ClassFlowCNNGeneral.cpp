@@ -29,6 +29,7 @@ ClassFlowCNNGeneral::ClassFlowCNNGeneral(ClassFlowAlignment *_flowalign, t_CNNTy
     ListFlowControll = NULL;
     previousElement = NULL;   
     SaveAllFiles = false; 
+    useSegmentDetection = false;
     disabled = false;
     isLogImageSelect = false;
     CNNType = AutoDetect;
@@ -349,6 +350,8 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
         return false;
     }
 
+    bool isDigitSection = (toUpper(aktparamgraph) == "[DIGIT]") || (toUpper(aktparamgraph) == "[DIGITS]");
+
     if (aktparamgraph[0] == ';') {
         disabled = true;
         while (getNextLine(pfile, &aktparamgraph) && !isNewParagraph(aktparamgraph));
@@ -358,6 +361,12 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
 
     while (this->getNextLine(pfile, &aktparamgraph) && !this->isNewParagraph(aktparamgraph)) {
         splitted = ZerlegeZeile(aktparamgraph);
+
+        // Seven segment sub-ROI positions: "SegmentA = x y dx dy" (percent of the digit ROI).
+        // Must be handled before the ROI lines below, as they also have 5 elements.
+        if (isDigitSection && (splitted.size() > 0) && ReadSegmentLayoutParameter(splitted)) {
+            continue;
+        }
         if ((toUpper(splitted[0]) == "ROIIMAGESLOCATION") && (splitted.size() > 1)) {
             this->imagesLocation = "/sdcard" + splitted[1];
             this->isLogImage = true;
@@ -405,9 +414,51 @@ bool ClassFlowCNNGeneral::ReadParameter(FILE* pfile, string& aktparamgraph) {
         if ((toUpper(splitted[0]) == "SAVEALLFILES") && (splitted.size() > 1)) {
             SaveAllFiles = alphanumericToBoolean(splitted[1]);
         }
+
+        // Seven segment detection is only available for digit ROIs
+        if (isDigitSection && (toUpper(splitted[0]) == "SEGMENTDETECTION") && (splitted.size() > 1)) {
+            useSegmentDetection = alphanumericToBoolean(splitted[1]);
+        }
+
+        if (isDigitSection && (toUpper(splitted[0]) == "SEGMENTPOLARITY") && (splitted.size() > 1)) {
+            string polarity = toUpper(splitted[1]);
+            if (polarity == "BRIGHT") {
+                segmentConfig.polarity = SegmentPolarityBright;
+            }
+            else if (polarity == "DARK") {
+                segmentConfig.polarity = SegmentPolarityDark;
+            }
+            else {
+                segmentConfig.polarity = SegmentPolarityAuto;
+            }
+        }
+
+        if (isDigitSection && (toUpper(splitted[0]) == "SEGMENTSLANT") && (splitted.size() > 1)) {
+            if (isStringNumeric(splitted[1])) {
+                segmentConfig.slantDeg = std::stof(splitted[1]);
+            }
+        }
+
+        if (isDigitSection && (toUpper(splitted[0]) == "SEGMENTTHRESHOLD") && (splitted.size() > 1)) {
+            if (isStringNumeric(splitted[1])) {
+                float threshold = std::stof(splitted[1]);
+                if ((threshold > 0) && (threshold < 1)) {
+                    segmentConfig.threshold = threshold;
+                }
+            }
+        }
     }
 
-    if (!getNetworkParameter()) {
+    if (useSegmentDetection) {
+        // No neural network needed: the digits are built from the detected segments.
+        // The ROI images are still prepared with the default digit model size (used for the web interface).
+        CNNType = Digit;
+        modelxsize = 20;
+        modelysize = 32;
+        modelchannel = 3;
+        LogFile.WriteToFile(ESP_LOG_INFO, TAG, "Digits: seven segment detection enabled, CNN model is not used");
+    }
+    else if (!getNetworkParameter()) {
         LogFile.WriteToFile(ESP_LOG_ERROR, TAG, "An error occured on setting up the Network -> Disabling it!");
         disabled = true; // An error occured, disable this CNN!
         return false;
@@ -586,6 +637,15 @@ void ClassFlowCNNGeneral::DrawROI(CImageBasis *_zw) {
             for (int _dig = 0; _dig < GENERAL.size(); ++_dig) {
                 for (int i = 0; i < GENERAL[_dig]->ROI.size(); ++i) {
                     _zw->drawRect(GENERAL[_dig]->ROI[i]->posx, GENERAL[_dig]->ROI[i]->posy, GENERAL[_dig]->ROI[i]->deltax, GENERAL[_dig]->ROI[i]->deltay, 0, 0, (255 - _dig*100), 2);
+
+                    if (useSegmentDetection) {
+                        // Show the segment sub-ROIs so they can be aligned with the display
+                        for (int s = 0; s < SEG_REGION_COUNT; ++s) {
+                            SegmentRect r = GetSegmentRect(s, GENERAL[_dig]->ROI[i]->deltax, GENERAL[_dig]->ROI[i]->deltay, segmentConfig);
+                            int red = (s < SEG_COUNT) ? 255 : 0;
+                            _zw->drawRect(GENERAL[_dig]->ROI[i]->posx + r.x + r.slantOffset, GENERAL[_dig]->ROI[i]->posy + r.y, r.dx, r.dy, red, 255, 0, 1);
+                        }
+                    }
                 }
             }
         }
@@ -664,9 +724,70 @@ bool ClassFlowCNNGeneral::getNetworkParameter() {
     return true;
 }
 
+bool ClassFlowCNNGeneral::ReadSegmentLayoutParameter(std::vector<string> &splitted) {
+    static const char *names[SEG_REGION_COUNT] = {
+        "SEGMENTA", "SEGMENTB", "SEGMENTC", "SEGMENTD", "SEGMENTE", "SEGMENTF", "SEGMENTG", "SEGMENTBGUPPER", "SEGMENTBGLOWER"
+    };
+
+    string key = toUpper(splitted[0]);
+
+    for (int region = 0; region < SEG_REGION_COUNT; ++region) {
+        if (key != names[region]) {
+            continue;
+        }
+
+        if ((splitted.size() >= 5) && isStringNumeric(splitted[1]) && isStringNumeric(splitted[2]) && 
+                isStringNumeric(splitted[3]) && isStringNumeric(splitted[4]) &&
+                SetSegmentLayout(segmentConfig, region, std::stof(splitted[1]), std::stof(splitted[2]), std::stof(splitted[3]), std::stof(splitted[4]))) {
+            return true;
+        }
+
+        LogFile.WriteToFile(ESP_LOG_WARN, TAG, "Invalid value for " + splitted[0] + " (expected: x y dx dy in percent of the ROI) -> default is used");
+        return true;
+    }
+
+    return false;
+}
+
+bool ClassFlowCNNGeneral::doSegmentDetection(string time) {
+    string logPath = CreateLogFolder(time);
+
+    for (int n = 0; n < GENERAL.size(); ++n) {
+        for (int roi = 0; roi < GENERAL[n]->ROI.size(); ++roi) {
+            CImageBasis *img = GENERAL[n]->ROI[roi]->image_org;
+            SegmentDecodeResult res = DecodeSevenSegment(img->rgb_image, img->width, img->height, img->channels, segmentConfig);
+
+            // Unreadable / invalid segment pattern -> class 10 (= "N"), same as the CNN NaN class
+            GENERAL[n]->ROI[roi]->result_klasse = (res.digit >= 0) ? res.digit : 10;
+            GENERAL[n]->ROI[roi]->result_float = (res.digit >= 0) ? res.digit : -1;
+
+            string litSegments = "";
+            for (int s = 0; s < SEG_COUNT; ++s) {
+                litSegments += (res.mask & (1 << s)) ? (char) ('a' + s) : '-';
+            }
+            LogFile.WriteToFile(ESP_LOG_DEBUG, TAG, "Segment detection " + GENERAL[n]->name + "_" + GENERAL[n]->ROI[roi]->name + 
+                    ": segments=" + litSegments + ", digit=" + std::to_string(res.digit) + ", background=" + std::to_string((int) res.background) + 
+                    ", polarity=" + std::to_string(res.polarity));
+
+            if (isLogImage) {
+                string _imagename = GENERAL[n]->name +  "_" + GENERAL[n]->ROI[roi]->name;
+                if (!isLogImageSelect || (LogImageSelect.find(GENERAL[n]->ROI[roi]->name) != std::string::npos)) {
+                    LogImage(logPath, _imagename, NULL, &GENERAL[n]->ROI[roi]->result_klasse, time, GENERAL[n]->ROI[roi]->image_org);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 bool ClassFlowCNNGeneral::doNeuralNetwork(string time) {
     if (disabled) {
         return true;
+    }
+
+    if (useSegmentDetection) {
+        return doSegmentDetection(time);
     }
 
     string logPath = CreateLogFolder(time);

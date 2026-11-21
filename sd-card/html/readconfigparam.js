@@ -153,6 +153,19 @@ function ParseConfig() {
     ParamAddValue(param, catname, "CNNGoodThreshold", 1);
     ParamAddValue(param, catname, "ROIImagesLocation");
     ParamAddValue(param, catname, "ROIImagesRetention");
+    ParamAddValue(param, catname, "SegmentDetection");
+    ParamAddValue(param, catname, "SegmentPolarity");
+    ParamAddValue(param, catname, "SegmentSlant");
+    ParamAddValue(param, catname, "SegmentThreshold");
+    ParamAddValue(param, catname, "SegmentA", 4);
+    ParamAddValue(param, catname, "SegmentB", 4);
+    ParamAddValue(param, catname, "SegmentC", 4);
+    ParamAddValue(param, catname, "SegmentD", 4);
+    ParamAddValue(param, catname, "SegmentE", 4);
+    ParamAddValue(param, catname, "SegmentF", 4);
+    ParamAddValue(param, catname, "SegmentG", 4);
+    ParamAddValue(param, catname, "SegmentBgUpper", 4);
+    ParamAddValue(param, catname, "SegmentBgLower", 4);
 
     var catname = "Analog";
     category[catname] = new Object();
@@ -386,7 +399,8 @@ function ParseConfigParamAll(_aktline, _catname) {
         var linesplit = ZerlegeZeile(input);
         ParamExtractValueAll(param, linesplit, _catname, _aktline, isCom);
         
-        if (!isCom && (linesplit.length >= 5) && (_catname == 'Digits')) {
+        // Parameters with 4 values (e.g. SegmentA = x y dx dy) must not be mistaken for a ROI
+        if (!isCom && (linesplit.length >= 5) && (_catname == 'Digits') && !isParamName(_catname, linesplit[0])) {
             ExtractROIs(input, "digit");
         }
         
@@ -758,6 +772,16 @@ function WriteConfigININew() {
 
         config_split.push("");
     }
+}
+
+function isParamName(_catname, _name) {
+    for (var paramname in param[_catname]) {
+        if (paramname.toUpperCase() == _name.toUpperCase()) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function isCommented(input) {

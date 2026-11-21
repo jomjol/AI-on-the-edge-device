@@ -45,3 +45,13 @@ CACert
 ValidateServerCert
 ClientCert
 ClientKey
+SegmentThreshold
+SegmentA
+SegmentB
+SegmentC
+SegmentD
+SegmentE
+SegmentF
+SegmentG
+SegmentBgUpper
+SegmentBgLower

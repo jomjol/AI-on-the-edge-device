@@ -20,6 +20,7 @@
 #include "components/jomjol-flowcontroll/test_PointerEvalAnalogToDigitNew.cpp"
 #include "components/jomjol-flowcontroll/test_getReadoutRawString.cpp"
 #include "components/jomjol-flowcontroll/test_cnnflowcontroll.cpp"
+#include "components/jomjol-flowcontroll/test_SevenSegmentDecoder.cpp"
 #include "components/openmetrics/test_openmetrics.cpp"
 #include "components/jomjol_mqtt/test_server_mqtt.cpp"
 
@@ -172,6 +173,16 @@ extern "C" void app_main()
 
     // getReadoutRawString test
     RUN_TEST(test_getReadoutRawString);
+    RUN_TEST(test_SegmentMaskToDigit);
+    RUN_TEST(test_SevenSegment_DarkOnLight);
+    RUN_TEST(test_SevenSegment_BrightOnDark);
+    RUN_TEST(test_SevenSegment_Noise);
+    RUN_TEST(test_SevenSegment_Slant);
+    RUN_TEST(test_SevenSegment_NineWithWeakSegment);
+    RUN_TEST(test_SevenSegment_Blank);
+    RUN_TEST(test_SevenSegment_Variants);
+    RUN_TEST(test_SevenSegment_SetLayout);
+    RUN_TEST(test_SevenSegment_CustomLayout);
     RUN_TEST(test_openmetrics);
     RUN_TEST(test_mqtt);
   
